@@ -67,8 +67,8 @@ import akka.stream.scaladsl.Sink
       toOffset: UUID,
       bucketSize: BucketSize,
       scanningPeriod: FiniteDuration,
-      whichToKeep: (TagPidSequenceNr, TagPidSequenceNr) => TagPidSequenceNr)
-      : Future[Map[PersistenceId, (TagPidSequenceNr, UUID)]] = {
+      whichToKeep: (TagPidSequenceNr,
+          TagPidSequenceNr) => TagPidSequenceNr): Future[Map[PersistenceId, (TagPidSequenceNr, UUID)]] = {
 
     def doIt(): Future[Map[PersistenceId, (TagPidSequenceNr, UUID)]] = {
 

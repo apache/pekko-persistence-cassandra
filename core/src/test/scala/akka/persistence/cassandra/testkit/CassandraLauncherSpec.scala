@@ -52,8 +52,8 @@ class CassandraLauncherSpec
         CassandraLauncher.classpathForResources("logback-test.xml"))
 
       awaitAssert({
-        testCassandra()
-      }, 45.seconds)
+          testCassandra()
+        }, 45.seconds)
 
       CassandraLauncher.stop()
 

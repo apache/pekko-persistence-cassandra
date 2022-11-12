@@ -14,7 +14,7 @@ import akka.Done
 
 class ReconciliationCompileOnly {
 
-  //#reconcile
+  // #reconcile
   // System should have the same Cassandra plugin configuration as your application
   // but be careful to remove seed nodes so this doesn't join the cluster
   val system = ActorSystem()
@@ -32,5 +32,5 @@ class ReconciliationCompileOnly {
     // optional: re-build, if this is ommited then it will be re-build next time the pid is started
     _ <- rec.rebuildTagViewForPersistenceIds(pid)
   } yield Done
-  //#reconcile
+  // #reconcile
 }

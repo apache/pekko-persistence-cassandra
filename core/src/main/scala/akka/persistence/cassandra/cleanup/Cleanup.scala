@@ -131,7 +131,6 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
    * snapshot.
    *
    * @return the snapshot meta of the oldest remaining snapshot. None if there are no snapshots
-   *
    */
   def deleteBeforeSnapshot(
       persistenceId: String,

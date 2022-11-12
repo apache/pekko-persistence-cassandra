@@ -452,7 +452,6 @@ import akka.persistence.cassandra.PluginSettings
             }
 
           case QueryIdle | _: QueryInProgress | _: QueryResult => // ok
-
         }
       }
 
