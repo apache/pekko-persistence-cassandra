@@ -12,7 +12,7 @@ object CleanupDocExample {
 
   implicit val system: ActorSystem = ???
 
-  //#cleanup
+  // #cleanup
   val queries = PersistenceQuery(system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
   val cleanup = new Cleanup(system)
 
@@ -31,6 +31,6 @@ object CleanupDocExample {
     .mapAsync(persistenceIdParallelism)(pid => cleanup.cleanupBeforeSnapshot(pid, 2, keepAfter.toInstant.toEpochMilli))
     .run()
 
-  //#cleanup
+  // #cleanup
 
 }

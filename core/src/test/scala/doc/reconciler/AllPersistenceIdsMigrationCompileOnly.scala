@@ -15,7 +15,7 @@ import akka.persistence.cassandra.reconciler.Reconciliation
 
 class AllPersistenceIdsMigrationCompileOnly {
 
-  //#migrate
+  // #migrate
   // System should have the same Cassandra plugin configuration as your application
   // but be careful to remove seed nodes so this doesn't join the cluster
   val system = ActorSystem()
@@ -32,5 +32,5 @@ class AllPersistenceIdsMigrationCompileOnly {
       system.log.error(e, "All persistenceIds migration failed.")
       system.terminate()
   }
-  //#migrate
+  // #migrate
 }

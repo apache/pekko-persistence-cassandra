@@ -59,10 +59,11 @@ class EventAdaptersReadSpec extends CassandraSpec(EventAdaptersReadSpec.config) 
   "Cassandra query EventsByPersistenceId" must {
 
     "not replay dropped events by the event-adapter" in {
-      setup("a", 6, {
-        case x if x % 2 == 0 => "dropped:"
-        case _               => ""
-      })
+      setup("a", 6,
+        {
+          case x if x % 2 == 0 => "dropped:"
+          case _               => ""
+        })
 
       val src = queries.currentEventsByPersistenceId("a", 0L, Long.MaxValue)
       src
@@ -78,10 +79,11 @@ class EventAdaptersReadSpec extends CassandraSpec(EventAdaptersReadSpec.config) 
 
     "replay duplicate events by the event-adapter" in {
 
-      setup("b", 3, {
-        case x if x % 2 == 0 => "duplicated:"
-        case _               => ""
-      })
+      setup("b", 3,
+        {
+          case x if x % 2 == 0 => "duplicated:"
+          case _               => ""
+        })
 
       val src = queries.currentEventsByPersistenceId("b", 0L, Long.MaxValue)
       src.map(_.event).runWith(TestSink.probe[Any]).request(10).expectNext("b-1", "b-2", "b-2", "b-3").expectComplete()
@@ -100,10 +102,11 @@ class EventAdaptersReadSpec extends CassandraSpec(EventAdaptersReadSpec.config) 
   "Cassandra query EventsByTag" must {
     "not replay events dropped by the event-adapter" in {
 
-      setup("d", 6, tagged("red") {
-        case x if x % 2 == 0 => "dropped:"
-        case _               => ""
-      })
+      setup("d", 6,
+        tagged("red") {
+          case x if x % 2 == 0 => "dropped:"
+          case _               => ""
+        })
 
       val src = queries.eventsByTag("red", NoOffset)
       val sub = src.map(_.event).runWith(TestSink.probe[Any])
@@ -115,10 +118,11 @@ class EventAdaptersReadSpec extends CassandraSpec(EventAdaptersReadSpec.config) 
 
     "replay events duplicated by the event-adapter" in {
 
-      setup("e", 3, tagged("yellow") {
-        case x if x % 2 == 0 => "duplicated:"
-        case _               => ""
-      })
+      setup("e", 3,
+        tagged("yellow") {
+          case x if x % 2 == 0 => "duplicated:"
+          case _               => ""
+        })
 
       val src = queries.eventsByTag("yellow", NoOffset)
       val sub = src.map(_.event).runWith(TestSink.probe[Any])
@@ -129,10 +133,11 @@ class EventAdaptersReadSpec extends CassandraSpec(EventAdaptersReadSpec.config) 
 
     "replay events transformed by the event-adapter" in {
 
-      setup("e", 3, tagged("green") {
-        case x if x % 2 == 0 => "prefixed:foo:"
-        case _               => ""
-      })
+      setup("e", 3,
+        tagged("green") {
+          case x if x % 2 == 0 => "prefixed:foo:"
+          case _               => ""
+        })
 
       val src = queries.eventsByTag("green", NoOffset)
       val sub = src.map(_.event).runWith(TestSink.probe[Any])

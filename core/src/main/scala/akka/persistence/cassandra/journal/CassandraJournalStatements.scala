@@ -76,8 +76,8 @@ import akka.persistence.cassandra.FutureDone
       |  WITH gc_grace_seconds =${eventsByTagSettings.tagTable.gcGraceSeconds}
       |  AND compaction = ${indent(eventsByTagSettings.tagTable.compactionStrategy.asCQL, "    ")}
       |  ${if (eventsByTagSettings.tagTable.ttl.isDefined)
-         "AND default_time_to_live = " + eventsByTagSettings.tagTable.ttl.get.toSeconds
-       else ""}
+        "AND default_time_to_live = " + eventsByTagSettings.tagTable.ttl.get.toSeconds
+      else ""}
     """.stripMargin.trim
 
   def createTagsProgressTable: String =
