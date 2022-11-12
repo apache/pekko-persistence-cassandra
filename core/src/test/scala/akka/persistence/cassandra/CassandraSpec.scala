@@ -179,8 +179,8 @@ abstract class CassandraSpec(
             .asScala
             .foreach(row => {
               println(s"""Row:${row.getString("tag_name")},${row.getLong("timebucket")},${formatOffset(
-                row.getUuid("timestamp"))},${row.getString("persistence_id")},${row
-                .getLong("tag_pid_sequence_nr")},${row.getLong("sequence_nr")}""")
+                  row.getUuid("timestamp"))},${row.getString("persistence_id")},${row
+                  .getLong("tag_pid_sequence_nr")},${row.getLong("sequence_nr")}""")
 
             })
         }
@@ -190,7 +190,7 @@ abstract class CassandraSpec(
           .asScala
           .foreach(row => {
             println(s"""Row:${row.getLong("partition_nr")}, ${row.getString("persistence_id")}, ${row.getLong(
-              "sequence_nr")}""")
+                "sequence_nr")}""")
           })
 
         println("snapshots")

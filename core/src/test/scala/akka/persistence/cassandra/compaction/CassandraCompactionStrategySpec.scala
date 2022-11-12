@@ -47,7 +47,7 @@ class CassandraCompactionStrategySpec
       compactionStrategy.compactionWindowUnit shouldEqual TimeUnit.DAYS
     }
 
-    "successfully create CQL from TimeWindowCompactionStrategy" taggedAs (RequiresCassandraThree) in {
+    "successfully create CQL from TimeWindowCompactionStrategy" taggedAs RequiresCassandraThree in {
       val twConfig = ConfigFactory.parseString("""journal.table-compaction-strategy {
           | class = "TimeWindowCompactionStrategy"
           | compaction_window_size = 1
@@ -57,7 +57,7 @@ class CassandraCompactionStrategySpec
 
       val cqlExpression =
         s"CREATE TABLE IF NOT EXISTS testKeyspace.testTable1 (testId TEXT PRIMARY KEY) WITH compaction = ${CassandraCompactionStrategy(
-          twConfig.getConfig("journal.table-compaction-strategy")).asCQL}"
+            twConfig.getConfig("journal.table-compaction-strategy")).asCQL}"
 
       noException must be thrownBy {
         cluster.execute(cqlExpression)
@@ -112,7 +112,7 @@ class CassandraCompactionStrategySpec
 
       val cqlExpression =
         s"CREATE TABLE IF NOT EXISTS testKeyspace.testTable2 (testId TEXT PRIMARY KEY) WITH compaction = ${CassandraCompactionStrategy(
-          uniqueConfig.getConfig("journal.table-compaction-strategy")).asCQL}"
+            uniqueConfig.getConfig("journal.table-compaction-strategy")).asCQL}"
 
       noException must be thrownBy {
         cluster.execute(cqlExpression)
@@ -165,7 +165,7 @@ class CassandraCompactionStrategySpec
 
       val cqlExpression =
         s"CREATE TABLE IF NOT EXISTS testKeyspace.testTable3 (testId TEXT PRIMARY KEY) WITH compaction = ${CassandraCompactionStrategy(
-          uniqueConfig.getConfig("journal.table-compaction-strategy")).asCQL}"
+            uniqueConfig.getConfig("journal.table-compaction-strategy")).asCQL}"
 
       noException must be thrownBy {
         cluster.execute(cqlExpression)

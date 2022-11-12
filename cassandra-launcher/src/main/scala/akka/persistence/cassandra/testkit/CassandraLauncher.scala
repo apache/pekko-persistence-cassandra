@@ -260,7 +260,7 @@ object CassandraLauncher {
 
       println(
         s"Starting Cassandra on port client port: $realPort storage port $storagePort host $realHost java version ${System
-          .getProperty("java.runtime.version")}")
+            .getProperty("java.runtime.version")}")
 
       // http://wiki.apache.org/cassandra/StorageConfiguration
       val conf = readResource(configResource)
@@ -400,16 +400,17 @@ object CassandraLauncher {
     val deadline = AwaitListenTimeout.fromNow
     @annotation.tailrec
     def tryConnect(): Unit = {
-      val retry = try {
-        new Socket(host, port).close()
-        false
-      } catch {
-        case _: IOException if deadline.hasTimeLeft() =>
-          Thread.sleep(AwaitListenPoll.toMillis)
-          true
-        case ioe: IOException =>
-          throw new RuntimeException(s"Cassandra did not start within $AwaitListenTimeout", ioe)
-      }
+      val retry =
+        try {
+          new Socket(host, port).close()
+          false
+        } catch {
+          case _: IOException if deadline.hasTimeLeft() =>
+            Thread.sleep(AwaitListenPoll.toMillis)
+            true
+          case ioe: IOException =>
+            throw new RuntimeException(s"Cassandra did not start within $AwaitListenTimeout", ioe)
+        }
       if (retry) tryConnect()
     }
     tryConnect()

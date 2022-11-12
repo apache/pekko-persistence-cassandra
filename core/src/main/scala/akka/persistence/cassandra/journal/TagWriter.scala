@@ -344,7 +344,7 @@ import scala.util.{ Failure, Success, Try }
               throw new IllegalStateException(
                 s"Expected events to be ordered by seqNr. ${event.persistenceId} " +
                 s"Events: ${writes.nextBatch.map(e =>
-                  (e.events.head._1.persistenceId, e.events.head._1.sequenceNr, e.events.head._1.timeUuid))}")
+                    (e.events.head._1.persistenceId, e.events.head._1.sequenceNr, e.events.head._1.timeUuid))}")
 
             acc + (event.persistenceId -> PidProgress(from, event.sequenceNr, tagPidSequenceNr, event.timeUuid))
           case None =>

@@ -6,7 +6,7 @@ package akka.persistence.cassandra.journal
 
 import java.lang.{ Long => JLong }
 import java.nio.ByteBuffer
-import java.util.{ UUID, HashMap => JHMap, Map => JMap }
+import java.util.{ HashMap => JHMap, Map => JMap, UUID }
 
 import akka.Done
 import akka.actor.SupervisorStrategy.Stop
@@ -266,7 +266,7 @@ import akka.stream.scaladsl.Source
             writeMessages(serialized)
           } else {
 
-            //if presistAll was used, single AtomicWrite can already contain complete batch, so we need to regroup writes correctly
+            // if presistAll was used, single AtomicWrite can already contain complete batch, so we need to regroup writes correctly
             val groups: List[List[SerializedAtomicWrite]] = groupedWrites(serialized.toList.reverse, Nil, Nil)
 
             // execute the groups in sequence
@@ -301,7 +301,7 @@ import akka.stream.scaladsl.Source
     toReturn
   }
 
-  //Regroup batches by payload size
+  // Regroup batches by payload size
   @tailrec
   private def groupedWrites(
       reversed: List[SerializedAtomicWrite],
@@ -639,12 +639,11 @@ import akka.stream.scaladsl.Source
     val boundSelectHighestSequenceNr = preparedSelectHighestSequenceNr.map(_.bind(persistenceId, partitionNr: JLong))
     boundSelectHighestSequenceNr
       .flatMap(selectOne)
-      .map(
-        row =>
-          row
-            .map(s =>
-              PartitionInfo(partitionNr, minSequenceNr(partitionNr), math.min(s.getLong("sequence_nr"), maxSequenceNr)))
-            .getOrElse(PartitionInfo(partitionNr, minSequenceNr(partitionNr), -1)))
+      .map(row =>
+        row
+          .map(s =>
+            PartitionInfo(partitionNr, minSequenceNr(partitionNr), math.min(s.getLong("sequence_nr"), maxSequenceNr)))
+          .getOrElse(PartitionInfo(partitionNr, minSequenceNr(partitionNr), -1)))
   }
 
   private def asyncHighestDeletedSequenceNumber(persistenceId: String): Future[Long] = {

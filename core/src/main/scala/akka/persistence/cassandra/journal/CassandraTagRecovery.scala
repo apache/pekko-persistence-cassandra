@@ -85,15 +85,14 @@ import akka.stream.alpakka.cassandra.scaladsl.CassandraSession
     else {
       val completed: List[Future[Done]] =
         tpr.tags.toList
-          .map(
-            tag =>
-              tag -> serializeEvent(
-                tpr.pr,
-                tpr.tags,
-                tpr.offset,
-                settings.eventsByTagSettings.bucketSize,
-                serialization,
-                system))
+          .map(tag =>
+            tag -> serializeEvent(
+              tpr.pr,
+              tpr.tags,
+              tpr.offset,
+              settings.eventsByTagSettings.bucketSize,
+              serialization,
+              system))
           .map {
             case (tag, serializedFut) =>
               serializedFut.map { serialized =>

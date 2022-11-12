@@ -479,7 +479,6 @@ class CassandraReadJournal protected (
    *
    * Use `NoOffset` when you want all events from the beginning of time.
    * To acquire an offset from a long unix timestamp to use with this query, you can use [[timeBasedUUIDFrom]].
-   *
    */
   override def currentEventsByTag(tag: String, offset: Offset): Source[EventEnvelope, NotUsed] =
     currentEventsByTagInternal(tag, offset)
@@ -654,8 +653,8 @@ class CassandraReadJournal protected (
             fastForwardEnabled))
         .named(name)
     }.mapAsync(querySettings.deserializationParallelism) { row =>
-        extractor.extract(row, deserializeEventAsync)
-      }
+      extractor.extract(row, deserializeEventAsync)
+    }
       .withAttributes(ActorAttributes.dispatcher(querySettings.pluginDispatcher))
   }
 

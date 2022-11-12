@@ -106,10 +106,9 @@ import scala.util.Try
     def writeProgress(tag: Tag, persistenceId: String, seqNr: Long, tagPidSequenceNr: Long, offset: UUID)(
         implicit ec: ExecutionContext): Future[Done] = {
       WriteTagProgress
-        .map(
-          ps =>
-            ps.bind(persistenceId, tag, seqNr: JLong, tagPidSequenceNr: JLong, offset)
-              .setExecutionProfileName(writeProfile))
+        .map(ps =>
+          ps.bind(persistenceId, tag, seqNr: JLong, tagPidSequenceNr: JLong, offset)
+            .setExecutionProfileName(writeProfile))
         .flatMap(executeWrite)
     }
 
