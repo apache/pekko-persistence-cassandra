@@ -68,7 +68,6 @@ object EventsByTagMigration {
 }
 
 /**
- *
  * @param pluginConfigPath The config namespace where the plugin is configured, default is `akka.persistence.cassandra`
  */
 class EventsByTagMigration(

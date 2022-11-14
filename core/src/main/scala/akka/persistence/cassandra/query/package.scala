@@ -35,10 +35,10 @@ package object query {
       val timestamp = (time - uuidEpoch) * 10000
 
       var msb = 0L
-      msb |= (0X00000000FFFFFFFFL & timestamp) << 32
-      msb |= (0X0000FFFF00000000L & timestamp) >>> 16
-      msb |= (0X0FFF000000000000L & timestamp) >>> 48
-      msb |= 0X0000000000001000L // sets the version to 1.
+      msb |= (0x00000000FFFFFFFFL & timestamp) << 32
+      msb |= (0x0000FFFF00000000L & timestamp) >>> 16
+      msb |= (0x0FFF000000000000L & timestamp) >>> 48
+      msb |= 0x0000000000001000L // sets the version to 1.
       msb
     }
 

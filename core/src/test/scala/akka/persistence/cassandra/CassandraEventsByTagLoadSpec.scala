@@ -54,7 +54,7 @@ class CassandraEventsByTagLoadSpec extends CassandraSpec(CassandraEventsByTagLoa
       val readJournal =
         PersistenceQuery(system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
 
-      eventTags.foreach({ tag =>
+      eventTags.foreach { tag =>
         try {
           validateTagStream(readJournal)(tag)
         } catch {
@@ -66,7 +66,7 @@ class CassandraEventsByTagLoadSpec extends CassandraSpec(CassandraEventsByTagLoa
             throw new RuntimeException("Only passed the second time")
         }
 
-      })
+      }
     }
   }
 
@@ -78,14 +78,15 @@ class CassandraEventsByTagLoadSpec extends CassandraSpec(CassandraEventsByTagLoa
     probe.request(messagesPerPersistenceId * nrPersistenceIds)
 
     (1L to (messagesPerPersistenceId * nrPersistenceIds)).foreach { i: Long =>
-      val event = try {
-        probe.expectNext(veryLongWait)
-      } catch {
-        case e: AssertionError =>
-          system.log.error(e, s"Failed to get event: $i")
-          allReceived.filter(_._2.size != messagesPerPersistenceId).foreach(p => system.log.info("{}", p))
-          throw e
-      }
+      val event =
+        try {
+          probe.expectNext(veryLongWait)
+        } catch {
+          case e: AssertionError =>
+            system.log.error(e, s"Failed to get event: $i")
+            allReceived.filter(_._2.size != messagesPerPersistenceId).foreach(p => system.log.info("{}", p))
+            throw e
+        }
 
       allReceived += (event.persistenceId -> (event.sequenceNr :: allReceived(event.persistenceId)))
       var fail = false

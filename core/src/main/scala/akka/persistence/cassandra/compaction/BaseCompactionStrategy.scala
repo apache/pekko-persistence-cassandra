@@ -16,7 +16,8 @@ abstract class BaseCompactionStrategy(config: Config, className: String, propert
   require(config.hasPath("class") && config.getString("class") == className, s"Config does not specify a $className")
   require(
     config.entrySet().asScala.map(_.getKey).forall(propertyKeys.contains(_)),
-    s"Config contains properties not supported by a $className. Supported: $propertyKeys. Supplied: ${config.entrySet().asScala.map(_.getKey)}")
+    s"Config contains properties not supported by a $className. Supported: $propertyKeys. Supplied: ${config.entrySet().asScala.map(
+        _.getKey)}")
 
   val enabled: Boolean =
     if (config.hasPath("enabled")) config.getBoolean("enabled") else true
