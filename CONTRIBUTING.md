@@ -14,7 +14,7 @@ You may also check out these [other resources](https://akka.io/get-involved/).
 
 * [Lightbend Contributor License Agreement](https://www.lightbend.com/contribute/cla)
 * [Issue Tracker](https://github.com/akka/akka-persistence-cassandra/issues)
-* [CI](https://travis-ci.org/akka/akka-persistence-cassandra)
+* [CI](https://github.com/apache/incubator-pekko-persistence-cassandra/actions)
 
 # Lightbend Project & Developer Guidelines
 
@@ -145,12 +145,6 @@ Example:
     * Details 1
     * Details 2
     * Details 3
-
-## How To Enforce These Guidelines?
-
-### Make Use of Pull Request Validator
-akka-persistence-cassandra uses [Travis pull request builder](https://travis-ci.org/akka/akka-persistence-cassandra) 
-that automatically merges the code, builds it, runs the tests and comments on the Pull Request in GitHub.
 
 ## Source style
 
