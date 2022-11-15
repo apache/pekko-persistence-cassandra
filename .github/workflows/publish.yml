@@ -13,7 +13,7 @@ on:
 jobs:
   release:
     # runs on main repo only
-    if: github.repository == 'akka/akka-persistence-cassandra'
+    if: github.repository == 'apache/incubator-pekko-persistence-cassandra'
     name: Release
     environment: release
     runs-on: ubuntu-20.04
