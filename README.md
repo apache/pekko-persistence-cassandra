@@ -1,38 +1,39 @@
-Cassandra Plugins for Akka Persistence
+Cassandra Plugins for Apache Pekko Persistence
 ======================================
 
-Replicated [Akka Persistence](https://doc.akka.io/docs/akka/current/scala/persistence.html) journal and snapshot store backed by [Apache Cassandra](https://cassandra.apache.org/).
+Replicated Apache Pekko Persistence journal and snapshot store backed by [Apache Cassandra](https://cassandra.apache.org/).
 
-For questions please use the [discuss.akka.io](https://discuss.lightbend.com/c/akka/) or [![gitter: akka/akka](https://img.shields.io/badge/gitter%3A-akka%2Fakka-blue.svg?style=flat-square)](https://gitter.im/akka/akka).
+Apache Pekko Persistence Cassandra is a fork of [Akka Persistence Cassandra](https://github.com/akka/akka-persistence-cassandra)
 
-Implementation in the `master` branch is currently `1.0.x` release.
+Documentation
+-------------
 
-[![Build Status](https://github.com/apache/incubator-pekko-persistence-cassandra/actions/workflows/check-build-test.yml/badge.svg?branch=main)](https://github.com/apache/incubator-pekko-persistence-cassandra/actions/workflows/check-build-test.yml?query=branch%3Amain)
-
-
-## Documentation
-
-The current version's documentation is available at https://doc.akka.io/docs/akka-persistence-cassandra/current/.
-
-[Snapshot documentation](https://doc.akka.io/docs/akka-persistence-cassandra/snapshot/) and [snapshot artifacts](https://oss.sonatype.org/content/repositories/snapshots/com/typesafe/akka/akka-persistence-cassandra_2.12/) are published for every successful `master` branch build.
-
-For versions earlier than 1.0.0, check this README.md file for the corresponding release tag.
+**TODO add documentation links**
 
 
-## History
+Community
+---------
 
-This [Apache Cassandra](https://cassandra.apache.org/) plugin to Akka Persistence was initiated [originally](https://github.com/krasserm/akka-persistence-cassandra) by Martin Krasser, [@krasserm](https://github.com/krasserm) in 2014.
+There are several ways to interact with the Apache Pekko community:
 
-It moved to the [Akka](https://github.com/akka/) organisation in 2016 and the first release after that move was 0.7 in January 2016.
+- [GitHub discussions](https://github.com/apache/incubator-pekko-persistence-cassandra/discussions): for questions and general discussion.
+- [Pekko dev mailing list](https://lists.apache.org/list.html?dev@pekko.apache.org): for Pekko development discussions.
+- [GitHub issues](https://github.com/apache/incubator-pekko-persistence-cassandra/issues): for bug reports and feature requests. Please search the existing issues before creating new ones. If you are unsure whether you have found a bug, consider asking in GitHub discussions or the mailing list first.
 
-## Branches and versions
+Contributing
+------------
 
-There are three branches of development:
+Contributions are very welcome. If you have an idea on how to improve Apache Pekko Cassandra Persistence, don't hesitate to create an issue or submit a pull request.
 
-* 1.0 -> `master` - current active development and stable 1.0.x patch releases
-* 0.80+ (currently 0.100) -> `release-0.x`  - removed use of Cassandra Materialized Views after they were marked as not to be used in production. 
-* 0.50+ (currently 0.62) -> `release-0.50`- first release under this organisation, previously under krasserm. No planned releases for this version.
+See [CONTRIBUTING.md](https://github.com/apache/incubator-pekko-persistence-cassandra/blob/main/CONTRIBUTING.md) for details on the development workflow and how to create your pull request.
 
-## License
 
-Akka Persistence Cassandra is Open Source and available under the Apache 2 License.
+Code of Conduct
+---------------
+
+Apache Pekko Persistence Cassandra is governed by the [Apache code of conduct](https://www.apache.org/foundation/policies/conduct.html). By participating in this project you agree to abide by its terms.
+
+License
+-------
+
+Apache Pekko Persistence Cassandra is available under the Apache License, version 2.0. See [LICENSE](https://github.com/apache/incubator-pekko-persistence-cassandra/blob/main/LICENSE) file for details.

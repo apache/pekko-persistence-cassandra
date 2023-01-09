@@ -1,104 +1,110 @@
-# Welcome! Thank you for contributing to the Akka Persistence Cassandra Plugin
+# Contributing to the Apache Pekko Persistence Cassandra Plugin
 
 We follow the standard GitHub [fork & pull](https://help.github.com/articles/using-pull-requests/#fork--pull) approach to pull requests. Just fork the official repo, develop in a branch, and submit a PR!
 
-You're always welcome to submit your PR straight away and start the discussion (without reading the rest of this wonderful doc, or the README.md). The goal of these notes is to make your experience contributing to Akka as smooth and pleasant as possible. We're happy to guide you through the process once you've submitted your PR.
+You're always welcome to submit your PR straight away and start the discussion (without reading the rest of this wonderful doc, or the README.md). The goal of these notes is to make your experience contributing to Apache Pekko as smooth and pleasant as possible. We're happy to guide you through the process once you've submitted your PR.
 
-# The Akka Community
+## The Pekko Community
 
-In case of questions about the contribution process or for discussion of specific issues please visit the [akka/dev gitter chat](https://gitter.im/akka/dev).
+If you have questions about the contribution process or discuss specific issues, please interact with the community using the following resources.
 
-You may also check out these [other resources](https://akka.io/get-involved/).
+- [GitHub discussions](https://github.com/apache/incubator-pekko-persistence-cassandra/discussions): for questions and general discussion.
+- [Pekko dev mailing list](https://lists.apache.org/list.html?dev@pekko.apache.org): for Pekko development discussions.
+- [GitHub issues](https://github.com/apache/incubator-pekko-persistence-cassandra/issues): for bug reports and feature requests. Please search the existing issues before creating new ones. If you are unsure whether you have found a bug, consider asking in GitHub discussions or the mailing list first.
 
-## Infrastructure
+## Navigating around the project & codebase
 
-* [Lightbend Contributor License Agreement](https://www.lightbend.com/contribute/cla)
-* [Issue Tracker](https://github.com/akka/akka-persistence-cassandra/issues)
-* [CI](https://github.com/apache/incubator-pekko-persistence-cassandra/actions)
-
-# Lightbend Project & Developer Guidelines
-
-These guidelines are meant to be a living document that should be changed and adapted as needed. We encourage changes that makes it easier to achieve our goals in an efficient way.
-
-These guidelines mainly apply to Lightbend's "mature" projects - not necessarily to projects of the type 'collection of scripts' etc.
-
-## Branches summary
+### Branches summary
 
 Depending on which version (or sometimes module) you want to work on, you should target a specific branch as explained below:
 
-* 1.0 -> `master` - current active development and stable 1.0.x patch releases
-* 0.80+ (see [Github releases](https://github.com/akka/akka-persistence-cassandra/releases) for latest) -> `release-0.x`  - removed use of Cassandra Materialized Views after they were marked as not to be used in production. 
-* 0.50+ (currently 0.62) -> `release-0.50`- first release under this organisation, previously under krasserm. No planned releases for this version. 
+* `main` – active development branch of Pekko Persistence Cassandra
+* `release-x.y` – maintenance branch of Pekko Persistence Cassandra x.y.z
+
+## Pekko contributing guidelines
+
+These guidelines apply to all Pekko projects, by which we currently mean both the `apache/incubator-pekko` repository, as well as any plugins or additional repositories.
+
+These guidelines are meant to be a living document that should be changed and adapted as needed.
+We encourage changes that make it easier to achieve our goals efficiently.
 
 ## General Workflow
 
-This is the process for committing code into master. There are of course exceptions to these rules, for example minor changes to comments and documentation, fixing a broken build etc.
+The steps below describe how to get a patch into the main development branch (`main`).
+The steps are exactly the same for everyone involved in the project, including the core team and first-time contributors.
 
-1. To avoid duplicated effort, it might be good to check the [issue tracker](https://github.com/akka/akka-persistence-cassandra/issues) and [existing pull requests](https://github.com/akka/akka-persistence-cassandra/pulls) for existing work.
-   - If there is no ticket yet, feel free to [create one](https://github.com/akka/akka-persistence-cassandra/issues/new) to discuss the problem and the approach you want to take to solve it.
-1. Make sure you have signed the Lightbend CLA, if not, [sign it online](https://www.lightbend.com/contribute/cla).
-3. You should always perform your work in a Git feature branch. The branch should be given a descriptive name that explains its intent. Some teams also like adding the ticket number and/or the [GitHub](https://github.com) user ID to the branch name, these details is up to each of the individual teams.
+1. To avoid duplicated effort, it might be good to check the [issue tracker](https://github.com/apache/incubator-pekko-persistence-cassandra/issues) and [existing pull requests](https://github.com/apache/incubator-pekko-persistence-cassandra/pulls) for existing work.
+   - If there is no ticket yet, feel free to [create one](https://github.com/apache/incubator-pekko-persistence-cassandra/issues/new) to discuss the problem and the approach you want to take to solve it.
+1. [Fork the project](https://github.com/apache/incubator-pekko-persistence-cassandra#fork-destination-box) on GitHub. You'll need to create a feature-branch for your work on your fork, as this way you'll be able to submit a pull request against the mainline Pekko.
+1. Create a branch on your fork and work on the feature. For example: `git checkout -b custom-headers-pekko-http`
+   - Please make sure to follow the general quality guidelines (specified below) when developing your patch.
+   - Please write additional tests covering your feature and adjust existing ones if needed before submitting your pull request. The `validatePullRequest` sbt task ([explained below](#the-validatepullrequest-task)) may come in handy to verify your changes are correct.
+   - Use the `verifyCodeStyle` sbt task to ensure your code is properly formatted and includes the proper copyright headers.
+1. Once your feature is complete, prepare the commit following our [Creating Commits And Writing Commit Messages](#creating-commits-and-writing-commit-messages). For example, a good commit message would be: `Adding compression support for Manifests #22222` (note the reference to the ticket it aimed to resolve).
+1. If it's a new feature or a change of behavior, document it on the [docs](https://github.com/apache/incubator-pekko-persistence-cassandra/tree/main/docs). When the feature touches Scala and Java DSL, document both the Scala and Java APIs.
+1. Now it's finally time to [submit the pull request](https://help.github.com/articles/using-pull-requests)!
+   - Please make sure to include a reference to the issue you're solving *in the comment* for the Pull Request, as this will cause the PR to be linked properly with the issue. Examples of good phrases for this are: "Resolves #1234" or "Refs #1234".
+1. If you are a first time contributor, a core member must approve the CI to run for your pull request.
+1. Now, both committers and interested people will review your code. This process ensures that the code we merge is of the best possible quality and that no silly mistakes slip through. You're expected to follow-up on these comments by adding new commits to the same branch. The commit messages of those commits can be more loose, for example: `Removed debugging using printline`, as they all will be squashed into one commit before merging into the main branch.
+   - The community and core team are really nice people, so don't be afraid to ask follow-up questions if you didn't understand some comment or would like clarification on how to continue with a given feature. We're here to help, so feel free to ask and discuss any questions you might have during the review process!
+1. After the review, you should fix the issues as needed (pushing a new commit for a new review, etc.), iterating until the reviewers give their approval signaled by GitHub's pull-request approval feature. Usually, a reviewer will add an `LGTM` comment, which means "Looks Good To Me".
+   - In general, a PR is expected to get 2 approvals from the team before it is merged. If the PR is trivial or under exceptional circumstances (such as most of the core team being on vacation, a PR was very thoroughly reviewed/tested and surely is correct), a single LGTM may be fine as well.
+1. If the code change needs to be applied to other branches as well (for example, a bugfix needing to be backported to a previous version), one of the team members will either ask you to submit a PR with the same commits to the old branch or will do this for you.
+   - Follow the [backporting steps](#backporting) below.
+1. Once everything is said and done, your pull request gets merged :tada: Your feature will be available with the next "earliest" release milestone (i.e. if backported so that it will be in release x.y.z, find the relevant milestone for that release). Of course, you will be given credit for the fix in the release stats during the release's announcement. You've made it!
 
-    akka-persistence-cassandra prefers the committer name as part of the branch name, the ticket number is optional.
+The TL;DR; of the above very precise workflow version is:
 
-4. When the feature or fix is completed you should open a [Pull Request](https://help.github.com/articles/using-pull-requests) on GitHub.
-5. The Pull Request should be reviewed by other maintainers (as many as feasible/practical). Note that the maintainers can consist of outside contributors, both within and outside Lightbend. Outside contributors (for example from EPFL or independent committers) are encouraged to participate in the review process, it is not a closed process.
-6. After the review you should fix the issues as needed (pushing a new commit for new review etc.), iterating until the reviewers give their thumbs up.
+1. Fork Pekko
+2. Hack and test on your feature (on a branch)
+3. Document it
+4. Submit a PR
+5. Sign the CLA if necessary
+6. Keep polishing it until getting the required number of approvals
+7. Profit!
 
-    When the branch conflicts with its merge target (either by way of git merge conflict or failing CI tests), do **not** merge the target branch into your feature branch. Instead rebase your branch onto the target branch. Merges complicate the git history, especially for the squashing which is necessary later (see below).
+> **Note:** Github Actions runs all the workflows for the forked project. We have filters to ensure that each action effectively runs only for the `apache/incubator-pekko-persistence-cassandra` repository, but you may also want to [disable Github Actions](https://docs.github.com/en/github/administering-a-repository/managing-repository-settings/disabling-or-limiting-github-actions-for-a-repository) entirely in your fork.
 
-7. Once the code has passed review the Pull Request can be merged into the master branch. For this purpose the commits which were added on the feature branch should be squashed into a single commit. This can be done using the command `git rebase -i master` (or the appropriate target branch), `pick`ing the first commit and `squash`ing all following ones.
+#### Backporting
 
-    Also make sure that the commit message conforms to the syntax specified below.
+Backport pull requests such as these are marked using the phrase `for validation` in the title to make the purpose clear in the pull request list.
+They can be merged once validation passes without additional review (if there are no conflicts).
+Using, for example: current.version 2.5.22, previous.version 2.5, milestone.version 2.6.0-M1
 
-8. If the code change needs to be applied to other branches as well, create pull requests against those branches which contain the change after rebasing it onto the respective branch and await successful verification by the continuous integration infrastructure; then merge those pull requests.
-
-    Please mark these pull requests with `(for validation)` in the title to make the purpose clear in the pull request list.
-
-9. Once everything is said and done, associate the ticket with the “earliest” release milestone (i.e. if back-ported so that it will be in release x.y.z, find the relevant milestone for that release) and close it.
+1. Label this PR with `to-be-backported`
+1. Mark this PR with Milestone `${milestone.version}`
+1. Mark the issue with Milestone `${current.version}`
+1. `git checkout release-${previous.version}`
+1. `git pull`
+1. Create wip branch
+1. `git cherry-pick <commit>`
+1. Open PR, target `release-${previous.version}`
+1. Label that PR with `backport`
+1. Merge backport PR after validation (no need for full PR reviews)
+1. Close issue.
 
 ## Running the tests
 
 The tests rely on a Cassandra instance running locally on port 9042. A docker-compose file is
 provided in the root of the project to start this with `docker-compose up -d cassandra`
 
-## Pull Request Requirements
+### Pull request requirements
 
-For a Pull Request to be considered at all it has to meet these requirements:
+For a pull request to be considered at all, it has to meet these requirements:
 
-1. Live up to the current code standard:
-   - Not violate [DRY](https://www.oreilly.com/library/view/97-things-every/9780596809515/ch30.html).
-   - [Boy Scout Rule](https://www.oreilly.com/library/view/97-things-every/9780596809515/ch08.html) needs to have been applied.
-2. Regardless if the code introduces new features or fixes bugs or regressions, it must have comprehensive tests.
-3. The code must be well documented in the Lightbend's standard documentation format (see the 'Documentation' section below).
-4. The commit messages must properly describe the changes, see further below.
-5. All Lightbend projects must include Lightbend copyright notices.  Each project can choose between one of two approaches:
-
-    1. All source files in the project must have a Lightbend copyright notice in the file header.
-    2. The Notices file for the project includes the Lightbend copyright notice and no other files contain copyright notices.  See https://www.apache.org/legal/src-headers.html for instructions for managing this approach for copyrights.
-
-    akka-persistence-cassandra uses the first choice, having copyright notices in every file header.
-
-    Other guidelines to follow for copyright notices:
-
-    - Use a form of ``Copyright (C) 2011-2018 Lightbend Inc. <https://www.lightbend.com>``, where the start year is when the project or file was first created and the end year is the last time the project or file was modified.
-    - Never delete or change existing copyright notices, just add additional info.
-    - Do not use ``@author`` tags since it does not encourage [Collective Code Ownership](http://www.extremeprogramming.org/rules/collective.html). However, each project should make sure that the contributors gets the credit they deserve—in a text file or page on the project website and in the release notes etc.
-
-If these requirements are not met then the code should **not** be merged into master, or even reviewed - regardless of how good or important it is. No exceptions.
-
-Whether or not a pull request (or parts of it) shall be back- or forward-ported will be discussed on the pull request discussion page, it shall therefore not be part of the commit messages. If desired the intent can be expressed in the pull request description.
-
-## Continuous Integration
-
-Each project should be configured to use a continuous integration (CI) tool (i.e. a build server à la Jenkins). Lightbend has a [Jenkins server farm](https://jenkins.akka.io/) that can be used. The CI tool should, on each push to master, build the **full** distribution and run **all** tests, and if something fails it should email out a notification with the failure report to the committer and the core team. The CI tool should also be used in conjunction with a Pull Request validator (discussed below).
+1. Regardless if the code introduces new features or fixes bugs or regressions, it must have comprehensive tests.
+1. The code must be well documented as per the existing documentation format (see the 'Documentation' section below).
+1. The commit messages must properly describe the changes. See further below.
+1. A pull request must be [linked to the issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue) it aims to resolve in the PR's description (or comments). This can be achieved by writing "Fixes #1234" or similar in PR description.
+1. Licensing rules:
+   - Existing files with copyright statements must leave those copyright statements intact
+   - New files should have an Apache license header instead. For an example of this, see [this file](https://github.com/apache/poi/blob/trunk/poi/src/main/java/org/apache/poi/POIDocument.java).
 
 ## Documentation
 
-akka-persistence-cassandra is currently documented in the README.md. If we
-were to provide more extensive documentation,
-[paradox](https://github.com/lightbend/paradox) would be the tool of choice.
-See the [alpakka](https://github.com/akka/alpakka) project for an example.
+pekko-persistence-cassandra is currently documented in the README.md. If we
+were to provide more extensive documentation, [paradox](https://github.com/apache/incubator-pekko-sbt-paradox) would be the tool of choice.
+See the [Apache Pekko Connectors](https://github.com/apache/incubator-pekko-connectors) project for an example.
 
 ## External Dependencies
 
@@ -148,4 +154,4 @@ Example:
 
 ## Source style
 
-akka-persistence-cassandra uses [Scalafmt](https://scalameta.org/scalafmt/) to enforce some of the code style rules.
+pekko-persistence-cassandra uses [Scalafmt](https://scalameta.org/scalafmt/) to enforce some of the code style rules.
