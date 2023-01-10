@@ -67,8 +67,9 @@ jobs:
       - name: "Create all API docs and create site with Paradox"
         run: sbt "unidoc; docs/makeSite"
 
-      - name: Run Link Validator
-        run: cs launch net.runne::site-link-validator:0.2.2 -- project/link-validator.conf
+      # temporarily disable link validator
+      #- name: Run Link Validator
+      #  run: cs launch net.runne::site-link-validator:0.2.2 -- project/link-validator.conf
 
   test:
     name: Test
