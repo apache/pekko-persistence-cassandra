@@ -59,9 +59,7 @@ object Common extends AutoPlugin {
     Compile / doc / scalacOptions --= Seq("-Xfatal-warnings"),
     scalafmtOnCompile := true,
     autoAPIMappings := true,
-    apiURL := Some(url(s"https://doc.akka.io/api/akka-persistence-cassandra/${projectInfoVersion.value}")),
-    headerLicense := Some(
-      HeaderLicense.Custom("""Copyright (C) 2016-2020 Lightbend Inc. <https://www.lightbend.com>""")),
+    headerLicense := Some(HeaderLicense.Custom(apacheHeader)),
     sonatypeProfileName := "com.typesafe",
     Test / logBuffered := System.getProperty("akka.logBufferedTests", "false").toBoolean,
     // show full stack traces and test case durations
@@ -71,4 +69,13 @@ object Common extends AutoPlugin {
     // -q Suppress stdout for successful tests.
     Test / testOptions += Tests.Argument(TestFrameworks.JUnit, "-a", "-v", "-q"),
     Test / parallelExecution := false)
+
+  def apacheHeader: String =
+    """Licensed to the Apache Software Foundation (ASF) under one or more
+      |license agreements; and to You under the Apache License, version 2.0:
+      |
+      |  https://www.apache.org/licenses/LICENSE-2.0
+      |
+      |This file is part of the Apache Pekko project, derived from Akka.
+      |""".stripMargin
 }
