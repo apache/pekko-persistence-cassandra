@@ -22,6 +22,7 @@ dumpSchema := (core / Test / runMain).toTask(" akka.persistence.cassandra.PrintC
 lazy val core = project
   .in(file("core"))
   .enablePlugins(Common, AutomateHeaderPlugin, MultiJvmPlugin)
+  .settings(MetaInfLicenseNoticeCopy.settings)
   .dependsOn(cassandraLauncher % Test)
   .settings(
     name := "akka-persistence-cassandra",
@@ -33,6 +34,7 @@ lazy val core = project
 lazy val cassandraLauncher = project
   .in(file("cassandra-launcher"))
   .enablePlugins(Common)
+  .settings(MetaInfLicenseNoticeCopy.settings)
   .settings(
     name := "akka-persistence-cassandra-launcher",
     Compile / managedResourceDirectories += (cassandraBundle / target).value / "bundle",
@@ -43,6 +45,7 @@ lazy val cassandraLauncher = project
 lazy val cassandraBundle = project
   .in(file("cassandra-bundle"))
   .enablePlugins(Common, AutomateHeaderPlugin)
+  .settings(MetaInfLicenseNoticeCopy.settings)
   .settings(
     name := "akka-persistence-cassandra-bundle",
     crossPaths := false,
