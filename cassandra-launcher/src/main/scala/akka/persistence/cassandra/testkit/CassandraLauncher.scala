@@ -1,4 +1,13 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * license agreements; and to You under the Apache License, version 2.0:
+ *
+ *   https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * This file is part of the Apache Pekko project, derived from Akka.
+ */
+
+/*
  * Copyright (C) 2016-2020 Lightbend Inc. <https://www.lightbend.com>
  */
 
@@ -10,12 +19,11 @@ import java.nio.channels.ServerSocketChannel
 import java.nio.file.Files
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
-
 import scala.annotation.varargs
 import scala.collection.immutable
 import scala.concurrent.duration._
-import scala.util.{ Failure, Try }
 import scala.util.control.NonFatal
+import scala.util.{ Failure, Try }
 
 /**
  * Starts Cassandra in current JVM. There can only be one Cassandra instance per JVM,
