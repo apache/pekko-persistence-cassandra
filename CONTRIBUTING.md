@@ -38,7 +38,7 @@ The steps are exactly the same for everyone involved in the project, including t
 1. [Fork the project](https://github.com/apache/incubator-pekko-persistence-cassandra#fork-destination-box) on GitHub. You'll need to create a feature-branch for your work on your fork, as this way you'll be able to submit a pull request against the mainline Pekko.
 1. Create a branch on your fork and work on the feature. For example: `git checkout -b custom-headers-pekko-http`
    - Please make sure to follow the general quality guidelines (specified below) when developing your patch.
-   - Please write additional tests covering your feature and adjust existing ones if needed before submitting your pull request. The `validatePullRequest` sbt task ([explained below](#the-validatepullrequest-task)) may come in handy to verify your changes are correct.
+   - Please write additional tests covering your feature and adjust existing ones if needed before submitting your pull request.
    - Use the `verifyCodeStyle` sbt task to ensure your code is properly formatted and includes the proper copyright headers.
 1. Once your feature is complete, prepare the commit following our [Creating Commits And Writing Commit Messages](#creating-commits-and-writing-commit-messages). For example, a good commit message would be: `Adding compression support for Manifests #22222` (note the reference to the ticket it aimed to resolve).
 1. If it's a new feature or a change of behavior, document it on the [docs](https://github.com/apache/incubator-pekko-persistence-cassandra/tree/main/docs). When the feature touches Scala and Java DSL, document both the Scala and Java APIs.

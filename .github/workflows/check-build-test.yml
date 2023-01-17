@@ -11,7 +11,7 @@ on:
 
 jobs:
   style-compile:
-    name: Compile, Code Style
+    name: Check Code Style
     if: github.repository == 'apache/incubator-pekko-persistence-cassandra'
     runs-on: ubuntu-20.04
     env:
@@ -35,8 +35,8 @@ jobs:
       - name: Cache Coursier cache
         uses: coursier/cache-action@v6.3
 
-      - name: "Code style, compile tests"
-        run: sbt "verifyCodeStyle; Test/compile"
+      - name: Compilation and binary-compatibility check
+        run: sbt "verifyCodeStyle; +Test/compile" # todo: add mimaReportBinaryIssues
 
 
   documentation:
