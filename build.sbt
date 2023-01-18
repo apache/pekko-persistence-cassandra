@@ -14,7 +14,7 @@ lazy val root = project
   .enablePlugins(Common, ScalaUnidocPlugin)
   .disablePlugins(SitePlugin)
   .aggregate(core, cassandraLauncher)
-  .settings(name := "akka-persistence-cassandra-root", publish / skip := true)
+  .settings(name := "pekko-persistence-cassandra-root", publish / skip := true)
 
 lazy val dumpSchema = taskKey[Unit]("Dumps cassandra schema for docs")
 dumpSchema := (core / Test / runMain).toTask(" akka.persistence.cassandra.PrintCreateStatements").value
@@ -25,7 +25,7 @@ lazy val core = project
   .settings(MetaInfLicenseNoticeCopy.settings)
   .dependsOn(cassandraLauncher % Test)
   .settings(
-    name := "akka-persistence-cassandra",
+    name := "pekko-persistence-cassandra",
     libraryDependencies ++= Dependencies.akkaPersistenceCassandraDependencies,
     Compile / packageBin / packageOptions += Package.ManifestAttributes(
       "Automatic-Module-Name" -> "akka.persistence.cassandra"))
@@ -36,7 +36,7 @@ lazy val cassandraLauncher = project
   .enablePlugins(Common)
   .settings(MetaInfLicenseNoticeCopy.settings)
   .settings(
-    name := "akka-persistence-cassandra-launcher",
+    name := "pekko-persistence-cassandra-launcher",
     Compile / managedResourceDirectories += (cassandraBundle / target).value / "bundle",
     Compile / managedResources += (cassandraBundle / assembly).value)
 
@@ -47,7 +47,7 @@ lazy val cassandraBundle = project
   .enablePlugins(Common, AutomateHeaderPlugin)
   .settings(MetaInfLicenseNoticeCopy.settings)
   .settings(
-    name := "akka-persistence-cassandra-bundle",
+    name := "pekko-persistence-cassandra-bundle",
     crossPaths := false,
     autoScalaLibrary := false,
     libraryDependencies += ("org.apache.cassandra" % "cassandra-all" % "3.11.3")
@@ -98,14 +98,14 @@ lazy val docs = project
   .enablePlugins(Common, AkkaParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin, PublishRsyncPlugin)
   .dependsOn(core)
   .settings(
-    name := "Akka Persistence Cassandra",
+    name := "Apache Pekko Persistence Cassandra",
     (Compile / paradox) := (Compile / paradox).dependsOn(root / dumpSchema).value,
     publish / skip := true,
     makeSite := makeSite.dependsOn(LocalRootProject / ScalaUnidoc / doc).value,
     previewPath := (Paradox / siteSubdirName).value,
-    Preprocess / siteSubdirName := s"api/akka-persistence-cassandra/${projectInfoVersion.value}",
+    Preprocess / siteSubdirName := s"api/pekko-persistence-cassandra/${projectInfoVersion.value}",
     Preprocess / sourceDirectory := (LocalRootProject / ScalaUnidoc / unidoc / target).value,
-    Paradox / siteSubdirName := s"docs/akka-persistence-cassandra/${projectInfoVersion.value}",
+    Paradox / siteSubdirName := s"docs/pekko-persistence-cassandra/${projectInfoVersion.value}",
     Compile / paradoxProperties ++= Map(
       "project.url" -> "https://doc.akka.io/docs/akka-persistence-cassandra/current/",
       "canonical.base_url" -> "https://doc.akka.io/docs/akka-persistence-cassandra/current",
