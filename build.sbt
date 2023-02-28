@@ -60,6 +60,7 @@ lazy val cassandraBundle = project
 lazy val endToEndExample = project
   .in(file("example"))
   .dependsOn(core)
+  .settings(MetaInfLicenseNoticeCopy.settings)
   .settings(libraryDependencies ++= Dependencies.exampleDependencies, publish / skip := true)
   .settings(
     dockerBaseImage := "openjdk:8-jre-alpine",
@@ -91,6 +92,7 @@ lazy val endToEndExample = project
 
 lazy val dseTest = project
   .in(file("dse-test"))
+  .settings(MetaInfLicenseNoticeCopy.settings)
   .dependsOn(core % "test->test")
   .settings(libraryDependencies ++= Dependencies.dseTestDependencies)
 

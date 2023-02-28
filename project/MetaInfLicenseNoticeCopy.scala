@@ -18,7 +18,8 @@ object MetaInfLicenseNoticeCopy {
   val settings: Seq[Setting[_]] = inConfig(Compile)(
     Seq(
       resourceGenerators += copyFileToMetaInf(resourceManaged, "LICENSE"),
-      resourceGenerators += copyFileToMetaInf(resourceManaged, "NOTICE")))
+      resourceGenerators += copyFileToMetaInf(resourceManaged, "NOTICE"),
+      resourceGenerators += copyFileToMetaInf(resourceManaged, "DISCLAIMER")))
 
   def copyFileToMetaInf(dir: SettingKey[File], fileName: String): Def.Initialize[Task[Seq[sbt.File]]] =
     Def.task[Seq[File]] {
