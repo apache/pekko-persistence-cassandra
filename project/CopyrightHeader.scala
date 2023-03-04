@@ -92,7 +92,8 @@ trait CopyrightHeader extends AutoPlugin {
 
   private def isApacheCopyrighted(text: String): Boolean =
     text.contains("Licensed to the Apache Software Foundation (ASF)") ||
-    text.contains("www.apache.org/licenses/license-2.0")
+    text.contains("www.apache.org/licenses/license-2.0") ||
+    text.contains("Apache-2.0")
 
   private def isLightbendCopyrighted(text: String): Boolean =
     text.contains("Lightbend Inc.")
