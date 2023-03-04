@@ -48,7 +48,7 @@ object Common extends AutoPlugin {
       "-sourcepath",
       (ThisBuild / baseDirectory).value.toString,
       "-doc-source-url", {
-        val branch = if (isSnapshot.value) "master" else s"v${version.value}"
+        val branch = if (isSnapshot.value) "main" else s"v${version.value}"
         s"https://github.com/apache/incubator-pekko-persistence-cassandra/tree/${branch}€{FILE_PATH_EXT}#L€{FILE_LINE}"
       },
       "-doc-canonical-base-url",
@@ -59,7 +59,6 @@ object Common extends AutoPlugin {
     Compile / doc / scalacOptions --= Seq("-Xfatal-warnings"),
     scalafmtOnCompile := true,
     autoAPIMappings := true,
-    headerLicense := Some(HeaderLicense.Custom(apacheHeader)),
     sonatypeProfileName := "org.apache.pekko",
     Test / logBuffered := System.getProperty("pekko.logBufferedTests", "false").toBoolean,
     // show full stack traces and test case durations
