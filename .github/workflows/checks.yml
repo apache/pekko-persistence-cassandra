@@ -41,7 +41,7 @@ jobs:
         run: sbt "verifyCodeStyle; +Test/compile" # todo: add mimaReportBinaryIssues
 
 
-  check-docs::
+  check-docs:
     name: ScalaDoc, Documentation with Paradox
     if: github.repository == 'apache/incubator-pekko-persistence-cassandra'
     runs-on: ubuntu-20.04
