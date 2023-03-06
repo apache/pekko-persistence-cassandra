@@ -11,27 +11,28 @@ import sbt._
 import Keys._
 
 object Dependencies {
-  val Scala212 = "2.12.17"
-  // update even in check-build-test.yml
-  val Scala213 = "2.13.10"
-  val ScalaVersions = Seq(Scala212, Scala213)
+  // keep in sync with .github/workflows/unit-tests.yml
+  val scala212Version = "2.12.17"
+  val scala213Version = "2.13.10"
+  val scala3Version = "3.1.2" // not yet enabled - missing pekko-http/pekko-management Scala 3 artifacts
+  val scalaVersions = Seq(scala212Version, scala213Version)
 
-  val AkkaVersion = System.getProperty("override.akka.version", "2.6.20")
-  val AkkaVersionInDocs = AkkaVersion.take(3)
-  val CassandraVersionInDocs = "4.0"
+  val akkaVersion = System.getProperty("override.akka.version", "2.6.20")
+  val akkaVersionInDocs = akkaVersion.take(3)
+  val cassandraVersionInDocs = "4.0"
   // Should be sync with the version of the driver in Alpakka Cassandra
-  val DriverVersionInDocs = "4.6"
+  val driverVersionInDocs = "4.6"
 
-  val AlpakkaVersion = "3.0.4"
-  val AlpakkaVersionInDocs = AlpakkaVersion.take(3)
+  val alpakkaVersion = "3.0.4"
+  val alpakkaVersionInDocs = alpakkaVersion.take(3)
   // for example
-  val AkkaManagementVersion = "1.1.4"
+  val akkaManagementVersion = "1.1.4"
 
-  val Logback = "ch.qos.logback" % "logback-classic" % "1.2.10"
+  val logback = "ch.qos.logback" % "logback-classic" % "1.2.10"
 
   val reconcilerDependencies = Seq(
-    "com.typesafe.akka" %% "akka-actor-testkit-typed" % AkkaVersion % Test,
-    "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion % Test)
+    "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
+    "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test)
 
   val akkaTestDeps = Seq(
     "com.typesafe.akka" %% "akka-persistence",
@@ -45,32 +46,32 @@ object Dependencies {
     "com.typesafe.akka" %% "akka-cluster-sharding")
 
   val akkaPersistenceCassandraDependencies = Seq(
-    "com.lightbend.akka" %% "akka-stream-alpakka-cassandra" % AlpakkaVersion,
-    "com.typesafe.akka" %% "akka-persistence" % AkkaVersion,
-    "com.typesafe.akka" %% "akka-persistence-query" % AkkaVersion,
-    "com.typesafe.akka" %% "akka-cluster-tools" % AkkaVersion,
+    "com.lightbend.akka" %% "akka-stream-alpakka-cassandra" % alpakkaVersion,
+    "com.typesafe.akka" %% "akka-persistence" % akkaVersion,
+    "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion,
+    "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
     "org.scala-lang.modules" %% "scala-collection-compat" % "2.7.0",
-    Logback % Test,
+    logback % Test,
     "org.scalatest" %% "scalatest" % "3.2.14" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test,
-    "org.osgi" % "org.osgi.core" % "5.0.0" % Provided) ++ akkaTestDeps.map(_ % AkkaVersion % Test)
+    "org.osgi" % "org.osgi.core" % "5.0.0" % Provided) ++ akkaTestDeps.map(_ % akkaVersion % Test)
 
   val exampleDependencies = Seq(
-    Logback,
-    "com.typesafe.akka" %% "akka-persistence-typed" % AkkaVersion,
-    "com.typesafe.akka" %% "akka-discovery" % AkkaVersion,
-    "com.typesafe.akka" %% "akka-serialization-jackson" % AkkaVersion,
-    "com.typesafe.akka" %% "akka-cluster-sharding-typed" % AkkaVersion,
-    "com.lightbend.akka.management" %% "akka-management" % AkkaManagementVersion,
-    "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % AkkaManagementVersion,
-    "com.lightbend.akka.management" %% "akka-management-cluster-http" % AkkaManagementVersion,
-    "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % AkkaManagementVersion,
+    logback,
+    "com.typesafe.akka" %% "akka-persistence-typed" % akkaVersion,
+    "com.typesafe.akka" %% "akka-discovery" % akkaVersion,
+    "com.typesafe.akka" %% "akka-serialization-jackson" % akkaVersion,
+    "com.typesafe.akka" %% "akka-cluster-sharding-typed" % akkaVersion,
+    "com.lightbend.akka.management" %% "akka-management" % akkaManagementVersion,
+    "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % akkaManagementVersion,
+    "com.lightbend.akka.management" %% "akka-management-cluster-http" % akkaManagementVersion,
+    "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % akkaManagementVersion,
     "org.hdrhistogram" % "HdrHistogram" % "2.1.12")
 
   val dseTestDependencies = Seq(
     "com.datastax.dse" % "dse-java-driver-core" % "2.3.0" % Test,
-    "com.typesafe.akka" %% "akka-persistence-tck" % AkkaVersion % Test,
-    "com.typesafe.akka" %% "akka-actor-testkit-typed" % AkkaVersion % Test,
-    "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion % Test,
-    Logback % Test)
+    "com.typesafe.akka" %% "akka-persistence-tck" % akkaVersion % Test,
+    "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
+    "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+    logback % Test)
 }
