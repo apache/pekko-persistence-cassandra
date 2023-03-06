@@ -40,7 +40,7 @@ To use the plugin with **Akka 2.5.x** you must use @extref:[version 0.103](apc-0
 [bintray-badge]:  https://api.bintray.com/packages/akka/snapshots/akka-persistence-cassandra/images/download.svg
 [bintray]:        https://bintray.com/akka/snapshots/akka-persistence-cassandra/_latestVersion
 
-Snapshots are published to a snapshot repository in Sonatype after every successful build on master. Add the following to your project build definition to resolve snapshots:
+Snapshots are published to a snapshot repository in Sonatype after every successful build on main branch. Add the following to your project build definition to resolve snapshots:
 
 sbt
 :   ```scala
@@ -83,6 +83,6 @@ It moved to the [Akka](https://github.com/akka/) organisation in 2016 and the fi
 
 ## Contributing
 
-Please feel free to contribute to Akka and Akka Persistence Cassandra by reporting issues you identify, or by suggesting changes to the code. Please refer to our [contributing instructions](https://github.com/akka/akka/blob/master/CONTRIBUTING.md) to learn how it can be done.
+Please feel free to contribute to Akka and Akka Persistence Cassandra by reporting issues you identify, or by suggesting changes to the code. Please refer to our [contributing instructions](https://github.com/apache/incubator-pekko/blob/main/CONTRIBUTING.md) to learn how it can be done.
 
 We want Akka to strive in a welcoming and open atmosphere and expect all contributors to respect our [code of conduct](https://www.lightbend.com/conduct).
