@@ -150,5 +150,3 @@ TaskKey[Unit]("verifyCodeFmt") := {
       "Unformatted sbt code found. Please run 'scalafmtSbt' and commit the reformatted code")
   }
 }
-
-addCommandAlias("verifyCodeStyle", "headerCheckAll; verifyCodeFmt")
