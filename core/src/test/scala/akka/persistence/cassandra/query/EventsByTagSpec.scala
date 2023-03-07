@@ -1357,10 +1357,10 @@ object EventsByTagDisabledSpec {
 
 class EventsByTagPersistenceIdCleanupSpec extends AbstractEventsByTagSpec(EventsByTagSpec.persistenceIdCleanupConfig) {
 
-  val newPersistenceIdScan: FiniteDuration = 500.millis
-  val cleanupPeriod: FiniteDuration = 1.second
+  private val newPersistenceIdScan: FiniteDuration = 500.millis
+  private val cleanupPeriod: FiniteDuration = 1.second
 
-  val logFilters = Set("cleanup-old-persistence-ids has been set")
+  private val logFilters = Set("cleanup-old-persistence-ids has been set")
 
   override protected val logCheck: PartialFunction[Any, Any] = {
     case m: Warning if !logFilters.exists(exclude => m.message.toString.contains(exclude)) => m
@@ -1368,7 +1368,7 @@ class EventsByTagPersistenceIdCleanupSpec extends AbstractEventsByTagSpec(Events
   }
 
   "PersistenceId cleanup" must {
-    "drop state and trigger new persistence id lookup peridodically" in {
+    "drop state and trigger new persistence id lookup periodically" in {
       val t1: LocalDateTime = LocalDateTime.now(ZoneOffset.UTC).minusDays(2)
       val event1 = PersistentRepr(s"cleanup-1", 1, "cleanup")
       writeTaggedEvent(t1, event1, Set("cleanup-tag"), 1, bucketSize)
@@ -1384,12 +1384,10 @@ class EventsByTagPersistenceIdCleanupSpec extends AbstractEventsByTagSpec(Events
       val event2 = PersistentRepr(s"cleanup-2", 2, "cleanup")
       writeTaggedEvent(event2, Set("cleanup-tag"), 2, bucketSize)
 
-      probe.expectNoMessage(newPersistenceIdScan - 50.millis)
+      probe.expectNoMessage(newPersistenceIdScan - 100.millis) // we don't now when exactly the next persistence id scan will be
       probe.expectNextPF { case e @ EventEnvelope(_, "cleanup", 2L, "cleanup-2") => e }
-
     }
   }
-
 }
 
 class EventsByTagDisabledSpec extends AbstractEventsByTagSpec(EventsByTagSpec.disabledConfig) {
