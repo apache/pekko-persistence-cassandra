@@ -9,23 +9,22 @@
 
 import com.lightbend.paradox.projectinfo.ParadoxProjectInfoPluginKeys._
 import de.heikoseeberger.sbtheader._
+import org.mdedetrich.apache.sonatype.SonatypeApachePlugin
 import org.scalafmt.sbt.ScalafmtPlugin.autoImport._
 import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
-import xerial.sbt.Sonatype.autoImport.sonatypeProfileName
+import sbtdynver.DynVerPlugin
+import sbtdynver.DynVerPlugin.autoImport.dynverSonatypeSnapshots
 
 object Common extends AutoPlugin {
 
   override def trigger = allRequirements
 
-  override def requires = JvmPlugin && HeaderPlugin
+  override def requires = JvmPlugin && HeaderPlugin && SonatypeApachePlugin && DynVerPlugin
 
   override def globalSettings =
     Seq(
-      organization := "org.apache.pekko",
-      organizationName := "Apache Software Foundation",
-      organizationHomepage := Some(url("https://pekko.apache.org/")),
       startYear := Some(2016),
       homepage := Some(url("https://pekko.apache.org/")),
       // apiURL defined in projectSettings because version.value is not correct here
@@ -38,7 +37,6 @@ object Common extends AutoPlugin {
         "Contributors",
         "dev@pekko.apache.org",
         url("https://github.com/apache/incubator-pekko-persistence-cassandra/graphs/contributors")),
-      licenses := Seq(("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0"))),
       description := "A Cassandra plugin for Apache Pekko Persistence.")
 
   override lazy val projectSettings = Seq(
@@ -67,7 +65,6 @@ object Common extends AutoPlugin {
     Compile / doc / scalacOptions --= Seq("-Xfatal-warnings"),
     scalafmtOnCompile := true,
     autoAPIMappings := true,
-    sonatypeProfileName := "org.apache.pekko",
     Test / logBuffered := System.getProperty("pekko.logBufferedTests", "false").toBoolean,
     // show full stack traces and test case durations
     Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
@@ -76,4 +73,7 @@ object Common extends AutoPlugin {
     // -q Suppress stdout for successful tests.
     Test / testOptions += Tests.Argument(TestFrameworks.JUnit, "-a", "-v", "-q"),
     Test / parallelExecution := false)
+
+  override lazy val buildSettings = Seq(
+    dynverSonatypeSnapshots := true)
 }
