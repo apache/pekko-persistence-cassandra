@@ -7,26 +7,21 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
+import org.mdedetrich.apache.sonatype.SonatypeApachePlugin
+import org.mdedetrich.apache.sonatype.SonatypeApachePlugin.autoImport.apacheSonatypeDisclaimerFile
+import sbt._
 import sbt.Keys._
-import sbt.{ Def, _ }
 
 /**
  * Copies LICENSE and NOTICE files into jar META-INF dir
  */
-object MetaInfLicenseNoticeCopy {
+object MetaInfLicenseNoticeCopy extends AutoPlugin {
 
-  val settings: Seq[Setting[_]] = inConfig(Compile)(
-    Seq(
-      resourceGenerators += copyFileToMetaInf(resourceManaged, "LICENSE"),
-      resourceGenerators += copyFileToMetaInf(resourceManaged, "NOTICE"),
-      resourceGenerators += copyFileToMetaInf(resourceManaged, "DISCLAIMER")))
+  override def trigger = allRequirements
 
-  def copyFileToMetaInf(dir: SettingKey[File], fileName: String): Def.Initialize[Task[Seq[sbt.File]]] =
-    Def.task[Seq[File]] {
-      val fromFile = (LocalRootProject / baseDirectory).value / fileName
-      val toFile = resourceManaged.value / "META-INF" / fileName
-      IO.copyFile(fromFile, toFile)
-      Seq(toFile)
-    }
+  override def requires = SonatypeApachePlugin
+
+  override lazy val projectSettings = Seq(
+    apacheSonatypeDisclaimerFile := Some((LocalRootProject / baseDirectory).value / "DISCLAIMER"))
 
 }

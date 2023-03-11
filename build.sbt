@@ -6,6 +6,8 @@ ThisBuild / resolvers ++= {
   else Seq.empty
 }
 
+ThisBuild / apacheSonatypeProjectProfile := "pekko"
+
 // make version compatible with docker for publishing example project
 ThisBuild / dynverSeparator := "-"
 
@@ -22,7 +24,6 @@ dumpSchema := (core / Test / runMain).toTask(" akka.persistence.cassandra.PrintC
 lazy val core = project
   .in(file("core"))
   .enablePlugins(Common, AutomateHeaderPlugin, MultiJvmPlugin)
-  .settings(MetaInfLicenseNoticeCopy.settings)
   .dependsOn(cassandraLauncher % Test)
   .settings(
     name := "pekko-persistence-cassandra",
@@ -34,7 +35,6 @@ lazy val core = project
 lazy val cassandraLauncher = project
   .in(file("cassandra-launcher"))
   .enablePlugins(Common)
-  .settings(MetaInfLicenseNoticeCopy.settings)
   .settings(
     name := "pekko-persistence-cassandra-launcher",
     Compile / managedResourceDirectories += (cassandraBundle / target).value / "bundle",
@@ -45,7 +45,6 @@ lazy val cassandraLauncher = project
 lazy val cassandraBundle = project
   .in(file("cassandra-bundle"))
   .enablePlugins(Common, AutomateHeaderPlugin)
-  .settings(MetaInfLicenseNoticeCopy.settings)
   .settings(
     name := "pekko-persistence-cassandra-bundle",
     crossPaths := false,
@@ -60,7 +59,6 @@ lazy val cassandraBundle = project
 lazy val endToEndExample = project
   .in(file("example"))
   .dependsOn(core)
-  .settings(MetaInfLicenseNoticeCopy.settings)
   .settings(libraryDependencies ++= Dependencies.exampleDependencies, publish / skip := true)
   .settings(
     dockerBaseImage := "openjdk:8-jre-alpine",
@@ -92,7 +90,6 @@ lazy val endToEndExample = project
 
 lazy val dseTest = project
   .in(file("dse-test"))
-  .settings(MetaInfLicenseNoticeCopy.settings)
   .dependsOn(core % "test->test")
   .settings(libraryDependencies ++= Dependencies.dseTestDependencies)
 
