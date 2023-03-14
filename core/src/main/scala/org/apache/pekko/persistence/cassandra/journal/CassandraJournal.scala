@@ -798,9 +798,8 @@ import scala.util.{ Failure, Success, Try }
           Extractors.optionalTaggedPersistentRepr(eventDeserializer, serialization))
         .mapAsync(1) { t =>
           t.tagged match {
-            case OptionVal.Some(tpr) =>
-              tr.sendMissingTagWrite(tp)(tpr)
             case OptionVal.None => FutureDone // no tags, skip
+            case tpr            => tr.sendMissingTagWrite(tp)(tpr.x)
           }
         }
         .runWith(Sink.ignore)
