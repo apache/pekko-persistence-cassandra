@@ -25,7 +25,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
 object PersistAllSpec {
-  val config = ConfigFactory.parseString(s"""
+  private val config = ConfigFactory.parseString(s"""
       pekko.persistence.cassandra.journal.max-message-batch-size = 100
       pekko.persistence.cassandra.journal.keyspace=PersistAllSpec
       pekko.persistence.cassandra.snapshot.keyspace=PersistAllSpecSnapshot
@@ -67,21 +67,21 @@ class PersistAllSpec extends CassandraSpec(config) with ImplicitSender with AnyW
     // reproducer of issue #869
     "write and replay with persistAll greater max-message-batch-size" in {
       val persistenceId = UUID.randomUUID().toString
-      val processorAtomic = system.actorOf(Props(classOf[ProcessorAtomic], persistenceId, self))
+      val processorAtomic = system.actorOf(Props(new ProcessorAtomic(persistenceId, self)))
 
       val N = 200
 
       processorAtomic ! (1 to N).map(n => s"a-$n").toList
       (1L to N).foreach { i =>
-        expectMsgAllOf(s"a-$i", i, false)
+        expectMsgAllOf[Any](s"a-$i", i, false)
       }
 
       stopAndWaitUntilTerminated(processorAtomic)
 
       val testProbe = TestProbe()
-      val processor2 = system.actorOf(Props(classOf[ProcessorAtomic], persistenceId, testProbe.ref))
+      val processor2 = system.actorOf(Props(new ProcessorAtomic(persistenceId, testProbe.ref)))
       (1L to N).foreach { i =>
-        testProbe.expectMsgAllOf(s"a-$i", i, true)
+        testProbe.expectMsgAllOf[Any](s"a-$i", i, true)
       }
       processor2
     }

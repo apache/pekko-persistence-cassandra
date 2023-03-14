@@ -13,12 +13,11 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import org.apache.pekko.actor._
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, TestTaggingActor }
 import com.typesafe.config.ConfigFactory
+import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, TestTaggingActor }
 
 object TagScanningSpec {
-  val config = ConfigFactory.parseString(s"""
+  private val config = ConfigFactory.parseString(s"""
       pekko.persistence.cassandra.events-by-tag.enabled = on
       pekko.persistence.cassandra.events-by-tag.scanning-flush-interval = 2s
       pekko.persistence.cassandra.journal.replay-filter.mode = off
@@ -40,7 +39,7 @@ class TagScanningSpec extends CassandraSpec(TagScanningSpec.config) {
         import scala.jdk.CollectionConverters._
         val expected = (0 until nrActors).map(n => (s"$n".toInt, 1L)).toList
         val scanning = cluster
-          .execute(s"select * from ${journalName}.tag_scanning")
+          .execute(s"select * from $journalName.tag_scanning")
           .all()
           .asScala
           .toList

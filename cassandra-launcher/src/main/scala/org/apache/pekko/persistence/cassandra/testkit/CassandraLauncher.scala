@@ -169,11 +169,14 @@ object CassandraLauncher {
     resources
       .map { resource =>
         this.getClass.getClassLoader.getResource(resource) match {
-          case null => sys.error("Resource not found: " + resource)
+          case null =>
+            sys.error("Resource not found: " + resource)
           case fileUrl if fileUrl.getProtocol == "file" =>
             new File(URI.create(fileUrl.toString.stripSuffix(resource))).getCanonicalPath
           case jarUrl if jarUrl.getProtocol == "jar" =>
             new File(URI.create(jarUrl.getPath.takeWhile(_ != '!'))).getCanonicalPath
+          case _ =>
+            sys.error("Resource not supported: " + resource)
         }
       }
       .distinct

@@ -13,45 +13,42 @@
 
 package org.apache.pekko.persistence.cassandra.query.scaladsl
 
-import java.net.URLEncoder
-import java.util.UUID
-
-import org.apache.pekko.{ Done, NotUsed }
+import com.datastax.oss.driver.api.core.CqlSession
+import com.datastax.oss.driver.api.core.cql._
+import com.datastax.oss.driver.api.core.uuid.Uuids
+import com.typesafe.config.Config
 import org.apache.pekko.actor.{ ActorSystem, ExtendedActorSystem }
 import org.apache.pekko.annotation.InternalApi
 import org.apache.pekko.event.Logging
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal.{ PersistenceId, Tag, TagPidSequenceNr }
-import org.apache.pekko.persistence.cassandra.journal._
-import org.apache.pekko.persistence.cassandra.Extractors
 import org.apache.pekko.persistence.cassandra.Extractors.Extractor
+import org.apache.pekko.persistence.cassandra.{ CassandraStatements, Extractors, PluginSettings }
+import org.apache.pekko.persistence.cassandra.journal.CassandraJournal.{
+  DeserializedEvent,
+  PersistenceId,
+  Tag,
+  TagPidSequenceNr
+}
+import org.apache.pekko.persistence.cassandra.journal._
 import org.apache.pekko.persistence.cassandra.query.EventsByTagStage.TagStageSession
 import org.apache.pekko.persistence.cassandra.query._
 import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.EventByTagStatements
 import org.apache.pekko.persistence.query._
 import org.apache.pekko.persistence.query.scaladsl._
 import org.apache.pekko.persistence.{ Persistence, PersistentRepr }
-import org.apache.pekko.stream.scaladsl.Flow
-import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko.serialization.SerializationExtension
 import org.apache.pekko.stream.ActorAttributes
-import org.apache.pekko.util.ByteString
-import com.datastax.oss.driver.api.core.cql._
-import com.typesafe.config.Config
+import org.apache.pekko.stream.connectors.cassandra.CassandraSessionSettings
+import org.apache.pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
+import org.apache.pekko.stream.scaladsl.{ Flow, Source }
+import org.apache.pekko.util.{ ByteString, OptionVal }
+import org.apache.pekko.{ Done, NotUsed }
 
+import java.net.URLEncoder
+import java.util.UUID
 import scala.collection.immutable
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.util.{ Failure, Success }
 import scala.util.control.NonFatal
-import org.apache.pekko.persistence.cassandra.PluginSettings
-import org.apache.pekko.persistence.cassandra.CassandraStatements
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal.DeserializedEvent
-import org.apache.pekko.serialization.SerializationExtension
-import org.apache.pekko.stream.connectors.cassandra.CassandraSessionSettings
-import org.apache.pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
-import org.apache.pekko.util.OptionVal
-import com.datastax.oss.driver.api.core.CqlSession
-import com.datastax.oss.driver.api.core.uuid.Uuids
 
 object CassandraReadJournal {
 
@@ -125,8 +122,7 @@ class CassandraReadJournal protected (
   private val settings = new PluginSettings(system, sharedConfig)
   private val statements = new CassandraStatements(settings)
 
-  import settings.querySettings
-  import settings.eventsByTagSettings
+  import settings.{ eventsByTagSettings, querySettings }
 
   if (eventsByTagSettings.eventualConsistency < 1.seconds) {
     log.warning(
@@ -371,8 +367,8 @@ class CassandraReadJournal protected (
               sender = null,
               writerUuid = row.getString("writer_uuid")))
           val reprWithMeta = metadata match {
-            case OptionVal.None           => repr
-            case OptionVal.Some(metadata) => repr.withMetadata(metadata)
+            case OptionVal.None => repr
+            case metadata       => repr.withMetadata(metadata.x)
           }
           UUIDPersistentRepr(uuidRow.offset, uuidRow.tagPidSequenceNr, reprWithMeta)
       }
@@ -446,9 +442,9 @@ class CassandraReadJournal protected (
     def getSession: CqlSession = session.underlying().value.get.get
 
     prepStmt.value match {
-      case Some(Success(ps)) => source(getSession, ps)
-      case Some(Failure(e))  => Source.failed(e)
-      case None              =>
+      case Some(util.Success(ps)) => source(getSession, ps)
+      case Some(util.Failure(e))  => Source.failed(e)
+      case None                   =>
         // completed later
         Source
           .maybe[P]
@@ -471,9 +467,9 @@ class CassandraReadJournal protected (
     def getSession: CqlSession = session.underlying().value.get.get
 
     prepStmt.value match {
-      case Some(Success(ps)) =>
+      case Some(util.Success(ps)) =>
         source(getSession, ps).mapMaterializedValue(Future.successful)
-      case Some(Failure(e)) =>
+      case Some(util.Failure(e)) =>
         Source.failed(e).mapMaterializedValue(_ => Future.failed(e))
       case None =>
         // completed later

@@ -236,8 +236,8 @@ import scala.util.{ Failure, Success, Try }
       val nextBuffer = buffer.writeComplete()
       buffer.nextBatch.foreach { write =>
         write.ack match {
-          case OptionVal.None      =>
-          case OptionVal.Some(ref) => ref ! Done
+          case OptionVal.None =>
+          case ref            => ref.x ! Done
         }
       }
       summary.foreach {
@@ -274,7 +274,7 @@ import scala.util.{ Failure, Success, Try }
       sendPubsubNotification()
       doneNotify.foreach(_ ! FlushComplete)
 
-    case TagWriteFailed(t, events) =>
+    case TagWriteFailed(t, _) =>
       log.warning(
         "Writing tags has failed. This means that any eventsByTag query will be out of date. " +
         "The write will be retried. Reason {}",

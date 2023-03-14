@@ -13,23 +13,22 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
-import java.util.UUID
-
+import com.typesafe.config.ConfigFactory
 import org.apache.pekko.actor.ActorRef
 import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
+import org.apache.pekko.persistence.query.TimeBasedUUID
 import org.apache.pekko.persistence.{ DeleteMessagesSuccess, PersistentRepr }
 import org.apache.pekko.stream.KillSwitches
-import org.apache.pekko.stream.scaladsl.Keep
+import org.apache.pekko.stream.scaladsl.{ Keep, Sink }
 import org.apache.pekko.stream.testkit.scaladsl.TestSink
-import com.typesafe.config.ConfigFactory
+import org.apache.pekko.util.UUIDComparator
+import org.scalatest.Inside
+
+import java.util.UUID
 import scala.concurrent.duration._
 
-import org.apache.pekko.persistence.query.TimeBasedUUID
-import org.apache.pekko.stream.scaladsl.Sink
-import org.apache.pekko.util.UUIDComparator
-
 object EventsByPersistenceIdSpec {
-  val config = ConfigFactory.parseString(s"""
+  private val config = ConfigFactory.parseString(s"""
     pekko.persistence.cassandra.journal.target-partition-size = 15
     pekko.persistence.cassandra.query.refresh-interval = 0.5s
     pekko.persistence.cassandra.query.max-result-size-query = 2
@@ -38,9 +37,9 @@ object EventsByPersistenceIdSpec {
     """).withFallback(CassandraLifecycle.config)
 }
 
-class EventsByPersistenceIdSpec extends CassandraSpec(EventsByPersistenceIdSpec.config) with DirectWriting {
+class EventsByPersistenceIdSpec extends CassandraSpec(EventsByPersistenceIdSpec.config) with DirectWriting with Inside {
 
-  val noMsgTimeout = 100.millis
+  private val noMsgTimeout = 100.millis
 
   def setup(persistenceId: String, n: Int): ActorRef = {
     val ref = system.actorOf(TestActor.props(persistenceId))
@@ -175,12 +174,16 @@ class EventsByPersistenceIdSpec extends CassandraSpec(EventsByPersistenceIdSpec.
 
       probe.request(5)
 
-      val (event1, seqNr1, TimeBasedUUID(uuid1)) = probe.requestNext()
-      event1 shouldBe "jo-1"
-      seqNr1 shouldBe 1
-      val (event2, seqNr2, TimeBasedUUID(uuid2)) = probe.requestNext()
-      event2 shouldBe "jo-2"
-      seqNr2 shouldBe 2
+      val uuid1 = inside(probe.requestNext()) { case (event1, seqNr1, TimeBasedUUID(uuid)) =>
+        event1 shouldBe "jo-1"
+        seqNr1 shouldBe 1
+        uuid
+      }
+      val uuid2 = inside(probe.requestNext()) { case (event2, seqNr2, TimeBasedUUID(uuid)) =>
+        event2 shouldBe "jo-2"
+        seqNr2 shouldBe 2
+        uuid
+      }
       system.log.debug("Saw evt 1 and 2")
 
       // 4 arrived out of order
@@ -197,17 +200,23 @@ class EventsByPersistenceIdSpec extends CassandraSpec(EventsByPersistenceIdSpec.
       writeTestEvent(PersistentRepr("jo-3", 3L, "jo"))
       system.log.debug("Wrote evt 3")
 
-      val (event3, seqNr3, TimeBasedUUID(uuid3)) = probe.requestNext()
-      event3 shouldBe "jo-3"
-      seqNr3 shouldBe 3
+      val uuid3 = inside(probe.requestNext()) { case (event3, seqNr3, TimeBasedUUID(uuid)) =>
+        event3 shouldBe "jo-3"
+        seqNr3 shouldBe 3
+        uuid
+      }
 
-      val (event4, seqNr4, TimeBasedUUID(uuid4)) = probe.requestNext()
-      event4 shouldBe "jo-4"
-      seqNr4 shouldBe 4
+      val uuid4 = inside(probe.requestNext()) { case (event4, seqNr4, TimeBasedUUID(uuid)) =>
+        event4 shouldBe "jo-4"
+        seqNr4 shouldBe 4
+        uuid
+      }
 
-      val (event5, seqNr5, TimeBasedUUID(uuid5)) = probe.requestNext()
-      event5 shouldBe "jo-5"
-      seqNr5 shouldBe 5
+      val uuid5 = inside(probe.requestNext()) { case (event5, seqNr5, TimeBasedUUID(uuid)) =>
+        event5 shouldBe "jo-5"
+        seqNr5 shouldBe 5
+        uuid
+      }
 
       UUIDComparator.comparator.compare(uuid1, uuid2) should be < 0
       UUIDComparator.comparator.compare(uuid2, uuid4) should be < 0
