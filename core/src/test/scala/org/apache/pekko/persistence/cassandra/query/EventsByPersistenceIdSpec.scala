@@ -34,7 +34,7 @@ object EventsByPersistenceIdSpec {
     pekko.persistence.cassandra.query.refresh-interval = 0.5s
     pekko.persistence.cassandra.query.max-result-size-query = 2
     pekko.persistence.cassandra.query.events-by-persistence-id-gap-timeout = 4 seconds
-    akka.stream.materializer.max-input-buffer-size = 4 # there is an async boundary
+    pekko.stream.materializer.max-input-buffer-size = 4 # there is an async boundary
     """).withFallback(CassandraLifecycle.config)
 }
 

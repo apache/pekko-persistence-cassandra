@@ -36,7 +36,7 @@ object EventsByTagMultiJvmSpec extends MultiNodeConfig {
   val name = "EventsByTagMuliJvmSpec"
 
   commonConfig(ConfigFactory.parseString(s"""
-      akka {
+      pekko {
         loglevel = INFO 
         actor.provider = cluster
         testconductor.barrier-timeout = 60 s

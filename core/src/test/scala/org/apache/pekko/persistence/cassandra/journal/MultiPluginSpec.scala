@@ -26,10 +26,10 @@ object MultiPluginSpec {
   val snapshotKeyspace = s"multiplugin_spec_snapshot_$now"
   val cassandraPort = CassandraLauncher.randomPort
   val config = ConfigFactory.parseString(s"""
-       |akka.test.single-expect-default = 20s
-       |akka.test.filter-leeway = 20s
+       |pekko.test.single-expect-default = 20s
+       |pekko.test.filter-leeway = 20s
        |
-       |akka.persistence.snapshot-store.plugin = ""
+       |pekko.persistence.snapshot-store.plugin = ""
        |
        |pekko.persistence.cassandra.journal.keyspace = $journalKeyspace
        |pekko.persistence.cassandra.journal.circuit-breaker.call-timeout = 30s

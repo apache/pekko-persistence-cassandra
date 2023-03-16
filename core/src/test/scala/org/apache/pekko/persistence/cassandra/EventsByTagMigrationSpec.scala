@@ -53,9 +53,9 @@ object EventsByTagMigrationSpec {
   
        // disable normal failure logging as tall these tests are related 
        // so if one fails need the logs for all
-       akka.loggers = []
-       akka.loglevel = DEBUG
-       akka {
+       pekko.loggers = []
+       pekko.loglevel = DEBUG
+       pekko {
          actor.serialize-messages=off
          actor.debug.unhandled = on
        }

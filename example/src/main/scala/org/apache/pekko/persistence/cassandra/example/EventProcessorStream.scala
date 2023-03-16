@@ -15,7 +15,7 @@ import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJourna
 import org.apache.pekko.persistence.query.{ Offset, PersistenceQuery, TimeBasedUUID }
 import org.apache.pekko.persistence.typed.PersistenceId
 import org.apache.pekko.stream.SharedKillSwitch
-import org.apache.pekko.stream.alpakka.cassandra.scaladsl.CassandraSessionRegistry
+import org.apache.pekko.stream.connectors.cassandra.scaladsl.CassandraSessionRegistry
 import org.apache.pekko.stream.scaladsl.{ RestartSource, Sink, Source }
 import com.datastax.oss.driver.api.core.cql.{ PreparedStatement, Row }
 import org.slf4j.{ Logger, LoggerFactory }
@@ -36,7 +36,7 @@ class EventProcessorStream[Event: ClassTag](
   implicit val sys: ActorSystem[_] = system
   implicit val ec: ExecutionContext = executionContext
 
-  private val session = CassandraSessionRegistry(system).sessionFor("akka.persistence.cassandra")
+  private val session = CassandraSessionRegistry(system).sessionFor("pekko.persistence.cassandra")
 
   private val query = PersistenceQuery(system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
 
@@ -85,7 +85,7 @@ class EventProcessorStream[Event: ClassTag](
   private def readOffset(): Future[Offset] = {
     session
       .selectOne(
-        "SELECT timeUuidOffset FROM akka.offsetStore WHERE eventProcessorId = ? AND tag = ?",
+        "SELECT timeUuidOffset FROM pekko.offsetStore WHERE eventProcessorId = ? AND tag = ?",
         eventProcessorId,
         tag)
       .map(extractOffset)
@@ -110,7 +110,7 @@ class EventProcessorStream[Event: ClassTag](
   }
 
   private lazy val prepareWriteOffset: Future[PreparedStatement] = {
-    session.prepare("INSERT INTO akka.offsetStore (eventProcessorId, tag, timeUuidOffset) VALUES (?, ?, ?)")
+    session.prepare("INSERT INTO pekko.offsetStore (eventProcessorId, tag, timeUuidOffset) VALUES (?, ?, ?)")
   }
 
   private def writeOffset(offset: Offset)(implicit ec: ExecutionContext): Future[Done] = {

@@ -40,7 +40,7 @@ import scala.util.control.NoStackTrace
 object TagWriterSpec {
   val config: Config =
     ConfigFactory.parseString("""
-      akka {
+      pekko {
         use-slf4j = off
         loglevel = DEBUG
         actor {

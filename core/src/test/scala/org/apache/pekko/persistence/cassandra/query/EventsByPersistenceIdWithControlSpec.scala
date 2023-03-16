@@ -29,7 +29,7 @@ object EventsByPersistenceIdWithControlSpec {
     pekko.persistence.cassandra.journal.target-partition-size = 15
     pekko.persistence.cassandra.query.refresh-interval = 120s # effectively disabled
     pekko.persistence.cassandra.query.max-result-size-query = 20
-    akka.stream.materializer.max-input-buffer-size = 4 # there is an async boundary
+    pekko.stream.materializer.max-input-buffer-size = 4 # there is an async boundary
     """).withFallback(CassandraLifecycle.config)
 }
 

@@ -22,13 +22,13 @@ import com.typesafe.config.ConfigFactory
 
 object EventsByPersistenceIdMultiPartitionGapSpec {
   val config = ConfigFactory.parseString(s"""
-    akka.loglevel = INFO
+    pekko.loglevel = INFO
     pekko.persistence.cassandra.journal.target-partition-size = 15
     pekko.persistence.cassandra.query.refresh-interval = 0.5s
     pekko.persistence.cassandra.query.max-result-size-query = 2
     pekko.persistence.cassandra.query.events-by-persistence-id-gap-timeout = 4 seconds
     pekko.persistence.cassandra.query.gap-free-sequence-numbers = off
-    akka.stream.materializer.max-input-buffer-size = 4 # there is an async boundary
+    pekko.stream.materializer.max-input-buffer-size = 4 # there is an async boundary
     """).withFallback(CassandraLifecycle.config)
 }
 

@@ -39,7 +39,7 @@ object CassandraQueryJournalOverrideSpec {
 
   val config = ConfigFactory.parseString("""
       pekko.persistence.cassandra.query {
-        class = "pekko.persistence.cassandra.query.JournalOverrideProvider"
+        class = "org.apache.pekko.persistence.cassandra.query.JournalOverrideProvider"
       }
     """.stripMargin).withFallback(CassandraLifecycle.config)
 

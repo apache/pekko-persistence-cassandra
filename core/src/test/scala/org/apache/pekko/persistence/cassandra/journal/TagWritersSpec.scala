@@ -34,7 +34,7 @@ import scala.concurrent.duration._
 object TagWritersSpec {
   val config: Config =
     ConfigFactory.parseString("""
-      akka {
+      pekko {
         use-slf4j = off
         loglevel = INFO
       }

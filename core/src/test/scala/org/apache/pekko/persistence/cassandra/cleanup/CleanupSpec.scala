@@ -29,7 +29,7 @@ import com.typesafe.config.ConfigFactory
 object CleanupSpec {
   val today = LocalDateTime.now(ZoneOffset.UTC)
   val config = ConfigFactory.parseString(s"""
-    akka.loglevel = DEBUG
+    pekko.loglevel = DEBUG
     pekko.persistence.cassandra.cleanup {
       log-progress-every = 2
       dry-run = false

@@ -23,7 +23,7 @@ import scala.concurrent.duration._
 
 object RecoveryLoadSpec {
   val config = ConfigFactory.parseString(s"""
-      akka.loglevel = INFO
+      pekko.loglevel = INFO
       pekko.persistence.cassandra.events-by-tag.enabled = on
       pekko.persistence.cassandra.events-by-tag.scanning-flush-interval = 2s
       pekko.persistence.cassandra.journal.replay-filter.mode = off

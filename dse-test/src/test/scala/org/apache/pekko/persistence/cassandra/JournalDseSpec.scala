@@ -14,11 +14,11 @@ import com.typesafe.config.ConfigFactory
 
 object JournalDseSpec {
   val config = ConfigFactory.parseString(s"""
-   akka.persistence.cassandra.journal.keyspace=JournalDseSpec
-   akka.persistence.cassandra.snapshot.keyspace=JournalDseSpec
+   pekko.persistence.cassandra.journal.keyspace=JournalDseSpec
+   pekko.persistence.cassandra.snapshot.keyspace=JournalDseSpec
                                  
    //# override-session-provider
-   akka.persistence.cassandra {
+   pekko.persistence.cassandra {
      session-provider = "your.pack.DseSessionProvider"
    }
    //# override-session-provider

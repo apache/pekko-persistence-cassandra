@@ -34,7 +34,7 @@ object CassandraEventsByTagLoadSpec {
          }
          snapshot.keyspace=CassandraEventsByTagLoadSpecSnapshot
        }
-       akka.actor.serialize-messages=off
+       pekko.actor.serialize-messages=off
     """).withFallback(CassandraLifecycle.config)
 }
 

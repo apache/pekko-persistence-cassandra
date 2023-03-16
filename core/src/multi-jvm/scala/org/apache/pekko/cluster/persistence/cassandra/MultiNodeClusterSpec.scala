@@ -31,16 +31,16 @@ object MultiNodeClusterSpec {
 
   def clusterConfigWithFailureDetectorPuppet: Config =
     ConfigFactory.parseString(
-      "akka.cluster.failure-detector.implementation-class = akka.cluster.FailureDetectorPuppet").withFallback(
+      "pekko.cluster.failure-detector.implementation-class = org.apache.pekko.cluster.FailureDetectorPuppet").withFallback(
       clusterConfig)
 
   def clusterConfig(failureDetectorPuppet: Boolean): Config =
     if (failureDetectorPuppet) clusterConfigWithFailureDetectorPuppet else clusterConfig
 
   def clusterConfig: Config = ConfigFactory.parseString(s"""
-    akka.actor.provider = cluster
-    akka.actor.warn-about-java-serializer-usage = off
-    akka.cluster {
+    pekko.actor.provider = cluster
+    pekko.actor.warn-about-java-serializer-usage = off
+    pekko.cluster {
       jmx.enabled                         = off
       gossip-interval                     = 200 ms
       leader-actions-interval             = 200 ms
@@ -55,18 +55,18 @@ object MultiNodeClusterSpec {
         waiting-for-state-timeout = 200ms
       }
     }
-    akka.loglevel = INFO
-    akka.log-dead-letters = off
-    akka.log-dead-letters-during-shutdown = off
-    akka.remote {
+    pekko.loglevel = INFO
+    pekko.log-dead-letters = off
+    pekko.log-dead-letters-during-shutdown = off
+    pekko.remote {
       log-remote-lifecycle-events = off
       artery.advanced.flight-recorder {
         enabled=on
         destination=target/flight-recorder-${UUID.randomUUID().toString}.afr
       }
     }
-    akka.loggers = ["akka.testkit.TestEventListener"]
-    akka.test {
+    pekko.loggers = ["org.apache.pekko.testkit.TestEventListener"]
+    pekko.test {
       single-expect-default = 5 s
     }
 
@@ -108,7 +108,7 @@ trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec with FlightRecordi
 
   override protected def afterTermination(): Unit = {
     self.afterTermination()
-    if (failed || sys.props.get("akka.remote.artery.always-dump-flight-recorder").isDefined) {
+    if (failed || sys.props.get("pekko.remote.artery.always-dump-flight-recorder").isDefined) {
       printFlightRecording()
     }
     deleteFlightRecorderFile()
@@ -126,13 +126,13 @@ trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec with FlightRecordi
       }
 
       muteDeadLetters(
-        classOf[akka.actor.PoisonPill],
-        classOf[akka.dispatch.sysmsg.DeathWatchNotification],
-        classOf[akka.remote.transport.AssociationHandle.Disassociated],
-        //        akka.remote.transport.AssociationHandle.Disassociated.getClass,
-        classOf[akka.remote.transport.ActorTransportAdapter.DisassociateUnderlying],
-        //        akka.remote.transport.ActorTransportAdapter.DisassociateUnderlying.getClass,
-        classOf[akka.remote.transport.AssociationHandle.InboundPayload])(sys)
+        classOf[org.apache.pekko.actor.PoisonPill],
+        classOf[org.apache.pekko.dispatch.sysmsg.DeathWatchNotification],
+        classOf[org.apache.pekko.remote.transport.AssociationHandle.Disassociated],
+        //        org.apache.pekko.remote.transport.AssociationHandle.Disassociated.getClass,
+        classOf[org.apache.pekko.remote.transport.ActorTransportAdapter.DisassociateUnderlying],
+        //        org.apache.pekko.remote.transport.ActorTransportAdapter.DisassociateUnderlying.getClass,
+        classOf[org.apache.pekko.remote.transport.AssociationHandle.InboundPayload])(sys)
 
     }
   }

@@ -28,7 +28,7 @@ object CassandraLoadSpec {
   val config = ConfigFactory.parseString(s"""
       pekko.persistence.cassandra.journal.replication-strategy = NetworkTopologyStrategy
       pekko.persistence.cassandra.journal.data-center-replication-factors = ["datacenter1:1"]
-      akka.actor.serialize-messages=off
+      pekko.actor.serialize-messages=off
      """).withFallback(CassandraLifecycle.config)
 
   trait Measure { this: Actor =>

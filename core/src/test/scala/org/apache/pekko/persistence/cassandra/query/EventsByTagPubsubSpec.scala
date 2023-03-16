@@ -28,12 +28,12 @@ object EventsByTagPubsubSpec {
   val today = LocalDate.now(ZoneOffset.UTC)
 
   val config = ConfigFactory.parseString(s"""
-    akka.actor.provider = "akka.cluster.ClusterActorRefProvider"
-    akka.actor.serialize-messages = off
-    akka.actor.serialize-creators = off
-    akka.remote.netty.tcp.port = 0
-    akka.remote.artery.canonical.port = 0
-    akka.remote.netty.tcp.hostname = "127.0.0.1"
+    pekko.actor.provider = "cluster"
+    pekko.actor.serialize-messages = off
+    pekko.actor.serialize-creators = off
+    pekko.remote.netty.tcp.port = 0
+    pekko.remote.artery.canonical.port = 0
+    pekko.remote.netty.tcp.hostname = "127.0.0.1"
     pekko.persistence.cassandra {
       
       query.refresh-interval = 10s

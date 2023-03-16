@@ -34,7 +34,7 @@ object Dependencies {
     "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
     "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test)
 
-  val akkaTestDeps = Seq(
+  val pekkoTestDeps = Seq(
     "org.apache.pekko" %% "pekko-persistence",
     "org.apache.pekko" %% "pekko-persistence-typed",
     "org.apache.pekko" %% "pekko-persistence-query",
@@ -45,7 +45,7 @@ object Dependencies {
     "org.apache.pekko" %% "pekko-multi-node-testkit",
     "org.apache.pekko" %% "pekko-cluster-sharding")
 
-  val akkaPersistenceCassandraDependencies = Seq(
+  val pekkoPersistenceCassandraDependencies = Seq(
     "org.apache.pekko" %% "pekko-connectors-cassandra" % pekkoConnectorsVersion,
     "org.apache.pekko" %% "pekko-persistence" % pekkoVersion,
     "org.apache.pekko" %% "pekko-persistence-query" % pekkoVersion,
@@ -54,7 +54,7 @@ object Dependencies {
     logback % Test,
     "org.scalatest" %% "scalatest" % "3.2.14" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test,
-    "org.osgi" % "org.osgi.core" % "5.0.0" % Provided) ++ akkaTestDeps.map(_ % pekkoVersion % Test)
+    "org.osgi" % "org.osgi.core" % "5.0.0" % Provided) ++ pekkoTestDeps.map(_ % pekkoVersion % Test)
 
   val exampleDependencies = Seq(
     logback,

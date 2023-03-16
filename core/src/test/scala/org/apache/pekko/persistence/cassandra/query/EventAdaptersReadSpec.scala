@@ -24,12 +24,12 @@ import scala.concurrent.duration._
 object EventAdaptersReadSpec {
 
   val config = ConfigFactory.parseString(s"""
-    akka.actor.serialize-messages=off
+    pekko.actor.serialize-messages=off
     pekko.persistence.cassandra {
       keyspace=EventAdaptersReadSpec
       journal {
         target-partition-size = 15
-        event-adapters.test = "pekko.persistence.cassandra.query.TestEventAdapter"
+        event-adapters.test = "org.apache.pekko.persistence.cassandra.query.TestEventAdapter"
         event-adapter-bindings {
           "java.lang.String" = test
         }

@@ -44,7 +44,7 @@ object CassandraJournalConfiguration {
 
   lazy val perfConfig =
     ConfigFactory.parseString("""
-    akka.actor.serialize-messages=off
+    pekko.actor.serialize-messages=off
     pekko.persistence.cassandra.journal.keyspace=CassandraJournalPerfSpec
     pekko.persistence.cassandra.snapshot.keyspace=CassandraJournalPerfSpecSnapshot
     """).withFallback(config)

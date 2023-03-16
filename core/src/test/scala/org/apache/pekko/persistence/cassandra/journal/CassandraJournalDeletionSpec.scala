@@ -70,8 +70,8 @@ object CassandraJournalDeletionSpec {
 }
 
 class CassandraJournalDeletionSpec extends CassandraSpec(s"""
-    akka.loggers = ["akka.testkit.TestEventListener"]
-    akka.log-dead-letters = off
+    pekko.loggers = ["org.apache.pekko.testkit.TestEventListener"]
+    pekko.log-dead-letters = off
     pekko.persistence.cassandra.journal.max-concurrent-deletes = 100
 
     cassandra-plugin-low-concurrent-deletes = $${pekko.persistence.cassandra}

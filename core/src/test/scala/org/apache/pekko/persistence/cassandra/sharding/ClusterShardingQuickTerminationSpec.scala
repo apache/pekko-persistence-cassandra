@@ -76,7 +76,7 @@ object ClusterShardingQuickTerminationSpec {
 }
 
 class ClusterShardingQuickTerminationSpec extends CassandraSpec("""
-    akka.actor.provider = cluster
+    pekko.actor.provider = cluster
   """.stripMargin) {
 
   import ClusterShardingQuickTerminationSpec._

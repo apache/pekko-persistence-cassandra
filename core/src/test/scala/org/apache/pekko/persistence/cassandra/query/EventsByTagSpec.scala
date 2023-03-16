@@ -52,14 +52,14 @@ object EventsByTagSpec {
   val today = LocalDateTime.now(ZoneOffset.UTC)
 
   val config = ConfigFactory.parseString(s"""
-    akka.actor.serialize-messages = off
-    akka.actor.warn-about-java-serializer-usage = off
+    pekko.actor.serialize-messages = off
+    pekko.actor.warn-about-java-serializer-usage = off
     pekko.persistence.cassandra {
       journal {
         #target-partition-size = 5
 
         event-adapters {
-          color-tagger  = pekko.persistence.cassandra.query.ColorFruitTagger
+          color-tagger  = org.apache.pekko.persistence.cassandra.query.ColorFruitTagger
         }
   
         event-adapter-bindings = {
@@ -96,7 +96,7 @@ object EventsByTagSpec {
     """).withFallback(config)
 
   val strictConfigFirstOffset1001DaysAgo = ConfigFactory.parseString(s"""
-    akka.loglevel = INFO # DEBUG is very verbose for this test so don't turn it on when debugging other tests
+    pekko.loglevel = INFO # DEBUG is very verbose for this test so don't turn it on when debugging other tests
     pekko.persistence.cassandra.events-by-tag.first-time-bucket = "${today.minusDays(1001).format(
       firstBucketFormatter)}"
     """).withFallback(strictConfig)
@@ -847,7 +847,7 @@ class EventsByTagStrictBySeqNoEarlyFirstOffsetSpec
 class EventsByTagLongRefreshIntervalSpec
     extends AbstractEventsByTagSpec(
       ConfigFactory.parseString("""
-     akka.loglevel = INFO 
+     pekko.loglevel = INFO
      pekko.persistence.cassandra {
        query.refresh-interval = 10s # set large enough so that it will fail the test if a refresh is required to continue the stream
        events-by-tag {

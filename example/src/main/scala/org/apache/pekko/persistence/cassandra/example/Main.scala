@@ -38,10 +38,10 @@ object Main {
           val topic = ReadSideTopic.init(ctx)
 
           if (cluster.selfMember.hasRole("read")) {
-            val session = CassandraSessionRegistry(ctx.system).sessionFor("akka.persistence.cassandra")
+            val session = CassandraSessionRegistry(ctx.system).sessionFor("pekko.persistence.cassandra")
             val offsetTableStmt =
               """
-              CREATE TABLE IF NOT EXISTS akka.offsetStore (
+              CREATE TABLE IF NOT EXISTS pekko.offsetStore (
                 eventProcessorId text,
                 tag text,
                 timeUuidOffset timeuuid,

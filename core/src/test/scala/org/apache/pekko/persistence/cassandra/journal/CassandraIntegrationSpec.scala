@@ -25,13 +25,17 @@ import org.scalatest.matchers.should.Matchers
 
 object CassandraIntegrationSpec {
   val config = ConfigFactory.parseString(s"""
-      |akka.persistence.journal.max-deletion-batch-size = 3
-      |akka.persistence.publish-confirmations = on
-      |akka.persistence.publish-plugin-commands = on
-      |pekko.persistence.cassandra.journal.target-partition-size = 5
-      |pekko.persistence.cassandra.max-result-size = 3
-      |pekko.persistence.cassandra.journal.keyspace=CassandraIntegrationSpec
-      |pekko.persistence.cassandra.snapshot.keyspace=CassandraIntegrationSpecSnapshot
+      |pekko {
+      |  persistence {
+      |    journal.max-deletion-batch-size = 3
+      |    publish-confirmations = on
+      |    publish-plugin-commands = on
+      |    cassandra.journal.target-partition-size = 5
+      |    cassandra.max-result-size = 3
+      |    cassandra.journal.keyspace=CassandraIntegrationSpec
+      |    cassandra.snapshot.keyspace=CassandraIntegrationSpecSnapshot
+      |  }
+      |}
     """.stripMargin).withFallback(CassandraLifecycle.config)
 
   case class DeleteTo(snr: Long)

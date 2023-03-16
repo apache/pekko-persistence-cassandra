@@ -22,20 +22,23 @@ import com.typesafe.config.ConfigFactory
 
 object CassandraSerializationSpec {
   val config = ConfigFactory.parseString(s"""
-       |akka.actor.serialize-messages=false
-       |akka.actor.serializers.crap="pekko.persistence.cassandra.journal.BrokenDeSerialization"
-       |akka.actor.serialization-identifiers."pekko.persistence.cassandra.journal.BrokenDeSerialization" = 666
-       |akka.actor.serialization-bindings {
-       |  "pekko.persistence.cassandra.Persister$$CrapEvent" = crap
+       |pekko {
+       |  actor.serialize-messages=false
+       |  actor.serializers.crap="org.apache.pekko.persistence.cassandra.journal.BrokenDeSerialization"
+       |  actor.serialization-identifiers."org.apache.pekko.persistence.cassandra.journal.BrokenDeSerialization" = 666
+       |  actor.serialization-bindings {
+       |    "org.apache.pekko.persistence.cassandra.Persister$$CrapEvent" = crap
+       |  }
+       |  persistence {
+       |    journal.max-deletion-batch-size = 3
+       |    publish-confirmations = on
+       |    publish-plugin-commands = on
+       |    cassandra.journal.target-partition-size = 5
+       |    cassandra.max-result-size = 3
+       |    cassandra.journal.keyspace=CassandraIntegrationSpec
+       |    cassandra.snapshot.keyspace=CassandraIntegrationSpecSnapshot
+       |  }
        |}
-       |akka.persistence.journal.max-deletion-batch-size = 3
-       |akka.persistence.publish-confirmations = on
-       |akka.persistence.publish-plugin-commands = on
-       |pekko.persistence.cassandra.journal.target-partition-size = 5
-       |pekko.persistence.cassandra.max-result-size = 3
-       |pekko.persistence.cassandra.journal.keyspace=CassandraIntegrationSpec
-       |pekko.persistence.cassandra.snapshot.keyspace=CassandraIntegrationSpecSnapshot
-       |
     """.stripMargin).withFallback(CassandraLifecycle.config)
 
 }

@@ -65,9 +65,9 @@ object CassandraCorruptJournalSpec {
 }
 
 class CassandraCorruptJournalSpec extends CassandraSpec(s"""
-    akka {
+    pekko {
       loglevel = debug
-      loggers = ["akka.testkit.TestEventListener"]
+      loggers = ["org.apache.pekko.testkit.TestEventListener"]
     }
 
     pekko.persistence.cassandra.journal.replay-filter {

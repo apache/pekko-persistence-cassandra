@@ -26,8 +26,9 @@ import scala.concurrent.duration._
 object EventsByTagRecoverySpec {
   val keyspaceName = "EventsByTagRecoverySpec"
   val config = ConfigFactory.parseString(s"""
-       akka {
+       pekko {
          actor.debug.unhandled = on
+         actor.serialize-messages=off
        }
        pekko.persistence.cassandra {
          journal.keyspace = $keyspaceName
@@ -38,8 +39,6 @@ object EventsByTagRecoverySpec {
          }
          snapshot.keyspace=$keyspaceName
        }
-       
-       akka.actor.serialize-messages=off
     """).withFallback(CassandraLifecycle.config)
 }
 

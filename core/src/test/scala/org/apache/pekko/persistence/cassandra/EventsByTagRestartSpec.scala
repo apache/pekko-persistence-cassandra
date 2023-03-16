@@ -33,8 +33,9 @@ object EventsByTagRestartSpec {
     DateTimeFormatter.ofPattern("yyyyMMdd'T'HH:mm")
 
   val config = ConfigFactory.parseString(s"""
-       |akka {
+       |pekko {
        |  actor.debug.unhandled = on
+       |  actor.serialize-messages=off
        |}
        |pekko.persistence.cassandra {
        |  log-queries = off
@@ -44,7 +45,6 @@ object EventsByTagRestartSpec {
        |  }
        |}
        |
-       |akka.actor.serialize-messages=off
     """.stripMargin).withFallback(CassandraLifecycle.config)
 }
 

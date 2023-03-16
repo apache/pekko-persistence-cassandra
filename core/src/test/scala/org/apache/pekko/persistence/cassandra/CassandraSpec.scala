@@ -83,9 +83,9 @@ object CassandraSpec {
      """)
 
   val fallbackConfig = ConfigFactory.parseString(s"""
-      akka.loggers = ["pekko.persistence.cassandra.SilenceAllTestEventListener"]
-      akka.loglevel = DEBUG
-      akka.use-slf4j = off
+      pekko.loggers = ["org.apache.pekko.persistence.cassandra.SilenceAllTestEventListener"]
+      pekko.loglevel = DEBUG
+      pekko.use-slf4j = off
 
       datastax-java-driver {
         basic.request {
@@ -279,7 +279,7 @@ abstract class CassandraSpec(
         Long.MaxValue,
         100,
         None,
-        readProfile = "akka-persistence-cassandra-profile",
+        readProfile = "pekko-persistence-cassandra-profile",
         "test",
         extractor = Extractors.taggedPersistentRepr(eventDeserializer, SerializationExtension(system)))
       .toMat(Sink.seq)(Keep.right)
@@ -294,7 +294,7 @@ abstract class CassandraSpec(
         Long.MaxValue,
         100,
         None,
-        readProfile = "akka-persistence-cassandra-profile",
+        readProfile = "pekko-persistence-cassandra-profile",
         "test",
         extractor = Extractors.taggedPersistentRepr(eventDeserializer, SerializationExtension(system)))
       .map { tpr =>

@@ -41,20 +41,28 @@ object CassandraLifecycle {
   }
 
   val config =
-    ConfigFactory.parseString(s"""
-    akka.test.timefactor = $${?AKKA_TEST_TIMEFACTOR}
-    akka.persistence.journal.plugin = "pekko.persistence.cassandra.journal"
-    akka.persistence.snapshot-store.plugin = "pekko.persistence.cassandra.snapshot"
-    pekko.persistence.cassandra.journal.circuit-breaker.call-timeout = 30s
-    pekko.persistence.cassandra.events-by-tag.first-time-bucket = "$firstTimeBucket"
-    akka.test.single-expect-default = 20s
-    akka.test.filter-leeway = 20s
-    akka.actor.serialize-messages=on
-    # needed when testing with Akka 2.6
-    akka.actor.allow-java-serialization = on
-    akka.actor.warn-about-java-serializer-usage = off
-    akka.use-slf4j = off
-    """).withFallback(CassandraSpec.enableAutocreate).resolve()
+    ConfigFactory.parseString(
+      s"""
+         |pekko {
+         |  use-slf4j = off
+         |  actor {
+         |    allow-java-serialization = on
+         |    warn-about-java-serializer-usage = off
+         |    serialize-messages=on
+         |  }
+         |  persistence {
+         |    journal.plugin = "pekko.persistence.cassandra.journal"
+         |    snapshot-store.plugin = "pekko.persistence.cassandra.snapshot"
+         |    cassandra.journal.circuit-breaker.call-timeout = 30s
+         |    cassandra.events-by-tag.first-time-bucket = "$firstTimeBucket"
+         |  }
+         |  test {
+         |    timefactor = $${?PEKKO_TEST_TIMEFACTOR}
+         |    single-expect-default = 20s
+         |    filter-leeway = 20s
+         |  }
+         |}
+         |""".stripMargin).withFallback(CassandraSpec.enableAutocreate).resolve()
 
   def awaitPersistenceInit(system: ActorSystem, journalPluginId: String = "", snapshotPluginId: String = ""): Unit = {
     val probe = TestProbe()(system)

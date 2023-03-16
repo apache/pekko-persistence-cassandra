@@ -24,11 +24,11 @@ import scala.concurrent.duration._
 
 object CassandraReadJournalSpec {
   val config = ConfigFactory.parseString(s"""
-    akka.actor.serialize-messages=off
+    pekko.actor.serialize-messages=off
     pekko.persistence.cassandra.query.max-buffer-size = 10
     pekko.persistence.cassandra.query.refresh-interval = 0.5s
     pekko.persistence.cassandra.journal.event-adapters {
-      test-tagger = pekko.persistence.cassandra.query.javadsl.TestTagger
+      test-tagger = org.apache.pekko.persistence.cassandra.query.javadsl.TestTagger
     }
     pekko.persistence.cassandra.journal.event-adapter-bindings = {
       "java.lang.String" = test-tagger
