@@ -4,7 +4,7 @@
  *
  *   https://www.apache.org/licenses/LICENSE-2.0
  *
- * This file is part of the Apache Pekko project, which was derived from Akka.
+ * This file is part of the Apache Pekko project, which was derived from pekko.
  */
 
 import sbt._
@@ -17,61 +17,61 @@ object Dependencies {
   val scala3Version = "3.1.2" // not yet enabled - missing pekko-http/pekko-management Scala 3 artifacts
   val scalaVersions = Seq(scala212Version, scala213Version)
 
-  val akkaVersion = System.getProperty("override.akka.version", "2.6.20")
-  val akkaVersionInDocs = akkaVersion.take(3)
+  val pekkoVersion = System.getProperty("override.pekko.version", "0.0.0+26599-83545a33-SNAPSHOT")
+  val pekkoVersionInDocs = pekkoVersion.take(3)
   val cassandraVersionInDocs = "4.0"
-  // Should be sync with the version of the driver in Alpakka Cassandra
+  // Should be sync with the version of the driver in Pekko Connectors Cassandra
   val driverVersionInDocs = "4.6"
 
-  val alpakkaVersion = "3.0.4"
-  val alpakkaVersionInDocs = alpakkaVersion.take(3)
+  val pekkoConnectorsVersion = "0.0.0+54-ee23f1bc-SNAPSHOT"
+  val pekkoConnectorsVersionInDocs = pekkoConnectorsVersion.take(3)
   // for example
-  val akkaManagementVersion = "1.1.4"
+  val pekkoManagementVersion = "0.0.0+707-9cd493ec-SNAPSHOT"
 
   val logback = "ch.qos.logback" % "logback-classic" % "1.2.10"
 
   val reconcilerDependencies = Seq(
-    "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
-    "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test)
+    "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
+    "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test)
 
   val akkaTestDeps = Seq(
-    "com.typesafe.akka" %% "akka-persistence",
-    "com.typesafe.akka" %% "akka-persistence-typed",
-    "com.typesafe.akka" %% "akka-persistence-query",
-    "com.typesafe.akka" %% "akka-cluster-typed",
-    "com.typesafe.akka" %% "akka-actor-testkit-typed",
-    "com.typesafe.akka" %% "akka-persistence-tck",
-    "com.typesafe.akka" %% "akka-stream-testkit",
-    "com.typesafe.akka" %% "akka-multi-node-testkit",
-    "com.typesafe.akka" %% "akka-cluster-sharding")
+    "org.apache.pekko" %% "pekko-persistence",
+    "org.apache.pekko" %% "pekko-persistence-typed",
+    "org.apache.pekko" %% "pekko-persistence-query",
+    "org.apache.pekko" %% "pekko-cluster-typed",
+    "org.apache.pekko" %% "pekko-actor-testkit-typed",
+    "org.apache.pekko" %% "pekko-persistence-tck",
+    "org.apache.pekko" %% "pekko-stream-testkit",
+    "org.apache.pekko" %% "pekko-multi-node-testkit",
+    "org.apache.pekko" %% "pekko-cluster-sharding")
 
   val akkaPersistenceCassandraDependencies = Seq(
-    "com.lightbend.akka" %% "akka-stream-alpakka-cassandra" % alpakkaVersion,
-    "com.typesafe.akka" %% "akka-persistence" % akkaVersion,
-    "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion,
-    "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
+    "org.apache.pekko" %% "pekko-connectors-cassandra" % pekkoConnectorsVersion,
+    "org.apache.pekko" %% "pekko-persistence" % pekkoVersion,
+    "org.apache.pekko" %% "pekko-persistence-query" % pekkoVersion,
+    "org.apache.pekko" %% "pekko-cluster-tools" % pekkoVersion,
     "org.scala-lang.modules" %% "scala-collection-compat" % "2.7.0",
     logback % Test,
     "org.scalatest" %% "scalatest" % "3.2.14" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test,
-    "org.osgi" % "org.osgi.core" % "5.0.0" % Provided) ++ akkaTestDeps.map(_ % akkaVersion % Test)
+    "org.osgi" % "org.osgi.core" % "5.0.0" % Provided) ++ akkaTestDeps.map(_ % pekkoVersion % Test)
 
   val exampleDependencies = Seq(
     logback,
-    "com.typesafe.akka" %% "akka-persistence-typed" % akkaVersion,
-    "com.typesafe.akka" %% "akka-discovery" % akkaVersion,
-    "com.typesafe.akka" %% "akka-serialization-jackson" % akkaVersion,
-    "com.typesafe.akka" %% "akka-cluster-sharding-typed" % akkaVersion,
-    "com.lightbend.akka.management" %% "akka-management" % akkaManagementVersion,
-    "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % akkaManagementVersion,
-    "com.lightbend.akka.management" %% "akka-management-cluster-http" % akkaManagementVersion,
-    "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % akkaManagementVersion,
+    "org.apache.pekko" %% "pekko-persistence-typed" % pekkoVersion,
+    "org.apache.pekko" %% "pekko-discovery" % pekkoVersion,
+    "org.apache.pekko" %% "pekko-serialization-jackson" % pekkoVersion,
+    "org.apache.pekko" %% "pekko-cluster-sharding-typed" % pekkoVersion,
+    "org.apache.pekko" %% "pekko-management" % pekkoManagementVersion,
+    "org.apache.pekko" %% "pekko-management-cluster-bootstrap" % pekkoManagementVersion,
+    "org.apache.pekko" %% "pekko-management-cluster-http" % pekkoManagementVersion,
+    "org.apache.pekko" %% "pekko-discovery-kubernetes-api" % pekkoManagementVersion,
     "org.hdrhistogram" % "HdrHistogram" % "2.1.12")
 
   val dseTestDependencies = Seq(
     "com.datastax.dse" % "dse-java-driver-core" % "2.3.0" % Test,
-    "com.typesafe.akka" %% "akka-persistence-tck" % akkaVersion % Test,
-    "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
-    "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+    "org.apache.pekko" %% "pekko-persistence-tck" % pekkoVersion % Test,
+    "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
+    "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test,
     logback % Test)
 }

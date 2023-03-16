@@ -1,12 +1,8 @@
 import com.typesafe.sbt.packager.docker._
 
-ThisBuild / resolvers ++= {
-  if (System.getProperty("override.akka.version") != null)
-    Seq("Akka Snapshots".at("https://oss.sonatype.org/content/repositories/snapshots/"))
-  else Seq.empty
-}
-
 ThisBuild / apacheSonatypeProjectProfile := "pekko"
+ThisBuild / resolvers += Resolver.jcenterRepo
+ThisBuild / resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
 
 // make version compatible with docker for publishing example project
 ThisBuild / dynverSeparator := "-"
@@ -108,14 +104,14 @@ lazy val docs = project
     Compile / paradoxProperties ++= Map(
       "project.url" -> "https://doc.akka.io/docs/akka-persistence-cassandra/current/",
       "canonical.base_url" -> "https://doc.akka.io/docs/akka-persistence-cassandra/current",
-      "akka.version" -> Dependencies.akkaVersion,
+      "akka.version" -> Dependencies.pekkoVersion,
       // Akka
-      "extref.akka.base_url" -> s"https://doc.akka.io/docs/akka/${Dependencies.akkaVersionInDocs}/%s",
-      "scaladoc.akka.base_url" -> s"https://doc.akka.io/api/akka/${Dependencies.akkaVersionInDocs}/",
-      "javadoc.akka.base_url" -> s"https://doc.akka.io/japi/akka/${Dependencies.akkaVersionInDocs}/",
+      "extref.akka.base_url" -> s"https://doc.akka.io/docs/akka/${Dependencies.pekkoVersionInDocs}/%s",
+      "scaladoc.akka.base_url" -> s"https://doc.akka.io/api/akka/${Dependencies.pekkoVersionInDocs}/",
+      "javadoc.akka.base_url" -> s"https://doc.akka.io/japi/akka/${Dependencies.pekkoVersionInDocs}/",
       // Alpakka
-      "extref.alpakka.base_url" -> s"https://doc.akka.io/docs/alpakka/${Dependencies.alpakkaVersionInDocs}/%s",
-      "scaladoc.akka.stream.alpakka.base_url" -> s"https://doc.akka.io/api/alpakka/${Dependencies.alpakkaVersionInDocs}/",
+      "extref.alpakka.base_url" -> s"https://doc.akka.io/docs/alpakka/${Dependencies.pekkoConnectorsVersionInDocs}/%s",
+      "scaladoc.akka.stream.alpakka.base_url" -> s"https://doc.akka.io/api/alpakka/${Dependencies.pekkoConnectorsVersionInDocs}/",
       "javadoc.akka.stream.alpakka.base_url" -> "",
       // APC 0.x
       "extref.apc-0.x.base_url" -> s"https://doc.akka.io/docs/akka-persistence-cassandra/0.103/%s",
