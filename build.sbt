@@ -15,7 +15,7 @@ lazy val root = project
   .settings(name := "pekko-persistence-cassandra-root", publish / skip := true)
 
 lazy val dumpSchema = taskKey[Unit]("Dumps cassandra schema for docs")
-dumpSchema := (core / Test / runMain).toTask(" akka.persistence.cassandra.PrintCreateStatements").value
+dumpSchema := (core / Test / runMain).toTask(" org.apache.pekko.persistence.cassandra.PrintCreateStatements").value
 
 lazy val core = project
   .in(file("core"))

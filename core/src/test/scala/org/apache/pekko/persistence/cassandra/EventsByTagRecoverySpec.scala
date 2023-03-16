@@ -1,0 +1,227 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * license agreements; and to You under the Apache License, version 2.0:
+ *
+ *   https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * This file is part of the Apache Pekko project, derived from Akka.
+ */
+
+/*
+ * Copyright (C) 2016-2020 Lightbend Inc. <https://www.lightbend.com>
+ */
+
+package org.apache.pekko.persistence.cassandra
+
+import org.apache.pekko.actor.{ ActorSystem, PoisonPill }
+import org.apache.pekko.persistence.cassandra.TestTaggingActor.{ Ack, DoASnapshotPlease, SnapShotAck }
+import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import org.apache.pekko.persistence.query.{ EventEnvelope, NoOffset, PersistenceQuery }
+import org.apache.pekko.stream.testkit.scaladsl.TestSink
+import org.apache.pekko.testkit.TestProbe
+import com.typesafe.config.ConfigFactory
+
+import scala.concurrent.duration._
+
+object EventsByTagRecoverySpec {
+  val keyspaceName = "EventsByTagRecoverySpec"
+  val config = ConfigFactory.parseString(s"""
+       akka {
+         actor.debug.unhandled = on
+       }
+       pekko.persistence.cassandra {
+         journal.keyspace = $keyspaceName
+         log-queries = off
+         events-by-tag {
+            max-message-batch-size = 2
+            bucket-size = "Day"
+         }
+         snapshot.keyspace=$keyspaceName
+       }
+       
+       akka.actor.serialize-messages=off
+    """).withFallback(CassandraLifecycle.config)
+}
+
+class EventsByTagRecoverySpec extends CassandraSpec(EventsByTagRecoverySpec.config) {
+
+  val waitTime = 100.milliseconds
+
+  "Events by tag recovery" must {
+
+    "continue tag sequence nrs" in {
+      val queryJournal = PersistenceQuery(system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
+      val systemTwo = ActorSystem("s2", system.settings.config)
+
+      try {
+        val p1 = systemTwo.actorOf(TestTaggingActor.props("p1", Set("blue")))
+        (1 to 4).foreach { i =>
+          p1 ! s"e-$i"
+          expectMsg(Ack)
+        }
+        p1 ! PoisonPill
+        system.log.info("Starting p1 on other actor system")
+        val p1take2 = system.actorOf(TestTaggingActor.props("p1", Set("blue")))
+        (5 to 8).foreach { i =>
+          p1take2 ! s"e-$i"
+          expectMsg(Ack)
+        }
+        p1take2 ! PoisonPill
+
+        val greenTags = queryJournal.eventsByTag(tag = "blue", offset = NoOffset)
+        val probe = greenTags.runWith(TestSink.probe[Any](system))
+        probe.request(9)
+        (1 to 8).foreach { i =>
+          val event = s"e-$i"
+          system.log.debug("Expecting event {}", event)
+          probe.expectNextPF { case EventEnvelope(_, "p1", `i`, `event`) => }
+        }
+        probe.expectNoMessage(waitTime)
+
+        // Now go back to the original actor system to ensure that previous tag writers don't use a cached value
+        // for tag pid sequence nrs
+        val p1take3 = systemTwo.actorOf(TestTaggingActor.props("p1", Set("blue")))
+        (9 to 12).foreach { i =>
+          p1take3 ! s"e-$i"
+          expectMsg(Ack)
+        }
+
+        val greenTagsTake2 = queryJournal.eventsByTag(tag = "blue", offset = NoOffset)
+        val probeTake2 = greenTagsTake2.runWith(TestSink.probe[Any](system))
+        probeTake2.request(13)
+        (1 to 12).foreach { i =>
+          val event = s"e-$i"
+          system.log.debug("Expecting event {}", event)
+          probeTake2.expectNextPF { case EventEnvelope(_, "p1", `i`, `event`) => }
+        }
+        probeTake2.expectNoMessage(waitTime)
+        probeTake2.cancel()
+      } finally {
+        systemTwo.terminate()
+      }
+    }
+
+    "recover tag if missing from views table" in {
+      val systemTwo = ActorSystem("s2", system.settings.config)
+      try {
+        val p2 = systemTwo.actorOf(TestTaggingActor.props("p2", Set("red", "orange")))
+        (1 to 4).foreach { i =>
+          p2 ! s"e-$i"
+          expectMsg(Ack)
+        }
+
+        Thread.sleep(500)
+        systemTwo.terminate().futureValue
+        cluster.execute(s"truncate ${journalName}.tag_views")
+        cluster.execute(s"truncate ${journalName}.tag_write_progress")
+
+        val tProbe = TestProbe()(system)
+        val p2take2 = system.actorOf(TestTaggingActor.props("p2", Set("red", "orange")))
+        (5 to 8).foreach { i =>
+          p2take2.tell(s"e-$i", tProbe.ref)
+          tProbe.expectMsg(Ack)
+        }
+
+        val queryJournal =
+          PersistenceQuery(system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
+        val greenTags = queryJournal.eventsByTag(tag = "red", offset = NoOffset)
+        val probe = greenTags.runWith(TestSink.probe[Any](system))
+        probe.request(9)
+        (1 to 8).foreach { i =>
+          val event = s"e-$i"
+          system.log.debug("Expecting event {}", event)
+          probe.expectNextPF { case EventEnvelope(_, "p2", `i`, `event`) => }
+        }
+        probe.expectNoMessage(waitTime)
+        probe.cancel()
+      } finally {
+        systemTwo.terminate().futureValue
+      }
+    }
+
+    "recover tags from before a snapshot" in {
+      val systemTwo = ActorSystem("s2", system.settings.config)
+      try {
+        val p3 = systemTwo.actorOf(TestTaggingActor.props("p3", Set("red", "orange")))
+        (1 to 4).foreach { i =>
+          p3 ! s"e-$i"
+          expectMsg(Ack)
+        }
+        p3 ! DoASnapshotPlease
+        expectMsg(SnapShotAck)
+        (5 to 8).foreach { i =>
+          p3 ! s"e-$i"
+          expectMsg(Ack)
+        }
+
+        // Longer than the flush interval of 250ms
+        Thread.sleep(500)
+
+        systemTwo.terminate().futureValue
+        cluster.execute(s"truncate ${journalName}.tag_views")
+        cluster.execute(s"truncate ${journalName}.tag_write_progress")
+
+        val tProbe = TestProbe()(system)
+        val p3take2 = system.actorOf(TestTaggingActor.props("p3", Set("red", "orange")))
+        (9 to 12).foreach { i =>
+          p3take2.tell(s"e-$i", tProbe.ref)
+          tProbe.expectMsg(Ack)
+        }
+
+        val queryJournal =
+          PersistenceQuery(system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
+        val greenTags = queryJournal.eventsByTag(tag = "red", offset = NoOffset)
+        val probe = greenTags.runWith(TestSink.probe[Any](system))
+        probe.request(13)
+        (1 to 12).foreach { i =>
+          val event = s"e-$i"
+          system.log.info("Expecting event {}", event)
+          probe.expectNextPF { case EventEnvelope(_, "p3", `i`, `event`) => }
+        }
+        probe.expectNoMessage(waitTime)
+        probe.cancel()
+      } finally {
+        systemTwo.terminate().futureValue
+      }
+    }
+
+    "recover if snapshot is for the latest sequence nr" in {
+      val p = system.actorOf(TestTaggingActor.props("p4", Set("blue")))
+      (1 to 4).foreach { i =>
+        p ! s"e-$i"
+        expectMsg(Ack)
+      }
+      p ! DoASnapshotPlease
+      expectMsg(SnapShotAck)
+      watch(p)
+      p ! PoisonPill
+      expectTerminated(p)
+
+      // Longer than the flush interval of 250ms
+      Thread.sleep(500)
+
+      val systemTwo = ActorSystem("s2", system.settings.config)
+      val p2 = systemTwo.actorOf(TestTaggingActor.props("p4", Set("blue")))
+      p2 ! "e-5"
+      expectMsg(Ack)
+
+      try {
+        val queryJournal =
+          PersistenceQuery(systemTwo).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
+        val blueTags = queryJournal.eventsByTag(tag = "blue", offset = NoOffset)
+        val probe = blueTags.runWith(TestSink.probe[Any](systemTwo))
+        probe.request(6)
+        (1 to 5).foreach { i =>
+          val event = s"e-$i"
+          system.log.info("Expecting event {}", event)
+          probe.expectNextPF { case EventEnvelope(_, "p4", `i`, `event`) => }
+        }
+        probe.expectNoMessage(waitTime)
+        probe.cancel()
+
+      } finally {
+        systemTwo.terminate()
+      }
+    }
+  }
+}
