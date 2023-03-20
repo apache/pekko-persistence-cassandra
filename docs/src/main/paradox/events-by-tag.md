@@ -140,7 +140,7 @@ This adds a delay each time a new persistence id is found by an offset query whe
 
 ## Events by tag reconciliation
 
-In the event that the `tag_views` table gets corrupted there is a @apidoc[akka.persistence.cassandra.reconciler.Reconciliation]
+In the event that the `tag_views` table gets corrupted there is a @apidoc[org.apache.pekko.persistence.cassandra.reconciler.Reconciliation]
 tool that can help fix it. It can only be run while the application is offline but per persistence id operations can
 be used if it is known that the persistence id is not running.
 
@@ -207,7 +207,7 @@ otherwise they'll be deleted before being read.
 
 @@@
 
-The @apidoc[akka.persistence.cassandra.cleanup.Cleanup] tool can also be used for deleting from the `tag_views`
+The @apidoc[org.apache.pekko.persistence.cassandra.cleanup.Cleanup] tool can also be used for deleting from the `tag_views`
 table. See @ref[Database Cleanup](./cleanup.md) for more details.
 
 ## How it works

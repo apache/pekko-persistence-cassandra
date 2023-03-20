@@ -124,14 +124,14 @@ lazy val docs = project
       "javadoc.base_url" -> "https://docs.oracle.com/javase/8/docs/api/",
       // Scala
       "scaladoc.scala.base_url" -> s"https://www.scala-lang.org/api/${scalaBinaryVersion.value}.x/",
-      "scaladoc.akka.persistence.cassandra.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
-      "javadoc.akka.persistence.cassandra.base_url" -> ""), // no Javadoc is published
+      "scaladoc.org.apache.pekko.persistence.cassandra.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
+      "javadoc.org.apache.pekko.persistence.cassandra.base_url" -> ""), // no Javadoc is published
     paradoxGroups := Map("Language" -> Seq("Java", "Scala")),
-    ApidocPlugin.autoImport.apidocRootPackage := "akka",
+    ApidocPlugin.autoImport.apidocRootPackage := "org.apache.pekko",
     resolvers += Resolver.jcenterRepo,
     publishRsyncArtifacts += makeSite.value -> "www/",
     publishRsyncHost := "akkarepo@gustav.akka.io",
-    apidocRootPackage := "akka")
+    apidocRootPackage := "org.apache.pekko")
 
 TaskKey[Unit]("verifyCodeFmt") := {
   scalafmtCheckAll.all(ScopeFilter(inAnyProject)).result.value.toEither.left.foreach { _ =>

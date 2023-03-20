@@ -70,6 +70,6 @@ The snapshot is stored in a single row so the maximum size of a serialized snaps
 
 ## Delete all snapshots
 
-The @apidoc[akka.persistence.cassandra.cleanup.Cleanup] tool can be used for deleting all events and/or snapshots
+The @apidoc[org.apache.pekko.persistence.cassandra.cleanup.Cleanup] tool can be used for deleting all events and/or snapshots
 given list of `persistenceIds` without using persistent actors. It's important that the actors with corresponding
 `persistenceId` are not running at the same time as using the tool. See @ref[Database Cleanup](./cleanup.md) for more details.
