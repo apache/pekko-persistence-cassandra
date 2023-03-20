@@ -23,9 +23,7 @@ lazy val core = project
   .dependsOn(cassandraLauncher % Test)
   .settings(
     name := "pekko-persistence-cassandra",
-    libraryDependencies ++= Dependencies.pekkoPersistenceCassandraDependencies,
-    Compile / packageBin / packageOptions += Package.ManifestAttributes(
-      "Automatic-Module-Name" -> "akka.persistence.cassandra"))
+    libraryDependencies ++= Dependencies.pekkoPersistenceCassandraDependencies)
   .configs(MultiJvm)
 
 lazy val cassandraLauncher = project
@@ -90,7 +88,7 @@ lazy val dseTest = project
   .settings(libraryDependencies ++= Dependencies.dseTestDependencies)
 
 lazy val docs = project
-  .enablePlugins(Common, AkkaParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin, PublishRsyncPlugin)
+  .enablePlugins(Common, PekkoParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin, PublishRsyncPlugin)
   .dependsOn(core)
   .settings(
     name := "Apache Pekko Persistence Cassandra",
