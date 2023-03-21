@@ -1,12 +1,8 @@
 import com.typesafe.sbt.packager.docker._
 
-ThisBuild / resolvers ++= {
-  if (System.getProperty("override.akka.version") != null)
-    Seq("Akka Snapshots".at("https://oss.sonatype.org/content/repositories/snapshots/"))
-  else Seq.empty
-}
-
 ThisBuild / apacheSonatypeProjectProfile := "pekko"
+ThisBuild / resolvers += Resolver.jcenterRepo
+ThisBuild / resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
 
 // make version compatible with docker for publishing example project
 ThisBuild / dynverSeparator := "-"
@@ -19,7 +15,7 @@ lazy val root = project
   .settings(name := "pekko-persistence-cassandra-root", publish / skip := true)
 
 lazy val dumpSchema = taskKey[Unit]("Dumps cassandra schema for docs")
-dumpSchema := (core / Test / runMain).toTask(" akka.persistence.cassandra.PrintCreateStatements").value
+dumpSchema := (core / Test / runMain).toTask(" org.apache.pekko.persistence.cassandra.PrintCreateStatements").value
 
 lazy val core = project
   .in(file("core"))
@@ -27,9 +23,9 @@ lazy val core = project
   .dependsOn(cassandraLauncher % Test)
   .settings(
     name := "pekko-persistence-cassandra",
-    libraryDependencies ++= Dependencies.akkaPersistenceCassandraDependencies,
+    libraryDependencies ++= Dependencies.pekkoPersistenceCassandraDependencies,
     Compile / packageBin / packageOptions += Package.ManifestAttributes(
-      "Automatic-Module-Name" -> "akka.persistence.cassandra"))
+      "Automatic-Module-Name" -> "pekko.persistence.cassandra"))
   .configs(MultiJvm)
 
 lazy val cassandraLauncher = project
@@ -94,7 +90,7 @@ lazy val dseTest = project
   .settings(libraryDependencies ++= Dependencies.dseTestDependencies)
 
 lazy val docs = project
-  .enablePlugins(Common, AkkaParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin, PublishRsyncPlugin)
+  .enablePlugins(Common, PekkoParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin, PublishRsyncPlugin)
   .dependsOn(core)
   .settings(
     name := "Apache Pekko Persistence Cassandra",
@@ -108,14 +104,14 @@ lazy val docs = project
     Compile / paradoxProperties ++= Map(
       "project.url" -> "https://doc.akka.io/docs/akka-persistence-cassandra/current/",
       "canonical.base_url" -> "https://doc.akka.io/docs/akka-persistence-cassandra/current",
-      "akka.version" -> Dependencies.akkaVersion,
+      "akka.version" -> Dependencies.pekkoVersion,
       // Akka
-      "extref.akka.base_url" -> s"https://doc.akka.io/docs/akka/${Dependencies.akkaVersionInDocs}/%s",
-      "scaladoc.akka.base_url" -> s"https://doc.akka.io/api/akka/${Dependencies.akkaVersionInDocs}/",
-      "javadoc.akka.base_url" -> s"https://doc.akka.io/japi/akka/${Dependencies.akkaVersionInDocs}/",
+      "extref.akka.base_url" -> s"https://doc.akka.io/docs/akka/${Dependencies.pekkoVersionInDocs}/%s",
+      "scaladoc.akka.base_url" -> s"https://doc.akka.io/api/akka/${Dependencies.pekkoVersionInDocs}/",
+      "javadoc.akka.base_url" -> s"https://doc.akka.io/japi/akka/${Dependencies.pekkoVersionInDocs}/",
       // Alpakka
-      "extref.alpakka.base_url" -> s"https://doc.akka.io/docs/alpakka/${Dependencies.alpakkaVersionInDocs}/%s",
-      "scaladoc.akka.stream.alpakka.base_url" -> s"https://doc.akka.io/api/alpakka/${Dependencies.alpakkaVersionInDocs}/",
+      "extref.alpakka.base_url" -> s"https://doc.akka.io/docs/alpakka/${Dependencies.pekkoConnectorsVersionInDocs}/%s",
+      "scaladoc.akka.stream.alpakka.base_url" -> s"https://doc.akka.io/api/alpakka/${Dependencies.pekkoConnectorsVersionInDocs}/",
       "javadoc.akka.stream.alpakka.base_url" -> "",
       // APC 0.x
       "extref.apc-0.x.base_url" -> s"https://doc.akka.io/docs/akka-persistence-cassandra/0.103/%s",
@@ -128,14 +124,14 @@ lazy val docs = project
       "javadoc.base_url" -> "https://docs.oracle.com/javase/8/docs/api/",
       // Scala
       "scaladoc.scala.base_url" -> s"https://www.scala-lang.org/api/${scalaBinaryVersion.value}.x/",
-      "scaladoc.akka.persistence.cassandra.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
-      "javadoc.akka.persistence.cassandra.base_url" -> ""), // no Javadoc is published
+      "scaladoc.org.apache.pekko.persistence.cassandra.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
+      "javadoc.org.apache.pekko.persistence.cassandra.base_url" -> ""), // no Javadoc is published
     paradoxGroups := Map("Language" -> Seq("Java", "Scala")),
-    ApidocPlugin.autoImport.apidocRootPackage := "akka",
+    ApidocPlugin.autoImport.apidocRootPackage := "org.apache.pekko",
     resolvers += Resolver.jcenterRepo,
     publishRsyncArtifacts += makeSite.value -> "www/",
     publishRsyncHost := "akkarepo@gustav.akka.io",
-    apidocRootPackage := "akka")
+    apidocRootPackage := "org.apache.pekko")
 
 TaskKey[Unit]("verifyCodeFmt") := {
   scalafmtCheckAll.all(ScopeFilter(inAnyProject)).result.value.toEither.left.foreach { _ =>

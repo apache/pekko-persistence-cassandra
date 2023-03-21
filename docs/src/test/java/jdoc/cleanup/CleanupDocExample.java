@@ -1,10 +1,10 @@
 package jdoc.cleanup;
 
-import akka.Done;
-import akka.actor.ActorSystem;
-import akka.persistence.cassandra.cleanup.Cleanup;
-import akka.persistence.cassandra.query.javadsl.CassandraReadJournal;
-import akka.persistence.query.PersistenceQuery;
+import org.apache.pekko.Done;
+import org.apache.pekko.actor.ActorSystem;
+import org.apache.pekko.persistence.cassandra.cleanup.Cleanup;
+import org.apache.pekko.persistence.cassandra.query.javadsl.CassandraReadJournal;
+import org.apache.pekko.persistence.query.PersistenceQuery;
 import scala.compat.java8.FutureConverters;
 
 import java.time.ZonedDateTime;

@@ -1,0 +1,58 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * license agreements; and to You under the Apache License, version 2.0:
+ *
+ *   https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * This file is part of the Apache Pekko project, derived from Akka.
+ */
+
+/*
+ * Copyright (C) 2016-2020 Lightbend Inc. <https://www.lightbend.com>
+ */
+
+package org.apache.pekko.persistence.cassandra.compaction
+
+import java.util.concurrent.TimeUnit
+
+import com.typesafe.config.Config
+
+class TimeWindowCompactionStrategy(config: Config)
+    extends BaseCompactionStrategy(
+      config,
+      TimeWindowCompactionStrategy.ClassName,
+      TimeWindowCompactionStrategy.propertyKeys) {
+  import TimeWindowCompactionStrategy._
+
+  val compactionWindowUnit: TimeUnit =
+    if (config.hasPath("compaction_window_unit"))
+      TimeUnit.valueOf(config.getString("compaction_window_unit"))
+    else TimeUnit.DAYS
+  val compactionWindowSize: Int =
+    if (config.hasPath("compaction_window_size"))
+      config.getInt("compaction_window_size")
+    else 1
+
+  require(
+    compactionWindowSize >= 1,
+    s"compaction_window_size must be larger than or equal to 1, but was $compactionWindowSize")
+
+  override def asCQL: String =
+    s"""{
+       |'class' : '$ClassName',
+       |${super.asCQL},
+       |'compaction_window_size' : $compactionWindowSize,
+       |'compaction_window_unit' : '${compactionWindowUnit.toString.toUpperCase}'
+       |}
+     """.stripMargin.trim
+}
+
+object TimeWindowCompactionStrategy extends CassandraCompactionStrategyConfig[TimeWindowCompactionStrategy] {
+  override val ClassName: String = "TimeWindowCompactionStrategy"
+
+  override def propertyKeys: List[String] =
+    (BaseCompactionStrategy.propertyKeys ++ List("compaction_window_size", "compaction_window_unit")).sorted
+
+  override def fromConfig(config: Config): TimeWindowCompactionStrategy =
+    new TimeWindowCompactionStrategy(config)
+}

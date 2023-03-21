@@ -1,12 +1,12 @@
 package doc.cleanup
 
-import java.time.{ LocalDate, ZonedDateTime }
-import java.time.temporal.ChronoUnit
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.persistence.cassandra.cleanup.Cleanup
+import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import org.apache.pekko.persistence.query.PersistenceQuery
 
-import akka.actor.ActorSystem
-import akka.persistence.cassandra.cleanup.Cleanup
-import akka.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import akka.persistence.query.PersistenceQuery
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 object CleanupDocExample {
 

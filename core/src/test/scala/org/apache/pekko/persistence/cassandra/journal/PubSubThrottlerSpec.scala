@@ -1,0 +1,63 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * license agreements; and to You under the Apache License, version 2.0:
+ *
+ *   https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * This file is part of the Apache Pekko project, derived from Akka.
+ */
+
+/*
+ * Copyright (C) 2016-2020 Lightbend Inc. <https://www.lightbend.com>
+ */
+
+package org.apache.pekko.persistence.cassandra.journal
+
+import scala.concurrent.duration.DurationInt
+
+import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatest.matchers.should.Matchers
+
+import org.apache.pekko.actor.{ ActorSystem, Props }
+import org.apache.pekko.testkit.{ TestKit, TestProbe }
+
+class PubSubThrottlerSpec
+    extends TestKit(ActorSystem("CassandraConfigCheckerSpec"))
+    with AnyWordSpecLike
+    with Matchers {
+  "PubSubThrottler" should {
+    "eat up duplicate messages that arrive within the same [interval] window" in {
+      val delegate = TestProbe()
+      val throttler = system.actorOf(Props(new PubSubThrottler(delegate.ref, 5.seconds)))
+
+      throttler ! "hello"
+      throttler ! "hello"
+      throttler ! "hello"
+      delegate.within(2.seconds) {
+        delegate.expectMsg("hello")
+      }
+      // Only first "hello" makes it through during the first interval.
+      delegate.expectNoMessage(2.seconds)
+
+      // Eventually, the interval will roll over and forward ONE further hello.
+      delegate.expectMsg(10.seconds, "hello")
+      delegate.expectNoMessage(2.seconds)
+
+      throttler ! "hello"
+      delegate.within(2.seconds) {
+        delegate.expectMsg("hello")
+      }
+    }
+
+    "allow differing messages to pass through within the same [interval] window" in {
+      val delegate = TestProbe()
+      val throttler = system.actorOf(Props(new PubSubThrottler(delegate.ref, 5.seconds)))
+      throttler ! "hello"
+      throttler ! "world"
+      delegate.within(2.seconds) {
+        delegate.expectMsg("hello")
+        delegate.expectMsg("world")
+      }
+    }
+  }
+}
