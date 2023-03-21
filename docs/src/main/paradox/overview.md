@@ -14,17 +14,17 @@ This plugin requires **Akka $akka.version$** or later. See [Akka's Binary Compat
   group=com.typesafe.akka
   artifact=akka-persistence-cassandra_$scala.binary.version$
   version=$project.version$
-  symbol=pekkoVersion
+  symbol=PekkoVersion
   value=$akka.version$
   group1=com.typesafe.akka
   artifact1=akka-persistence_$scala.binary.version$
-  version1=pekkoVersion
+  version1=PekkoVersion
   group2=com.typesafe.akka
   artifact2=akka-persistence-query_$scala.binary.version$
-  version2=pekkoVersion
+  version2=PekkoVersion
   group3=com.typesafe.akka
   artifact3=akka-cluster-tools_$scala.binary.version$
-  version3=pekkoVersion
+  version3=PekkoVersion
 }
 
 Note that it is important that all `akka-*` dependencies are in the same version, so it is recommended to depend on them explicitly to avoid problems with transient dependencies causing an unlucky mix of versions.

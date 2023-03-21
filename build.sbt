@@ -23,7 +23,9 @@ lazy val core = project
   .dependsOn(cassandraLauncher % Test)
   .settings(
     name := "pekko-persistence-cassandra",
-    libraryDependencies ++= Dependencies.pekkoPersistenceCassandraDependencies)
+    libraryDependencies ++= Dependencies.pekkoPersistenceCassandraDependencies,
+    Compile / packageBin / packageOptions += Package.ManifestAttributes(
+      "Automatic-Module-Name" -> "pekko.persistence.cassandra"))
   .configs(MultiJvm)
 
 lazy val cassandraLauncher = project

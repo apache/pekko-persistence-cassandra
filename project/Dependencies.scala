@@ -18,13 +18,13 @@ object Dependencies {
   val scalaVersions = Seq(scala212Version, scala213Version)
 
   val pekkoVersion = System.getProperty("override.pekko.version", "0.0.0+26599-83545a33-SNAPSHOT")
-  val pekkoVersionInDocs = pekkoVersion.take(3)
+  val pekkoVersionInDocs = "current"
   val cassandraVersionInDocs = "4.0"
   // Should be sync with the version of the driver in Pekko Connectors Cassandra
   val driverVersionInDocs = "4.6"
 
   val pekkoConnectorsVersion = "0.0.0+54-ee23f1bc-SNAPSHOT"
-  val pekkoConnectorsVersionInDocs = pekkoConnectorsVersion.take(3)
+  val pekkoConnectorsVersionInDocs = "current"
   // for example
   val pekkoManagementVersion = "0.0.0+707-9cd493ec-SNAPSHOT"
 
