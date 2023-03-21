@@ -13,36 +13,31 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
-import java.util.UUID
-import java.util.concurrent.ThreadLocalRandom
-
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.persistence.cassandra._
-import org.apache.pekko.persistence.cassandra.journal.TimeBucket
-import org.apache.pekko.persistence.cassandra.query.EventsByTagStage._
-import org.apache.pekko.stream.stage.{ GraphStage, _ }
-import org.apache.pekko.stream.{ Attributes, Outlet, SourceShape }
-import org.apache.pekko.util.PrettyDuration._
-
-import scala.annotation.tailrec
-import scala.concurrent.duration.Duration
-import scala.concurrent.duration._
-import scala.concurrent.{ ExecutionContext, ExecutionContextExecutor, Future }
-import scala.util.{ Failure, Success, Try }
-import java.lang.{ Long => JLong }
-
+import com.datastax.oss.driver.api.core.CqlSession
+import com.datastax.oss.driver.api.core.cql.{ AsyncResultSet, Row }
+import com.datastax.oss.driver.api.core.uuid.Uuids
 import org.apache.pekko.actor.Scheduler
+import org.apache.pekko.annotation.InternalApi
 import org.apache.pekko.cluster.pubsub.{ DistributedPubSub, DistributedPubSubMediator }
 import org.apache.pekko.persistence.cassandra.EventsByTagSettings.RetrySettings
+import org.apache.pekko.persistence.cassandra._
 import org.apache.pekko.persistence.cassandra.journal.CassandraJournal._
+import org.apache.pekko.persistence.cassandra.journal.TimeBucket
+import org.apache.pekko.persistence.cassandra.query.EventsByTagStage._
 import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.EventByTagStatements
+import org.apache.pekko.stream.stage._
+import org.apache.pekko.stream.{ Attributes, Outlet, SourceShape }
+import org.apache.pekko.util.PrettyDuration._
 import org.apache.pekko.util.UUIDComparator
-import com.datastax.oss.driver.api.core.CqlSession
-import com.datastax.oss.driver.api.core.cql.AsyncResultSet
-import com.datastax.oss.driver.api.core.cql.Row
-import com.datastax.oss.driver.api.core.uuid.Uuids
 
+import java.lang.{ Long => JLong }
+import java.util.UUID
+import java.util.concurrent.ThreadLocalRandom
+import scala.annotation.tailrec
 import scala.compat.java8.FutureConverters._
+import scala.concurrent.duration.{ Duration, _ }
+import scala.concurrent.{ ExecutionContext, ExecutionContextExecutor, Future }
+import scala.util.{ Failure, Success, Try }
 
 /**
  * INTERNAL API
@@ -227,8 +222,7 @@ import scala.compat.java8.FutureConverters._
     scanner: TagViewSequenceNumberScanner)
     extends GraphStage[SourceShape[UUIDRow]] {
 
-  import settings.querySettings
-  import settings.eventsByTagSettings
+  import settings.{ eventsByTagSettings, querySettings }
 
   private val out: Outlet[UUIDRow] = Outlet("event.out")
   private val verboseDebug = eventsByTagSettings.verboseDebug
@@ -449,12 +443,10 @@ import scala.compat.java8.FutureConverters._
       }
 
       override protected def onTimer(timerKey: Any): Unit = timerKey match {
-        case _: QueryPoll =>
-          continue()
-        case PersistenceIdsCleanup =>
-          cleanup()
-        case ScanForDelayedEvents =>
-          scanForDelayedEvents()
+        case _: QueryPoll          => continue()
+        case PersistenceIdsCleanup => cleanup()
+        case ScanForDelayedEvents  => scanForDelayedEvents()
+        case o                     => throw new IllegalStateException("Unexpected timerKey: " + o)
       }
 
       override def onPull(): Unit = {

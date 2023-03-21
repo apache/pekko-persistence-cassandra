@@ -13,39 +13,30 @@
 
 package org.apache.pekko.persistence.cassandra.snapshot
 
-import java.lang.{ Long => JLong }
-import java.nio.ByteBuffer
-import java.util.NoSuchElementException
-
-import org.apache.pekko.NotUsed
-
-import scala.collection.immutable
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
-import scala.util.Failure
-import scala.util.Success
-import scala.util.control.NonFatal
+import com.datastax.oss.driver.api.core.cql._
+import com.datastax.oss.protocol.internal.util.Bytes
+import com.typesafe.config.Config
+import org.apache.pekko.{ Done, NotUsed }
 import org.apache.pekko.actor._
+import org.apache.pekko.annotation.InternalApi
+import org.apache.pekko.dispatch.ExecutionContexts
+import org.apache.pekko.event.Logging
 import org.apache.pekko.pattern.pipe
 import org.apache.pekko.persistence._
 import org.apache.pekko.persistence.cassandra._
 import org.apache.pekko.persistence.serialization.Snapshot
 import org.apache.pekko.persistence.snapshot.SnapshotStore
-import org.apache.pekko.serialization.AsyncSerializer
-import org.apache.pekko.serialization.Serialization
-import org.apache.pekko.serialization.SerializationExtension
-import org.apache.pekko.serialization.Serializers
-import org.apache.pekko.stream.scaladsl.Sink
-import org.apache.pekko.stream.scaladsl.Source
-import org.apache.pekko.util.{ unused, OptionVal }
-import com.datastax.oss.driver.api.core.cql._
-import com.datastax.oss.protocol.internal.util.Bytes
-import com.typesafe.config.Config
-import org.apache.pekko.Done
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.dispatch.ExecutionContexts
-import org.apache.pekko.event.Logging
+import org.apache.pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtension, Serializers }
 import org.apache.pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
+import org.apache.pekko.stream.scaladsl.{ Sink, Source }
+import org.apache.pekko.util.{ unused, OptionVal }
+
+import java.lang.{ Long => JLong }
+import java.nio.ByteBuffer
+import scala.collection.immutable
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Success }
+import scala.util.control.NonFatal
 
 /**
  * INTERNAL API

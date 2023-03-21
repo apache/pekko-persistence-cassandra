@@ -9,21 +9,19 @@
 
 package org.apache.pekko.cluster.persistence.cassandra
 
-import java.io.File
-import java.time.{ LocalDateTime, ZoneOffset }
-
-import org.apache.pekko.persistence.cassandra.CassandraLifecycle
+import com.typesafe.config.ConfigFactory
 import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import org.apache.pekko.persistence.cassandra.query._
+import org.apache.pekko.persistence.cassandra.testkit.CassandraLauncher
 import org.apache.pekko.persistence.journal.Tagged
 import org.apache.pekko.persistence.query.{ NoOffset, PersistenceQuery }
 import org.apache.pekko.remote.testkit.{ MultiNodeConfig, MultiNodeSpec }
 import org.apache.pekko.stream.ActorMaterializer
 import org.apache.pekko.stream.testkit.TestSubscriber
 import org.apache.pekko.stream.testkit.scaladsl.TestSink
-import com.typesafe.config.ConfigFactory
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
+
+import java.io.File
 
 object EventsByTagMultiJvmSpec extends MultiNodeConfig {
   // No way to start and distribute the port so hard coding

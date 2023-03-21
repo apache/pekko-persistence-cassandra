@@ -13,24 +13,21 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
-import java.lang.{ Long => JLong }
-import java.util.concurrent.ThreadLocalRandom
-
+import com.datastax.oss.driver.api.core.CqlSession
+import com.datastax.oss.driver.api.core.cql._
 import org.apache.pekko.Done
 import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.stream.{ Attributes, Outlet, SourceShape }
-import org.apache.pekko.stream.stage._
-import com.datastax.oss.driver.api.core.cql._
-import scala.annotation.tailrec
-import scala.concurrent.{ ExecutionContext, Future, Promise }
-import scala.concurrent.duration.{ FiniteDuration, _ }
-import scala.util.{ Failure, Success, Try }
-
-import com.datastax.oss.driver.api.core.CqlSession
-import scala.annotation.nowarn
-import scala.compat.java8.FutureConverters._
-
 import org.apache.pekko.persistence.cassandra.PluginSettings
+import org.apache.pekko.stream.stage._
+import org.apache.pekko.stream.{ Attributes, Outlet, SourceShape }
+
+import java.lang.{ Long => JLong }
+import java.util.concurrent.ThreadLocalRandom
+import scala.annotation.{ nowarn, tailrec }
+import scala.compat.java8.FutureConverters._
+import scala.concurrent.duration.{ FiniteDuration, _ }
+import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.util.{ Failure, Success, Try }
 
 /**
  * INTERNAL API
@@ -123,8 +120,7 @@ import org.apache.pekko.persistence.cassandra.PluginSettings
     extends GraphStageWithMaterializedValue[SourceShape[Row], EventsByPersistenceIdStage.Control] {
 
   import EventsByPersistenceIdStage._
-  import settings.querySettings
-  import settings.journalSettings
+  import settings.{ journalSettings, querySettings }
 
   val out: Outlet[Row] = Outlet("EventsByPersistenceId.out")
   override val shape: SourceShape[Row] = SourceShape(out)
@@ -288,6 +284,7 @@ import org.apache.pekko.persistence.cassandra.PluginSettings
       override protected def onTimer(timerKey: Any): Unit = timerKey match {
         case Continue            => continue()
         case LookForMissingSeqNr => lookForMissingSeqNr()
+        case o                   => throw new IllegalStateException("Unexpected timerKey: " + o)
       }
 
       def continue(): Unit =

@@ -184,7 +184,7 @@ import org.apache.pekko.persistence.query.TimeBasedUUID
 
     def deserializeEvent(): Future[PersistentRepr] = {
       ed.deserializeEvent(row, async).map {
-        case DeserializedEvent(payload, metadata) =>
+        case DeserializedEvent(payload, metadata: OptionVal[Any]) =>
           val repr = PersistentRepr(
             payload,
             sequenceNr = row.getLong("sequence_nr"),
@@ -194,8 +194,8 @@ import org.apache.pekko.persistence.query.TimeBasedUUID
             sender = null,
             writerUuid = row.getString("writer_uuid"))
           metadata match {
-            case OptionVal.None    => repr
-            case OptionVal.Some(m) => repr.withMetadata(m)
+            case OptionVal.None => repr
+            case some           => repr.withMetadata(some.x)
           }
       }
     }
