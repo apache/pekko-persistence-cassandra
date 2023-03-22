@@ -20,8 +20,10 @@ object Dependencies {
   val pekkoVersion = System.getProperty("override.pekko.version", "0.0.0+26630-2c4d0ee0-SNAPSHOT")
   val pekkoVersionInDocs = "current"
   val cassandraVersionInDocs = "4.0"
+
   // Should be sync with the version of the driver in Pekko Connectors Cassandra
-  val driverVersionInDocs = "4.6"
+  val driverVersion = "4.15.0"
+  val driverVersionInDocs = "4.14"
 
   val pekkoConnectorsVersion = "0.0.0+64-20da4165-SNAPSHOT"
   val pekkoConnectorsVersionInDocs = "current"
@@ -50,6 +52,7 @@ object Dependencies {
     "org.apache.pekko" %% "pekko-persistence" % pekkoVersion,
     "org.apache.pekko" %% "pekko-persistence-query" % pekkoVersion,
     "org.apache.pekko" %% "pekko-cluster-tools" % pekkoVersion,
+    "com.datastax.oss" % "java-driver-core" % driverVersion,
     "org.scala-lang.modules" %% "scala-collection-compat" % "2.7.0",
     logback % Test,
     "org.scalatest" %% "scalatest" % "3.2.14" % Test,
