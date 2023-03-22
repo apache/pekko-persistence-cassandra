@@ -14,7 +14,7 @@ jobs:
   test:
     name: Test
     if: github.repository == 'apache/incubator-pekko-persistence-cassandra'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     strategy:
       fail-fast: false
@@ -48,7 +48,7 @@ jobs:
           java-version: ${{ matrix.javaVersion }}
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@v6.4.0
+        uses: coursier/cache-action@v6.4.3
 
       - name: Test against ${{ matrix.container }}
         run: |-
@@ -57,7 +57,7 @@ jobs:
   docs:
     name: ScalaDoc, Documentation with Paradox
     if: github.repository == 'apache/incubator-pekko-persistence-cassandra'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
       JAVA_OPTS: -Xms2G -Xmx2G -Xss2M -XX:ReservedCodeCacheSize=256M -Dfile.encoding=UTF-8
 
@@ -80,7 +80,7 @@ jobs:
           java-version: 11
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@v6.4.0
+        uses: coursier/cache-action@v6.4.3
 
       - name: Create all API docs for artifacts/website and all reference docs
         run: sbt "unidoc; docs/paradox"
