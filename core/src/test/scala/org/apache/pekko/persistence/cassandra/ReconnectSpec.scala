@@ -14,11 +14,12 @@
 package org.apache.pekko.persistence.cassandra
 
 import java.io.File
-import org.apache.pekko.actor.{ ActorSystem, Props }
-import org.apache.pekko.persistence.cassandra.CassandraLifecycle.AwaitPersistenceInit
-import org.apache.pekko.testkit.{ ImplicitSender, SocketUtil, TestKit }
+import org.apache.pekko
+import pekko.actor.{ ActorSystem, Props }
+import pekko.persistence.cassandra.CassandraLifecycle.AwaitPersistenceInit
+import pekko.testkit.{ ImplicitSender, SocketUtil, TestKit }
 import com.typesafe.config.ConfigFactory
-import org.apache.pekko.persistence.cassandra.testkit.CassandraLauncher
+import pekko.persistence.cassandra.testkit.CassandraLauncher
 import org.scalatest.Suite
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers

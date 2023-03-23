@@ -13,9 +13,10 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import org.apache.pekko.persistence.cassandra.Day
-import org.apache.pekko.persistence.cassandra.Hour
-import org.apache.pekko.persistence.cassandra.Minute
+import org.apache.pekko
+import pekko.persistence.cassandra.Day
+import pekko.persistence.cassandra.Hour
+import pekko.persistence.cassandra.Minute
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 

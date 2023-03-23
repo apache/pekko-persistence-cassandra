@@ -16,31 +16,32 @@ package org.apache.pekko.persistence.cassandra
 import java.nio.ByteBuffer
 import java.lang.{ Long => JLong }
 
-import org.apache.pekko.actor.{ ActorSystem, PoisonPill }
-import org.apache.pekko.persistence.cassandra.TestTaggingActor.Ack
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournalStatements
-import org.apache.pekko.persistence.cassandra.query.DirectWriting
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import org.apache.pekko.persistence.query.{ EventEnvelope, NoOffset, PersistenceQuery }
-import org.apache.pekko.persistence.{ PersistentRepr, RecoveryCompleted }
-import org.apache.pekko.serialization.SerializationExtension
-import org.apache.pekko.stream.scaladsl.Source
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
-import org.apache.pekko.testkit.TestProbe
-import org.apache.pekko.{ Done, NotUsed }
+import org.apache.pekko
+import pekko.actor.{ ActorSystem, PoisonPill }
+import pekko.persistence.cassandra.TestTaggingActor.Ack
+import pekko.persistence.cassandra.journal.CassandraJournalStatements
+import pekko.persistence.cassandra.query.DirectWriting
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.query.{ EventEnvelope, NoOffset, PersistenceQuery }
+import pekko.persistence.{ PersistentRepr, RecoveryCompleted }
+import pekko.serialization.SerializationExtension
+import pekko.stream.scaladsl.Source
+import pekko.stream.testkit.scaladsl.TestSink
+import pekko.testkit.TestProbe
+import pekko.{ Done, NotUsed }
 import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfterAll
 import scala.concurrent.duration._
 
-import org.apache.pekko.persistence.cassandra.journal.TimeBucket
-import org.apache.pekko.serialization.Serializers
+import pekko.persistence.cassandra.journal.TimeBucket
+import pekko.serialization.Serializers
 import com.datastax.oss.driver.api.core.cql.SimpleStatement
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import scala.util.control.NonFatal
 
-import org.apache.pekko.persistence.cassandra.reconciler.Reconciliation
-import org.apache.pekko.stream.SystemMaterializer
-import org.apache.pekko.stream.connectors.cassandra.scaladsl.CassandraSessionRegistry
+import pekko.persistence.cassandra.reconciler.Reconciliation
+import pekko.stream.SystemMaterializer
+import pekko.stream.connectors.cassandra.scaladsl.CassandraSessionRegistry
 
 /**
  */

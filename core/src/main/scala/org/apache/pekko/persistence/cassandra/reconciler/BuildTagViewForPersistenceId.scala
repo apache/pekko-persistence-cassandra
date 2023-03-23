@@ -13,24 +13,25 @@
 
 package org.apache.pekko.persistence.cassandra.reconciler
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.persistence.cassandra.PluginSettings
-import org.apache.pekko.Done
-import org.apache.pekko.persistence.cassandra.journal.TagWriter._
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.persistence.cassandra.PluginSettings
+import pekko.Done
+import pekko.persistence.cassandra.journal.TagWriter._
 import scala.concurrent.duration._
 import scala.concurrent.Future
-import org.apache.pekko.stream.scaladsl.Source
-import org.apache.pekko.actor.ExtendedActorSystem
-import org.apache.pekko.persistence.query.PersistenceQuery
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import org.apache.pekko.event.Logging
-import org.apache.pekko.persistence.cassandra.journal.CassandraTagRecovery
-import org.apache.pekko.persistence.cassandra.Extractors
-import org.apache.pekko.util.Timeout
-import org.apache.pekko.stream.OverflowStrategy
-import org.apache.pekko.stream.scaladsl.Sink
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.serialization.SerializationExtension
+import pekko.stream.scaladsl.Source
+import pekko.actor.ExtendedActorSystem
+import pekko.persistence.query.PersistenceQuery
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.event.Logging
+import pekko.persistence.cassandra.journal.CassandraTagRecovery
+import pekko.persistence.cassandra.Extractors
+import pekko.util.Timeout
+import pekko.stream.OverflowStrategy
+import pekko.stream.scaladsl.Sink
+import pekko.annotation.InternalApi
+import pekko.serialization.SerializationExtension
 
 /**
  * INTERNAL API

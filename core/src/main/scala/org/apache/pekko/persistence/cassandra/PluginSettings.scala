@@ -13,13 +13,14 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.annotation.InternalStableApi
-import org.apache.pekko.persistence.cassandra.healthcheck.HealthCheckSettings
-import org.apache.pekko.persistence.cassandra.journal.JournalSettings
-import org.apache.pekko.persistence.cassandra.query.QuerySettings
-import org.apache.pekko.persistence.cassandra.snapshot.SnapshotSettings
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.annotation.InternalApi
+import pekko.annotation.InternalStableApi
+import pekko.persistence.cassandra.healthcheck.HealthCheckSettings
+import pekko.persistence.cassandra.journal.JournalSettings
+import pekko.persistence.cassandra.query.QuerySettings
+import pekko.persistence.cassandra.snapshot.SnapshotSettings
 import com.typesafe.config.Config
 
 /**

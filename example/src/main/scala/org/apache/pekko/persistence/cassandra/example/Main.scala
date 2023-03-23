@@ -9,13 +9,14 @@
 
 package org.apache.pekko.persistence.cassandra.example
 
-import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.actor.typed.scaladsl.{ Behaviors, LoggerOps }
-import org.apache.pekko.cluster.typed.{ Cluster, SelfUp, Subscribe }
-import org.apache.pekko.management.cluster.bootstrap.ClusterBootstrap
-import org.apache.pekko.management.scaladsl.PekkoManagement
-import org.apache.pekko.persistence.cassandra.example.LoadGenerator.Start
-import org.apache.pekko.stream.connectors.cassandra.scaladsl.CassandraSessionRegistry
+import org.apache.pekko
+import pekko.actor.typed.ActorSystem
+import pekko.actor.typed.scaladsl.{ Behaviors, LoggerOps }
+import pekko.cluster.typed.{ Cluster, SelfUp, Subscribe }
+import pekko.management.cluster.bootstrap.ClusterBootstrap
+import pekko.management.scaladsl.PekkoManagement
+import pekko.persistence.cassandra.example.LoadGenerator.Start
+import pekko.stream.connectors.cassandra.scaladsl.CassandraSessionRegistry
 
 import scala.concurrent.Await
 import scala.concurrent.duration._

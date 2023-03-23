@@ -19,13 +19,14 @@ import java.util.concurrent.TimeUnit
 
 import scala.concurrent.duration._
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.event.Logging
-import org.apache.pekko.persistence.cassandra.compaction.CassandraCompactionStrategy
-import org.apache.pekko.persistence.cassandra.journal.TagWriter.TagWriterSettings
-import org.apache.pekko.persistence.cassandra.journal.TimeBucket
-import org.apache.pekko.persistence.cassandra.query.firstBucketFormatter
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.annotation.InternalApi
+import pekko.event.Logging
+import pekko.persistence.cassandra.compaction.CassandraCompactionStrategy
+import pekko.persistence.cassandra.journal.TagWriter.TagWriterSettings
+import pekko.persistence.cassandra.journal.TimeBucket
+import pekko.persistence.cassandra.query.firstBucketFormatter
 import com.typesafe.config.Config
 
 /**

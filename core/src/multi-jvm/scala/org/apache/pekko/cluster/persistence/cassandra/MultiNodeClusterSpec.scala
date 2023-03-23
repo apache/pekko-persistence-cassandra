@@ -12,13 +12,14 @@ package org.apache.pekko.cluster.persistence.cassandra
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-import org.apache.pekko.actor.{ Actor, ActorRef, ActorSystem, Address, RootActorPath }
-import org.apache.pekko.cluster.{ Cluster, ClusterReadView, MemberStatus, _ }
-import org.apache.pekko.event.Logging.ErrorLevel
-import org.apache.pekko.remote.testconductor.RoleName
-import org.apache.pekko.remote.testkit.{ FlightRecordingSupport, MultiNodeSpec }
-import org.apache.pekko.testkit.TestEvent._
-import org.apache.pekko.testkit._
+import org.apache.pekko
+import pekko.actor.{ Actor, ActorRef, ActorSystem, Address, RootActorPath }
+import pekko.cluster.{ Cluster, ClusterReadView, MemberStatus, _ }
+import pekko.event.Logging.ErrorLevel
+import pekko.remote.testconductor.RoleName
+import pekko.remote.testkit.{ FlightRecordingSupport, MultiNodeSpec }
+import pekko.testkit.TestEvent._
+import pekko.testkit._
 import com.typesafe.config.{ Config, ConfigFactory }
 import org.scalatest.exceptions.TestCanceledException
 import org.scalatest.{ Canceled, Outcome, Suite }
@@ -126,13 +127,13 @@ trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec with FlightRecordi
       }
 
       muteDeadLetters(
-        classOf[org.apache.pekko.actor.PoisonPill],
-        classOf[org.apache.pekko.dispatch.sysmsg.DeathWatchNotification],
-        classOf[org.apache.pekko.remote.transport.AssociationHandle.Disassociated],
-        //        org.apache.pekko.remote.transport.AssociationHandle.Disassociated.getClass,
-        classOf[org.apache.pekko.remote.transport.ActorTransportAdapter.DisassociateUnderlying],
-        //        org.apache.pekko.remote.transport.ActorTransportAdapter.DisassociateUnderlying.getClass,
-        classOf[org.apache.pekko.remote.transport.AssociationHandle.InboundPayload])(sys)
+        classOf[pekko.actor.PoisonPill],
+        classOf[pekko.dispatch.sysmsg.DeathWatchNotification],
+        classOf[pekko.remote.transport.AssociationHandle.Disassociated],
+        //        pekko.remote.transport.AssociationHandle.Disassociated.getClass,
+        classOf[pekko.remote.transport.ActorTransportAdapter.DisassociateUnderlying],
+        //        pekko.remote.transport.ActorTransportAdapter.DisassociateUnderlying.getClass,
+        classOf[pekko.remote.transport.AssociationHandle.InboundPayload])(sys)
 
     }
   }

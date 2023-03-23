@@ -15,10 +15,11 @@ package org.apache.pekko.persistence.cassandra.query
 
 import java.util.UUID
 
-import org.apache.pekko.persistence.PersistentRepr
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
-import org.apache.pekko.stream.scaladsl.Keep
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
+import org.apache.pekko
+import pekko.persistence.PersistentRepr
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
+import pekko.stream.scaladsl.Keep
+import pekko.stream.testkit.scaladsl.TestSink
 import com.typesafe.config.ConfigFactory
 import org.scalatest.time.{ Milliseconds, Seconds, Span }
 

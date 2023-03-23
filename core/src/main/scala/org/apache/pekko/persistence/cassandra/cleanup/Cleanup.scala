@@ -19,21 +19,22 @@ import scala.collection.immutable
 import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
-import org.apache.pekko.{ Done, NotUsed }
-import org.apache.pekko.actor.{ ActorRef, ClassicActorSystemProvider }
-import org.apache.pekko.annotation.ApiMayChange
-import org.apache.pekko.event.Logging
-import org.apache.pekko.pattern.ask
-import org.apache.pekko.persistence.JournalProtocol.DeleteMessagesTo
-import org.apache.pekko.persistence.{ Persistence, SnapshotMetadata }
-import org.apache.pekko.persistence.cassandra.PluginSettings
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal
-import org.apache.pekko.persistence.cassandra.reconciler.Reconciliation
-import org.apache.pekko.persistence.cassandra.reconciler.ReconciliationSettings
-import org.apache.pekko.persistence.cassandra.snapshot.{ CassandraSnapshotStatements, CassandraSnapshotStore }
-import org.apache.pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
-import org.apache.pekko.stream.scaladsl.{ Sink, Source }
-import org.apache.pekko.util.Timeout
+import org.apache.pekko
+import pekko.{ Done, NotUsed }
+import pekko.actor.{ ActorRef, ClassicActorSystemProvider }
+import pekko.annotation.ApiMayChange
+import pekko.event.Logging
+import pekko.pattern.ask
+import pekko.persistence.JournalProtocol.DeleteMessagesTo
+import pekko.persistence.{ Persistence, SnapshotMetadata }
+import pekko.persistence.cassandra.PluginSettings
+import pekko.persistence.cassandra.journal.CassandraJournal
+import pekko.persistence.cassandra.reconciler.Reconciliation
+import pekko.persistence.cassandra.reconciler.ReconciliationSettings
+import pekko.persistence.cassandra.snapshot.{ CassandraSnapshotStatements, CassandraSnapshotStore }
+import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
+import pekko.stream.scaladsl.{ Sink, Source }
+import pekko.util.Timeout
 import com.datastax.oss.driver.api.core.cql.Row
 
 /**
@@ -391,7 +392,7 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
       log.info("dry run: Operation on journal: {}", create(ActorRef.noSender))
       Future.successful(Done)
     } else {
-      import org.apache.pekko.pattern.extended.ask
+      import pekko.pattern.extended.ask
       ask(journal, create).map(_ => Done)
     }
   }

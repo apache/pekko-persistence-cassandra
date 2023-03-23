@@ -14,11 +14,12 @@
 package org.apache.pekko.persistence.cassandra.query
 
 import scala.collection.immutable
-import org.apache.pekko.actor.Props
-import org.apache.pekko.persistence.PersistentActor
-import org.apache.pekko.actor.ActorRef
-import org.apache.pekko.persistence.DeleteMessagesSuccess
-import org.apache.pekko.persistence.journal.Tagged
+import org.apache.pekko
+import pekko.actor.Props
+import pekko.persistence.PersistentActor
+import pekko.actor.ActorRef
+import pekko.persistence.DeleteMessagesSuccess
+import pekko.persistence.journal.Tagged
 
 object TestActor {
   def props(persistenceId: String, journalId: String = "pekko.persistence.cassandra.journal"): Props =

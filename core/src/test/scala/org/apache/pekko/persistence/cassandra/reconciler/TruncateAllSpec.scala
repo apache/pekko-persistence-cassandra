@@ -13,9 +13,10 @@
 
 package org.apache.pekko.persistence.cassandra.reconciler
 
-import org.apache.pekko.persistence.cassandra.CassandraSpec
+import org.apache.pekko
+import pekko.persistence.cassandra.CassandraSpec
 import org.scalatest.concurrent.Eventually
-import org.apache.pekko.persistence.cassandra.TestTaggingActor
+import pekko.persistence.cassandra.TestTaggingActor
 
 class TruncateAllSpec extends CassandraSpec with Eventually {
 

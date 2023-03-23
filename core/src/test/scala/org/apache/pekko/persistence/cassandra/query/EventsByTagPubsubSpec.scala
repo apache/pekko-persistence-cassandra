@@ -15,11 +15,12 @@ package org.apache.pekko.persistence.cassandra.query
 
 import java.time.{ LocalDate, ZoneOffset }
 
-import org.apache.pekko.cluster.Cluster
-import org.apache.pekko.persistence.cassandra.CassandraSpec
-import org.apache.pekko.persistence.cassandra.journal.JournalSettings
-import org.apache.pekko.persistence.query.{ EventEnvelope, NoOffset }
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
+import org.apache.pekko
+import pekko.cluster.Cluster
+import pekko.persistence.cassandra.CassandraSpec
+import pekko.persistence.cassandra.journal.JournalSettings
+import pekko.persistence.query.{ EventEnvelope, NoOffset }
+import pekko.stream.testkit.scaladsl.TestSink
 import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.duration._

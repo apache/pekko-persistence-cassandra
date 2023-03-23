@@ -17,13 +17,14 @@ import java.util.UUID
 
 import scala.concurrent.duration._
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.ActorRef
-import org.apache.pekko.persistence.cassandra.CassandraLifecycle
-import org.apache.pekko.persistence.cassandra.CassandraSpec
-import org.apache.pekko.persistence.cassandra.journal.JournalSettings
-import org.apache.pekko.stream.scaladsl.Source
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.ActorRef
+import pekko.persistence.cassandra.CassandraLifecycle
+import pekko.persistence.cassandra.CassandraSpec
+import pekko.persistence.cassandra.journal.JournalSettings
+import pekko.stream.scaladsl.Source
+import pekko.stream.testkit.scaladsl.TestSink
 import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfterEach
 

@@ -17,12 +17,13 @@ import java.lang.{ Long => JLong }
 import java.lang.{ Integer => JInteger }
 import java.nio.ByteBuffer
 
-import org.apache.pekko.persistence.SnapshotProtocol._
-import org.apache.pekko.persistence._
-import org.apache.pekko.persistence.cassandra.CassandraLifecycle
-import org.apache.pekko.persistence.snapshot.SnapshotStoreSpec
-import org.apache.pekko.stream.connectors.cassandra.CassandraMetricsRegistry
-import org.apache.pekko.testkit.TestProbe
+import org.apache.pekko
+import pekko.persistence.SnapshotProtocol._
+import pekko.persistence._
+import pekko.persistence.cassandra.CassandraLifecycle
+import pekko.persistence.snapshot.SnapshotStoreSpec
+import pekko.stream.connectors.cassandra.CassandraMetricsRegistry
+import pekko.testkit.TestProbe
 import com.datastax.oss.driver.api.core.cql.SimpleStatement
 import com.typesafe.config.ConfigFactory
 

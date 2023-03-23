@@ -15,25 +15,26 @@ package org.apache.pekko.persistence.cassandra.query
 
 import java.time.{ LocalDateTime, ZoneOffset }
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.ActorRef
-import org.apache.pekko.persistence.PersistentRepr
-import org.apache.pekko.persistence.cassandra.journal.TimeBucket
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, Minute }
-import org.apache.pekko.persistence.journal.Tagged
-import org.apache.pekko.persistence.query.scaladsl.EventsByTagQuery
-import org.apache.pekko.persistence.query.{ EventEnvelope, NoOffset }
-import org.apache.pekko.serialization.{ Serialization, SerializationExtension }
-import org.apache.pekko.stream.scaladsl.{ Keep, Source }
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
-import org.apache.pekko.testkit.ImplicitSender
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.ActorRef
+import pekko.persistence.PersistentRepr
+import pekko.persistence.cassandra.journal.TimeBucket
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, Minute }
+import pekko.persistence.journal.Tagged
+import pekko.persistence.query.scaladsl.EventsByTagQuery
+import pekko.persistence.query.{ EventEnvelope, NoOffset }
+import pekko.serialization.{ Serialization, SerializationExtension }
+import pekko.stream.scaladsl.{ Keep, Source }
+import pekko.stream.testkit.scaladsl.TestSink
+import pekko.testkit.ImplicitSender
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfterAll
 import scala.annotation.tailrec
 import scala.concurrent.duration._
 
-import org.apache.pekko.persistence.cassandra.PluginSettings
+import pekko.persistence.cassandra.PluginSettings
 
 object EventsByTagStageSpec {
   val fetchSize = 3L

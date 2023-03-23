@@ -14,11 +14,12 @@
 package org.apache.pekko.persistence.cassandra.journal
 
 import com.typesafe.config.ConfigFactory
-import org.apache.pekko.actor.Props
-import org.apache.pekko.persistence.cassandra.journal.MultiPluginSpec._
-import org.apache.pekko.persistence.cassandra.testkit.CassandraLauncher
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, PluginSettings }
-import org.apache.pekko.persistence.{ PersistentActor, SaveSnapshotSuccess }
+import org.apache.pekko
+import pekko.actor.Props
+import pekko.persistence.cassandra.journal.MultiPluginSpec._
+import pekko.persistence.cassandra.testkit.CassandraLauncher
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, PluginSettings }
+import pekko.persistence.{ PersistentActor, SaveSnapshotSuccess }
 
 object MultiPluginSpec {
   val now = System.currentTimeMillis()

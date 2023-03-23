@@ -9,10 +9,11 @@
 
 package doc.cleanup
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.persistence.cassandra.cleanup.Cleanup
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import org.apache.pekko.persistence.query.PersistenceQuery
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.persistence.cassandra.cleanup.Cleanup
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.query.PersistenceQuery
 
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit

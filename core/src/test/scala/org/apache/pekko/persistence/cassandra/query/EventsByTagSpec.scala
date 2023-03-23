@@ -18,27 +18,28 @@ import java.time.{ LocalDateTime, ZoneOffset }
 import java.util.Optional
 import java.util.UUID
 
-import org.apache.pekko.actor.{ PoisonPill, Props }
-import org.apache.pekko.event.Logging.Warning
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournalStatements
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, Day }
-import org.apache.pekko.persistence.journal.{ Tagged, WriteEventAdapter }
-import org.apache.pekko.persistence.query.scaladsl.{ CurrentEventsByTagQuery, EventsByTagQuery }
-import org.apache.pekko.persistence.query.{ EventEnvelope, NoOffset, Offset, TimeBasedUUID }
-import org.apache.pekko.persistence.{ PersistentActor, PersistentRepr }
-import org.apache.pekko.serialization.SerializationExtension
-import org.apache.pekko.stream.testkit.TestSubscriber
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
+import org.apache.pekko
+import pekko.actor.{ PoisonPill, Props }
+import pekko.event.Logging.Warning
+import pekko.persistence.cassandra.journal.CassandraJournalStatements
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, Day }
+import pekko.persistence.journal.{ Tagged, WriteEventAdapter }
+import pekko.persistence.query.scaladsl.{ CurrentEventsByTagQuery, EventsByTagQuery }
+import pekko.persistence.query.{ EventEnvelope, NoOffset, Offset, TimeBasedUUID }
+import pekko.persistence.{ PersistentActor, PersistentRepr }
+import pekko.serialization.SerializationExtension
+import pekko.stream.testkit.TestSubscriber
+import pekko.stream.testkit.scaladsl.TestSink
 import EventsByTagSpec._
-import org.apache.pekko.event.Logging
-import org.apache.pekko.testkit.TestProbe
+import pekko.event.Logging
+import pekko.testkit.TestProbe
 import com.datastax.oss.driver.api.core.CqlIdentifier
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import com.typesafe.config.{ Config, ConfigFactory }
 import org.scalatest.BeforeAndAfterEach
 import scala.concurrent.duration._
 
-import org.apache.pekko.persistence.cassandra.PluginSettings
+import pekko.persistence.cassandra.PluginSettings
 
 object EventsByTagSpec {
   def withProbe[T](probe: TestSubscriber.Probe[Any], f: TestSubscriber.Probe[Any] => T): T = {

@@ -16,13 +16,14 @@ package org.apache.pekko.persistence.cassandra.query.javadsl
 import java.util.UUID
 import java.util.concurrent.CompletionStage
 
-import org.apache.pekko.{ Done, NotUsed }
-import org.apache.pekko.persistence.query.EventEnvelope
-import org.apache.pekko.persistence.query.Offset
-import org.apache.pekko.persistence.query.TimeBasedUUID
-import org.apache.pekko.persistence.query.javadsl._
-import org.apache.pekko.stream.connectors.cassandra.javadsl.CassandraSession
-import org.apache.pekko.stream.javadsl.Source
+import org.apache.pekko
+import pekko.{ Done, NotUsed }
+import pekko.persistence.query.EventEnvelope
+import pekko.persistence.query.Offset
+import pekko.persistence.query.TimeBasedUUID
+import pekko.persistence.query.javadsl._
+import pekko.stream.connectors.cassandra.javadsl.CassandraSession
+import pekko.stream.javadsl.Source
 
 import scala.compat.java8.FutureConverters
 
@@ -36,7 +37,7 @@ object CassandraReadJournal {
    * to the absolute path to the read journal configuration entry.
    */
   final val Identifier =
-    org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.Identifier
+    pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.Identifier
 }
 
 /**
@@ -48,14 +49,14 @@ object CassandraReadJournal {
  *   PersistenceQuery.get(system).getReadJournalFor(CassandraReadJournal.class, CassandraReadJournal.Identifier());
  * }}}
  *
- * Corresponding Scala API is in [[org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal]].
+ * Corresponding Scala API is in [[pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal]].
  *
  * Configuration settings can be defined in the configuration section with the
  * absolute path corresponding to the identifier, which is `"pekko.persistence.cassandra.query"`
  * for the default [[CassandraReadJournal#Identifier]]. See `reference.conf`.
  */
 class CassandraReadJournal(
-    scaladslReadJournal: org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal)
+    scaladslReadJournal: pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal)
     extends ReadJournal
     with PersistenceIdsQuery
     with CurrentPersistenceIdsQuery
@@ -116,7 +117,7 @@ class CassandraReadJournal(
    * in a `akka.persistence.journal.Tagged` with the given `tags`.
    * The tags must be defined in the `tags` section of the `pekko.persistence.cassandra` configuration.
    *
-   * You can use [[org.apache.pekko.persistence.query.NoOffset]] to retrieve all events with a given tag or
+   * You can use [[pekko.persistence.query.NoOffset]] to retrieve all events with a given tag or
    * retrieve a subset of all events by specifying a [[TimeBasedUUID]] `offset`.
    *
    * The offset of each event is provided in the streamed envelopes returned,

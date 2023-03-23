@@ -16,8 +16,9 @@ package org.apache.pekko.persistence.cassandra.testkit
 import java.io.File
 import java.net.InetSocketAddress
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.testkit.TestKit
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.testkit.TestKit
 import com.datastax.oss.driver.api.core.CqlSession
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatest.matchers.should.Matchers

@@ -19,27 +19,28 @@ import java.net.URLEncoder
 import java.util.UUID
 
 import scala.concurrent.Promise
-import org.apache.pekko.Done
-import org.apache.pekko.actor.SupervisorStrategy.Escalate
-import org.apache.pekko.pattern.ask
-import org.apache.pekko.pattern.pipe
-import org.apache.pekko.actor.Actor
-import org.apache.pekko.actor.ActorLogging
-import org.apache.pekko.actor.ActorRef
-import org.apache.pekko.actor.NoSerializationVerificationNeeded
-import org.apache.pekko.actor.OneForOneStrategy
-import org.apache.pekko.actor.Props
-import org.apache.pekko.actor.SupervisorStrategy
-import org.apache.pekko.actor.Timers
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.dispatch.ExecutionContexts
-import org.apache.pekko.event.LoggingAdapter
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal._
-import org.apache.pekko.persistence.cassandra.journal.TagWriter._
-import org.apache.pekko.persistence.cassandra.journal.TagWriters._
-import org.apache.pekko.stream.connectors.cassandra.scaladsl.CassandraSession
-import org.apache.pekko.util.ByteString
-import org.apache.pekko.util.Timeout
+import org.apache.pekko
+import pekko.Done
+import pekko.actor.SupervisorStrategy.Escalate
+import pekko.pattern.ask
+import pekko.pattern.pipe
+import pekko.actor.Actor
+import pekko.actor.ActorLogging
+import pekko.actor.ActorRef
+import pekko.actor.NoSerializationVerificationNeeded
+import pekko.actor.OneForOneStrategy
+import pekko.actor.Props
+import pekko.actor.SupervisorStrategy
+import pekko.actor.Timers
+import pekko.annotation.InternalApi
+import pekko.dispatch.ExecutionContexts
+import pekko.event.LoggingAdapter
+import pekko.persistence.cassandra.journal.CassandraJournal._
+import pekko.persistence.cassandra.journal.TagWriter._
+import pekko.persistence.cassandra.journal.TagWriters._
+import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
+import pekko.util.ByteString
+import pekko.util.Timeout
 import com.datastax.oss.driver.api.core.cql.{ BatchStatementBuilder, BatchType, BoundStatement, Statement }
 
 import scala.concurrent.{ ExecutionContext, Future }

@@ -17,11 +17,12 @@ import java.util.concurrent.TimeUnit
 
 import scala.concurrent.duration._
 
-import org.apache.pekko.actor._
-import org.apache.pekko.persistence.PersistentActor
-import org.apache.pekko.persistence.cassandra.CassandraLifecycle
-import org.apache.pekko.persistence.cassandra.CassandraSpec
-import org.apache.pekko.persistence.journal.Tagged
+import org.apache.pekko
+import pekko.actor._
+import pekko.persistence.PersistentActor
+import pekko.persistence.cassandra.CassandraLifecycle
+import pekko.persistence.cassandra.CassandraSpec
+import pekko.persistence.journal.Tagged
 import com.typesafe.config.ConfigFactory
 
 object ManyActorsLoadSpec {

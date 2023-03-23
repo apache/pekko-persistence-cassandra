@@ -16,12 +16,13 @@ package org.apache.pekko.persistence.cassandra.journal
 import java.nio.ByteBuffer
 import java.util.UUID
 
-import org.apache.pekko.actor.{ ActorRef, ActorSystem }
-import org.apache.pekko.persistence.cassandra.Day
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal.{ Serialized, TagPidSequenceNr }
-import org.apache.pekko.persistence.cassandra.journal.TagWriter.AwaitingWrite
-import org.apache.pekko.testkit.{ TestKit, TestProbe }
-import org.apache.pekko.util.OptionVal
+import org.apache.pekko
+import pekko.actor.{ ActorRef, ActorSystem }
+import pekko.persistence.cassandra.Day
+import pekko.persistence.cassandra.journal.CassandraJournal.{ Serialized, TagPidSequenceNr }
+import pekko.persistence.cassandra.journal.TagWriter.AwaitingWrite
+import pekko.testkit.{ TestKit, TestProbe }
+import pekko.util.OptionVal
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers

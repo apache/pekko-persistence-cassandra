@@ -9,14 +9,15 @@
 
 package org.apache.pekko.persistence.cassandra.example
 
-import org.apache.pekko.actor.typed.{ ActorRef, Behavior }
-import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.cluster.sharding.typed.ShardingEnvelope
+import org.apache.pekko
+import pekko.actor.typed.{ ActorRef, Behavior }
+import pekko.actor.typed.scaladsl.Behaviors
+import pekko.cluster.sharding.typed.ShardingEnvelope
+import pekko.util.JavaDurationConverters._
 import com.typesafe.config.Config
 
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
-import org.apache.pekko.util.JavaDurationConverters._
 
 object LoadGenerator {
 

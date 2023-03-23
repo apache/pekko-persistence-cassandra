@@ -13,28 +13,29 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.pattern.ask
-import org.apache.pekko.event.Logging
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal._
-import org.apache.pekko.persistence.cassandra.journal.TagWriter.TagProgress
-import org.apache.pekko.persistence.cassandra.journal.TagWriters.{ AllFlushed, FlushAllTagWriters, TagWritersSession }
-import org.apache.pekko.persistence.cassandra.journal._
-import org.apache.pekko.persistence.cassandra.Extractors.RawEvent
-import org.apache.pekko.persistence.cassandra.Extractors.Extractor
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import org.apache.pekko.persistence.query.PersistenceQuery
-import org.apache.pekko.serialization.SerializationExtension
-import org.apache.pekko.stream.connectors.cassandra.scaladsl.CassandraSession
-import org.apache.pekko.stream.scaladsl.{ Sink, Source }
-import org.apache.pekko.util.Timeout
-import org.apache.pekko.{ Done, NotUsed }
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.pattern.ask
+import pekko.event.Logging
+import pekko.persistence.cassandra.journal.CassandraJournal._
+import pekko.persistence.cassandra.journal.TagWriter.TagProgress
+import pekko.persistence.cassandra.journal.TagWriters.{ AllFlushed, FlushAllTagWriters, TagWritersSession }
+import pekko.persistence.cassandra.journal._
+import pekko.persistence.cassandra.Extractors.RawEvent
+import pekko.persistence.cassandra.Extractors.Extractor
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.query.PersistenceQuery
+import pekko.serialization.SerializationExtension
+import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
+import pekko.stream.scaladsl.{ Sink, Source }
+import pekko.util.Timeout
+import pekko.{ Done, NotUsed }
 import com.datastax.oss.driver.api.core.cql.Row
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-import org.apache.pekko.actor.ClassicActorSystemProvider
+import pekko.actor.ClassicActorSystemProvider
 
 object EventsByTagMigration {
   def apply(systemProvider: ClassicActorSystemProvider): EventsByTagMigration =

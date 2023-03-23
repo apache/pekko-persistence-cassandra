@@ -15,25 +15,18 @@ package org.apache.pekko.persistence.cassandra.journal
 
 import java.util.UUID
 
-import org.apache.pekko.Done
-import org.apache.pekko.actor.{
-  Actor,
-  ActorLogging,
-  ActorRef,
-  NoSerializationVerificationNeeded,
-  Props,
-  ReceiveTimeout,
-  Timers
-}
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.cluster.pubsub.{ DistributedPubSub, DistributedPubSubMediator }
-import org.apache.pekko.event.LoggingAdapter
-import org.apache.pekko.pattern.pipe
-import org.apache.pekko.persistence.cassandra.formatOffset
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal._
-import org.apache.pekko.persistence.cassandra.journal.TagWriter.TagWriterSettings
-import org.apache.pekko.persistence.cassandra.journal.TagWriters.TagWritersSession
-import org.apache.pekko.util.{ OptionVal, UUIDComparator }
+import org.apache.pekko
+import pekko.Done
+import pekko.actor.{ Actor, ActorLogging, ActorRef, NoSerializationVerificationNeeded, Props, ReceiveTimeout, Timers }
+import pekko.annotation.InternalApi
+import pekko.cluster.pubsub.{ DistributedPubSub, DistributedPubSubMediator }
+import pekko.event.LoggingAdapter
+import pekko.pattern.pipe
+import pekko.persistence.cassandra.formatOffset
+import pekko.persistence.cassandra.journal.CassandraJournal._
+import pekko.persistence.cassandra.journal.TagWriter.TagWriterSettings
+import pekko.persistence.cassandra.journal.TagWriters.TagWritersSession
+import pekko.util.{ OptionVal, UUIDComparator }
 
 import scala.concurrent.duration.{ Duration, FiniteDuration, _ }
 import scala.util.control.NonFatal

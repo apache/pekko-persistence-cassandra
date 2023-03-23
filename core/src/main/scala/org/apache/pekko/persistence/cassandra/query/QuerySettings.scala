@@ -15,11 +15,12 @@ package org.apache.pekko.persistence.cassandra.query
 
 import scala.concurrent.duration._
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.actor.NoSerializationVerificationNeeded
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.annotation.InternalStableApi
-import org.apache.pekko.persistence.cassandra.EventsByTagSettings
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.actor.NoSerializationVerificationNeeded
+import pekko.annotation.InternalApi
+import pekko.annotation.InternalStableApi
+import pekko.persistence.cassandra.EventsByTagSettings
 import com.typesafe.config.Config
 
 /**

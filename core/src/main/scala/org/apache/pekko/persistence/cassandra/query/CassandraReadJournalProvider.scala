@@ -13,8 +13,9 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
-import org.apache.pekko.actor.ExtendedActorSystem
-import org.apache.pekko.persistence.query.ReadJournalProvider
+import org.apache.pekko
+import pekko.actor.ExtendedActorSystem
+import pekko.persistence.query.ReadJournalProvider
 import com.typesafe.config.Config
 
 class CassandraReadJournalProvider(system: ExtendedActorSystem, config: Config, configPath: String)

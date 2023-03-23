@@ -16,16 +16,17 @@ package org.apache.pekko.persistence.cassandra
 import java.io.{ OutputStream, PrintStream }
 import java.util.concurrent.atomic.AtomicInteger
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.event.Logging
-import org.apache.pekko.event.Logging.{ LogEvent, StdOutLogger }
-import org.apache.pekko.persistence.cassandra.CassandraSpec._
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import org.apache.pekko.persistence.query.{ NoOffset, PersistenceQuery }
-import org.apache.pekko.stream.scaladsl.{ Keep, Sink }
-import org.apache.pekko.stream.testkit.TestSubscriber
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
-import org.apache.pekko.testkit.{ EventFilter, ImplicitSender, SocketUtil, TestKitBase }
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.event.Logging
+import pekko.event.Logging.{ LogEvent, StdOutLogger }
+import pekko.persistence.cassandra.CassandraSpec._
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.query.{ NoOffset, PersistenceQuery }
+import pekko.stream.scaladsl.{ Keep, Sink }
+import pekko.stream.testkit.TestSubscriber
+import pekko.stream.testkit.scaladsl.TestSink
+import pekko.testkit.{ EventFilter, ImplicitSender, SocketUtil, TestKitBase }
 import com.typesafe.config.{ Config, ConfigFactory }
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{ Milliseconds, Seconds, Span }
@@ -35,12 +36,12 @@ import org.scalatest.matchers.should.Matchers
 import scala.collection.immutable
 import scala.concurrent.duration._
 
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal
-import org.apache.pekko.serialization.SerializationExtension
+import pekko.persistence.cassandra.journal.CassandraJournal
+import pekko.serialization.SerializationExtension
 import scala.util.control.NonFatal
 
-import org.apache.pekko.persistence.cassandra.TestTaggingActor.Ack
-import org.apache.pekko.actor.PoisonPill
+import pekko.persistence.cassandra.TestTaggingActor.Ack
+import pekko.actor.PoisonPill
 
 object CassandraSpec {
   def getCallerName(clazz: Class[_]): String = {

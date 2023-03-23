@@ -15,11 +15,12 @@ package org.apache.pekko.persistence.cassandra.query
 
 import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.cql._
-import org.apache.pekko.Done
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.persistence.cassandra.PluginSettings
-import org.apache.pekko.stream.stage._
-import org.apache.pekko.stream.{ Attributes, Outlet, SourceShape }
+import org.apache.pekko
+import pekko.Done
+import pekko.annotation.InternalApi
+import pekko.persistence.cassandra.PluginSettings
+import pekko.stream.stage._
+import pekko.stream.{ Attributes, Outlet, SourceShape }
 
 import java.lang.{ Long => JLong }
 import java.util.concurrent.ThreadLocalRandom
@@ -300,7 +301,7 @@ import scala.util.{ Failure, Success, Try }
       def lookForMissingSeqNr(): Unit =
         lookingForMissingSeqNr match {
           case Some(m) if m.deadline.isOverdue() =>
-            import org.apache.pekko.util.PrettyDuration.PrettyPrintableDuration
+            import pekko.util.PrettyDuration.PrettyPrintableDuration
             onFailure(
               new IllegalStateException(
                 s"Sequence number [$expectedNextSeqNr] still missing after " +

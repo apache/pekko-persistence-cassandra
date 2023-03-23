@@ -13,9 +13,10 @@
 
 package org.apache.pekko.persistence.cassandra.reconciler
 
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.stream.scaladsl.Source
-import org.apache.pekko.NotUsed
+import org.apache.pekko
+import pekko.annotation.InternalApi
+import pekko.stream.scaladsl.Source
+import pekko.NotUsed
 
 /**
  * Calculates all the tags by scanning the tag_write_progress table.

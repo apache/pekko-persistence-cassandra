@@ -17,8 +17,9 @@ package doc.reconciler
 import scala.util.Failure
 import scala.util.Success
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.persistence.cassandra.reconciler.Reconciliation
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.persistence.cassandra.reconciler.Reconciliation
 
 //#imports
 

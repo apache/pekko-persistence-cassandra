@@ -17,15 +17,16 @@ import java.nio.ByteBuffer
 import java.time.{ LocalDateTime, ZoneOffset }
 import java.util.UUID
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.persistence.PersistentRepr
-import org.apache.pekko.persistence.cassandra.BucketSize
-import org.apache.pekko.persistence.cassandra.EventsByTagSettings
-import org.apache.pekko.persistence.cassandra.PluginSettings
-import org.apache.pekko.persistence.cassandra.formatOffset
-import org.apache.pekko.persistence.cassandra.journal._
-import org.apache.pekko.serialization.Serialization
-import org.apache.pekko.serialization.Serializers
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.persistence.PersistentRepr
+import pekko.persistence.cassandra.BucketSize
+import pekko.persistence.cassandra.EventsByTagSettings
+import pekko.persistence.cassandra.PluginSettings
+import pekko.persistence.cassandra.formatOffset
+import pekko.persistence.cassandra.journal._
+import pekko.serialization.Serialization
+import pekko.serialization.Serializers
 import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.uuid.Uuids
 

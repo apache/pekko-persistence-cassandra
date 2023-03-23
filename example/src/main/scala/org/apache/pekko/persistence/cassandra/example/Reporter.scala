@@ -9,11 +9,12 @@
 
 package org.apache.pekko.persistence.cassandra.example
 
-import org.apache.pekko.actor.typed.{ ActorRef, Behavior }
-import org.apache.pekko.actor.typed.pubsub.Topic
-import org.apache.pekko.actor.typed.scaladsl.Behaviors
+import org.apache.pekko
+import pekko.actor.typed.{ ActorRef, Behavior }
+import pekko.actor.typed.pubsub.Topic
+import pekko.actor.typed.scaladsl.Behaviors
 import ReadSideTopic.ReadSideMetrics
-import org.apache.pekko.actor.typed.scaladsl.LoggerOps
+import pekko.actor.typed.scaladsl.LoggerOps
 
 object Reporter {
   def apply(topic: ActorRef[Topic.Command[ReadSideTopic.ReadSideMetrics]]): Behavior[ReadSideMetrics] =

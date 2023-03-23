@@ -13,8 +13,9 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.persistence.cassandra.PluginSettings
+import org.apache.pekko
+import pekko.annotation.InternalApi
+import pekko.persistence.cassandra.PluginSettings
 
 /**
  * INTERNAL API

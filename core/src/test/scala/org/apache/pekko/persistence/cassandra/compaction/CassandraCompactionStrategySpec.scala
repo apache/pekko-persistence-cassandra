@@ -15,10 +15,11 @@ package org.apache.pekko.persistence.cassandra.compaction
 
 import java.util.concurrent.TimeUnit
 
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, PluginSettings }
+import org.apache.pekko
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, PluginSettings }
 import com.typesafe.config.ConfigFactory
 import org.scalatest.wordspec.AnyWordSpecLike
-import org.apache.pekko.persistence.cassandra.RequiresCassandraThree
+import pekko.persistence.cassandra.RequiresCassandraThree
 
 object CassandraCompactionStrategySpec {
   lazy val config = ConfigFactory.parseString(s"""

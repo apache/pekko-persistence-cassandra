@@ -13,9 +13,10 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.persistence.cassandra.journal.TagWriter.{ timeUuidOrdering, AwaitingWrite }
-import org.apache.pekko.util.{ OptionVal, UUIDComparator }
+import org.apache.pekko
+import pekko.annotation.InternalApi
+import pekko.persistence.cassandra.journal.TagWriter.{ timeUuidOrdering, AwaitingWrite }
+import pekko.util.{ OptionVal, UUIDComparator }
 
 /**
  * INTERNAL API

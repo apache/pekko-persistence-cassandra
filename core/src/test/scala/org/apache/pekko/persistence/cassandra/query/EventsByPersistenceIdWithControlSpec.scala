@@ -13,11 +13,12 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
-import org.apache.pekko.actor.ActorRef
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
-import org.apache.pekko.stream.scaladsl.Keep
-import org.apache.pekko.stream.testkit.TestSubscriber.Probe
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
+import org.apache.pekko
+import pekko.actor.ActorRef
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
+import pekko.stream.scaladsl.Keep
+import pekko.stream.testkit.TestSubscriber.Probe
+import pekko.stream.testkit.scaladsl.TestSink
 import com.typesafe.config.ConfigFactory
 
 import scala.annotation.tailrec

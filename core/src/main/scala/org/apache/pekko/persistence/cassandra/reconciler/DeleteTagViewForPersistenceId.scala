@@ -13,15 +13,16 @@
 
 package org.apache.pekko.persistence.cassandra.reconciler
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.persistence.cassandra.PluginSettings
-import org.apache.pekko.Done
-import org.apache.pekko.event.Logging
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.persistence.query.NoOffset
-import org.apache.pekko.persistence.cassandra.journal.TimeBucket
-import org.apache.pekko.stream.scaladsl.Sink
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.persistence.cassandra.PluginSettings
+import pekko.Done
+import pekko.event.Logging
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.annotation.InternalApi
+import pekko.persistence.query.NoOffset
+import pekko.persistence.cassandra.journal.TimeBucket
+import pekko.stream.scaladsl.Sink
 import scala.concurrent.Future
 
 /**

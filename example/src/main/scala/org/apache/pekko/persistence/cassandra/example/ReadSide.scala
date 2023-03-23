@@ -9,15 +9,16 @@
 
 package org.apache.pekko.persistence.cassandra.example
 
-import org.apache.pekko.actor.typed.pubsub.Topic
-import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.{ ActorRef, ActorSystem, Behavior, PostStop }
-import org.apache.pekko.cluster.sharding.typed.{ ClusterShardingSettings, ShardedDaemonProcessSettings }
-import org.apache.pekko.cluster.sharding.typed.scaladsl.ShardedDaemonProcess
-import org.apache.pekko.stream.{ KillSwitches, SharedKillSwitch }
+import org.apache.pekko
+import pekko.actor.typed.pubsub.Topic
+import pekko.actor.typed.scaladsl.Behaviors
+import pekko.actor.typed.{ ActorRef, ActorSystem, Behavior, PostStop }
+import pekko.cluster.sharding.typed.{ ClusterShardingSettings, ShardedDaemonProcessSettings }
+import pekko.cluster.sharding.typed.scaladsl.ShardedDaemonProcess
+import pekko.stream.{ KillSwitches, SharedKillSwitch }
 import com.typesafe.config.Config
 import org.HdrHistogram.Histogram
-import org.apache.pekko.actor.typed.scaladsl.LoggerOps
+import pekko.actor.typed.scaladsl.LoggerOps
 import scala.concurrent.duration._
 
 object ReadSide {

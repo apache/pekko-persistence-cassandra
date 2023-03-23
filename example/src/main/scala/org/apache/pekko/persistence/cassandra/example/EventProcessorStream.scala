@@ -9,17 +9,18 @@
 
 package org.apache.pekko.persistence.cassandra.example
 
-import org.apache.pekko.{ Done, NotUsed }
-import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import org.apache.pekko.persistence.query.{ Offset, PersistenceQuery, TimeBasedUUID }
-import org.apache.pekko.persistence.typed.PersistenceId
-import org.apache.pekko.stream.SharedKillSwitch
-import org.apache.pekko.stream.connectors.cassandra.scaladsl.CassandraSessionRegistry
-import org.apache.pekko.stream.scaladsl.{ RestartSource, Sink, Source }
+import org.apache.pekko
+import pekko.{ Done, NotUsed }
+import pekko.actor.typed.ActorSystem
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.query.{ Offset, PersistenceQuery, TimeBasedUUID }
+import pekko.persistence.typed.PersistenceId
+import pekko.stream.SharedKillSwitch
+import pekko.stream.connectors.cassandra.scaladsl.CassandraSessionRegistry
+import pekko.stream.scaladsl.{ RestartSource, Sink, Source }
 import com.datastax.oss.driver.api.core.cql.{ PreparedStatement, Row }
 import org.slf4j.{ Logger, LoggerFactory }
-import org.apache.pekko.actor.typed.scaladsl.LoggerOps
+import pekko.actor.typed.scaladsl.LoggerOps
 import org.HdrHistogram.Histogram
 
 import scala.concurrent.{ ExecutionContext, Future }

@@ -15,16 +15,17 @@ package org.apache.pekko.persistence.cassandra.query
 
 import java.nio.ByteBuffer
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.persistence.{ PersistentRepr, SnapshotMetadata }
-import org.apache.pekko.persistence.cassandra.Hour
-import org.apache.pekko.persistence.cassandra.PluginSettings
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournalStatements
-import org.apache.pekko.persistence.cassandra.journal.TimeBucket
-import org.apache.pekko.persistence.cassandra.snapshot.{ CassandraSnapshotStatements, CassandraSnapshotStore }
-import org.apache.pekko.persistence.cassandra.snapshot.CassandraSnapshotStore.SnapshotSerialization
-import org.apache.pekko.serialization.SerializationExtension
-import org.apache.pekko.serialization.Serializers
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.persistence.{ PersistentRepr, SnapshotMetadata }
+import pekko.persistence.cassandra.Hour
+import pekko.persistence.cassandra.PluginSettings
+import pekko.persistence.cassandra.journal.CassandraJournalStatements
+import pekko.persistence.cassandra.journal.TimeBucket
+import pekko.persistence.cassandra.snapshot.{ CassandraSnapshotStatements, CassandraSnapshotStore }
+import pekko.persistence.cassandra.snapshot.CassandraSnapshotStore.SnapshotSerialization
+import pekko.serialization.SerializationExtension
+import pekko.serialization.Serializers
 import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import org.scalatest.BeforeAndAfterAll

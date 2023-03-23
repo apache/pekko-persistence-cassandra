@@ -13,11 +13,12 @@
 
 package org.apache.pekko.persistence.cassandra.query.javadsl
 
-import org.apache.pekko.persistence.cassandra.query.{ javadsl, scaladsl, TestActor }
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
-import org.apache.pekko.persistence.journal.{ Tagged, WriteEventAdapter }
-import org.apache.pekko.persistence.query.{ Offset, PersistenceQuery }
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
+import org.apache.pekko
+import pekko.persistence.cassandra.query.{ javadsl, scaladsl, TestActor }
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
+import pekko.persistence.journal.{ Tagged, WriteEventAdapter }
+import pekko.persistence.query.{ Offset, PersistenceQuery }
+import pekko.stream.testkit.scaladsl.TestSink
 import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.duration._

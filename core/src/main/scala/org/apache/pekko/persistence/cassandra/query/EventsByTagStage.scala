@@ -16,19 +16,20 @@ package org.apache.pekko.persistence.cassandra.query
 import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.cql.{ AsyncResultSet, Row }
 import com.datastax.oss.driver.api.core.uuid.Uuids
-import org.apache.pekko.actor.Scheduler
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.cluster.pubsub.{ DistributedPubSub, DistributedPubSubMediator }
-import org.apache.pekko.persistence.cassandra.EventsByTagSettings.RetrySettings
-import org.apache.pekko.persistence.cassandra._
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal._
-import org.apache.pekko.persistence.cassandra.journal.TimeBucket
-import org.apache.pekko.persistence.cassandra.query.EventsByTagStage._
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.EventByTagStatements
-import org.apache.pekko.stream.stage._
-import org.apache.pekko.stream.{ Attributes, Outlet, SourceShape }
-import org.apache.pekko.util.PrettyDuration._
-import org.apache.pekko.util.UUIDComparator
+import org.apache.pekko
+import pekko.actor.Scheduler
+import pekko.annotation.InternalApi
+import pekko.cluster.pubsub.{ DistributedPubSub, DistributedPubSubMediator }
+import pekko.persistence.cassandra.EventsByTagSettings.RetrySettings
+import pekko.persistence.cassandra._
+import pekko.persistence.cassandra.journal.CassandraJournal._
+import pekko.persistence.cassandra.journal.TimeBucket
+import pekko.persistence.cassandra.query.EventsByTagStage._
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.EventByTagStatements
+import pekko.stream.stage._
+import pekko.stream.{ Attributes, Outlet, SourceShape }
+import pekko.util.PrettyDuration._
+import pekko.util.UUIDComparator
 
 import java.lang.{ Long => JLong }
 import java.util.UUID

@@ -16,11 +16,12 @@ package org.apache.pekko.persistence.cassandra
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-import org.apache.pekko.Done
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.event.LoggingAdapter
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournalStatements
-import org.apache.pekko.persistence.cassandra.snapshot.CassandraSnapshotStatements
+import org.apache.pekko
+import pekko.Done
+import pekko.annotation.InternalApi
+import pekko.event.LoggingAdapter
+import pekko.persistence.cassandra.journal.CassandraJournalStatements
+import pekko.persistence.cassandra.snapshot.CassandraSnapshotStatements
 import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.cql.Row
 
