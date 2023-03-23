@@ -13,33 +13,34 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import org.apache.pekko.Done
-import org.apache.pekko.actor.ActorRef
-import org.apache.pekko.pattern.ask
-import org.apache.pekko.event.LoggingAdapter
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal.{ SequenceNr, Tag }
-import org.apache.pekko.persistence.cassandra.journal.TagWriter.TagProgress
-import org.apache.pekko.persistence.cassandra.journal.TagWriters.{
+import org.apache.pekko
+import pekko.Done
+import pekko.actor.ActorRef
+import pekko.pattern.ask
+import pekko.event.LoggingAdapter
+import pekko.persistence.cassandra.journal.CassandraJournal.{ SequenceNr, Tag }
+import pekko.persistence.cassandra.journal.TagWriter.TagProgress
+import pekko.persistence.cassandra.journal.TagWriters.{
   PersistentActorStarting,
   PersistentActorStartingAck,
   SetTagProgress,
   TagProcessAck,
   TagWrite
 }
-import org.apache.pekko.persistence.cassandra.Extractors.RawEvent
-import org.apache.pekko.stream.scaladsl.Sink
-import org.apache.pekko.util.Timeout
+import pekko.persistence.cassandra.Extractors.RawEvent
+import pekko.stream.scaladsl.Sink
+import pekko.util.Timeout
 
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.event.Logging
-import org.apache.pekko.persistence.cassandra.Extractors.TaggedPersistentRepr
-import org.apache.pekko.serialization.SerializationExtension
-import org.apache.pekko.persistence.cassandra._
-import org.apache.pekko.persistence.cassandra.journal.TagWriters.FlushAllTagWriters
-import org.apache.pekko.stream.connectors.cassandra.scaladsl.CassandraSession
+import pekko.actor.ActorSystem
+import pekko.annotation.InternalApi
+import pekko.event.Logging
+import pekko.persistence.cassandra.Extractors.TaggedPersistentRepr
+import pekko.serialization.SerializationExtension
+import pekko.persistence.cassandra._
+import pekko.persistence.cassandra.journal.TagWriters.FlushAllTagWriters
+import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
 
 /**
  * INTERNAL API

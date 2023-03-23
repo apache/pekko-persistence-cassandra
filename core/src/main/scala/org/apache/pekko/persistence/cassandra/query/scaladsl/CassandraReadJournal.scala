@@ -17,31 +17,27 @@ import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.cql._
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import com.typesafe.config.Config
-import org.apache.pekko.actor.{ ActorSystem, ExtendedActorSystem }
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.event.Logging
-import org.apache.pekko.persistence.cassandra.Extractors.Extractor
-import org.apache.pekko.persistence.cassandra.{ CassandraStatements, Extractors, PluginSettings }
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal.{
-  DeserializedEvent,
-  PersistenceId,
-  Tag,
-  TagPidSequenceNr
-}
-import org.apache.pekko.persistence.cassandra.journal._
-import org.apache.pekko.persistence.cassandra.query.EventsByTagStage.TagStageSession
-import org.apache.pekko.persistence.cassandra.query._
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.EventByTagStatements
-import org.apache.pekko.persistence.query._
-import org.apache.pekko.persistence.query.scaladsl._
-import org.apache.pekko.persistence.{ Persistence, PersistentRepr }
-import org.apache.pekko.serialization.SerializationExtension
-import org.apache.pekko.stream.ActorAttributes
-import org.apache.pekko.stream.connectors.cassandra.CassandraSessionSettings
-import org.apache.pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
-import org.apache.pekko.stream.scaladsl.{ Flow, Source }
-import org.apache.pekko.util.{ ByteString, OptionVal }
-import org.apache.pekko.{ Done, NotUsed }
+import org.apache.pekko
+import pekko.actor.{ ActorSystem, ExtendedActorSystem }
+import pekko.annotation.InternalApi
+import pekko.event.Logging
+import pekko.persistence.cassandra.Extractors.Extractor
+import pekko.persistence.cassandra.{ CassandraStatements, Extractors, PluginSettings }
+import pekko.persistence.cassandra.journal.CassandraJournal.{ DeserializedEvent, PersistenceId, Tag, TagPidSequenceNr }
+import pekko.persistence.cassandra.journal._
+import pekko.persistence.cassandra.query.EventsByTagStage.TagStageSession
+import pekko.persistence.cassandra.query._
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.EventByTagStatements
+import pekko.persistence.query._
+import pekko.persistence.query.scaladsl._
+import pekko.persistence.{ Persistence, PersistentRepr }
+import pekko.serialization.SerializationExtension
+import pekko.stream.ActorAttributes
+import pekko.stream.connectors.cassandra.CassandraSessionSettings
+import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
+import pekko.stream.scaladsl.{ Flow, Source }
+import pekko.util.{ ByteString, OptionVal }
+import pekko.{ Done, NotUsed }
 
 import java.net.URLEncoder
 import java.util.UUID

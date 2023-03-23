@@ -13,13 +13,14 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.actor.NoSerializationVerificationNeeded
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.annotation.InternalStableApi
-import org.apache.pekko.persistence.cassandra.PluginSettings.getReplicationStrategy
-import org.apache.pekko.persistence.cassandra.compaction.CassandraCompactionStrategy
-import org.apache.pekko.persistence.cassandra.getListFromConfig
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.actor.NoSerializationVerificationNeeded
+import pekko.annotation.InternalApi
+import pekko.annotation.InternalStableApi
+import pekko.persistence.cassandra.PluginSettings.getReplicationStrategy
+import pekko.persistence.cassandra.compaction.CassandraCompactionStrategy
+import pekko.persistence.cassandra.getListFromConfig
 import com.typesafe.config.Config
 
 /** INTERNAL API */

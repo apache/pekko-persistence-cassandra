@@ -15,11 +15,12 @@ package org.apache.pekko.persistence.cassandra.journal
 
 import scala.concurrent.duration._
 
-import org.apache.pekko.actor._
-import org.apache.pekko.persistence._
-import org.apache.pekko.persistence.cassandra.CassandraLifecycle
-import org.apache.pekko.persistence.cassandra.CassandraSpec
-import org.apache.pekko.testkit._
+import org.apache.pekko
+import pekko.actor._
+import pekko.persistence._
+import pekko.persistence.cassandra.CassandraLifecycle
+import pekko.persistence.cassandra.CassandraSpec
+import pekko.testkit._
 import com.typesafe.config.ConfigFactory
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike

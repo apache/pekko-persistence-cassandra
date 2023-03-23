@@ -13,8 +13,9 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.testkit.TestKit
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.testkit.TestKit
 import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -22,7 +23,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import scala.util.Random
 
-import org.apache.pekko.persistence.cassandra.journal.JournalSettings
+import pekko.persistence.cassandra.journal.JournalSettings
 
 class CassandraPluginSettingsSpec
     extends TestKit(ActorSystem("CassandraPluginConfigSpec"))

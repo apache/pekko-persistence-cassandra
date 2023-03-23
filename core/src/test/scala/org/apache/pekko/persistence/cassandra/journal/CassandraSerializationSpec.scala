@@ -13,11 +13,12 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import org.apache.pekko.actor.{ ExtendedActorSystem, Props }
-import org.apache.pekko.persistence.RecoveryCompleted
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, Persister }
-import org.apache.pekko.serialization.BaseSerializer
-import org.apache.pekko.testkit.TestProbe
+import org.apache.pekko
+import pekko.actor.{ ExtendedActorSystem, Props }
+import pekko.persistence.RecoveryCompleted
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, Persister }
+import pekko.serialization.BaseSerializer
+import pekko.testkit.TestProbe
 import com.typesafe.config.ConfigFactory
 
 object CassandraSerializationSpec {
@@ -54,7 +55,7 @@ class BrokenDeSerialization(override val system: ExtendedActorSystem) extends Ba
 
 class CassandraSerializationSpec extends CassandraSpec(CassandraSerializationSpec.config) {
 
-  import org.apache.pekko.persistence.cassandra.Persister._
+  import pekko.persistence.cassandra.Persister._
 
   "A Cassandra journal" must {
 

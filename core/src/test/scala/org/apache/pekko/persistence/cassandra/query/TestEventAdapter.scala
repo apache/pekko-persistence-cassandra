@@ -13,8 +13,9 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
-import org.apache.pekko.actor.ExtendedActorSystem
-import org.apache.pekko.persistence.journal.{ EventAdapter, EventSeq, Tagged }
+import org.apache.pekko
+import pekko.actor.ExtendedActorSystem
+import pekko.persistence.journal.{ EventAdapter, EventSeq, Tagged }
 
 sealed trait TestEvent[T] {
   def value: T

@@ -15,9 +15,10 @@ package org.apache.pekko.persistence.cassandra.journal
 
 import java.util.UUID
 
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.persistence.cassandra.BucketSize
-import org.apache.pekko.util.HashCode
+import org.apache.pekko
+import pekko.annotation.InternalApi
+import pekko.persistence.cassandra.BucketSize
+import pekko.util.HashCode
 import com.datastax.oss.driver.api.core.uuid.Uuids
 
 /** INTERNAL API */
@@ -81,7 +82,7 @@ import com.datastax.oss.driver.api.core.uuid.Uuids
     result
   }
 
-  import org.apache.pekko.persistence.cassandra._
+  import pekko.persistence.cassandra._
 
   override def toString =
     s"TimeBucket($key, $bucketSize, inPast: $inPast, currentBucket: $isCurrent. time: ${formatUnixTime(key)} )"

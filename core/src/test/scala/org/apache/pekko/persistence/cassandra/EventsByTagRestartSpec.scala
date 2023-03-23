@@ -16,15 +16,16 @@ package org.apache.pekko.persistence.cassandra
 import java.time.format.DateTimeFormatter
 import java.time.{ LocalDateTime, ZoneOffset }
 
-import org.apache.pekko.persistence.cassandra.TestTaggingActor.{ Ack, Stop }
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import org.apache.pekko.persistence.query.{ EventEnvelope, NoOffset, PersistenceQuery }
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
-import org.apache.pekko.testkit.TestProbe
+import org.apache.pekko
+import pekko.persistence.cassandra.TestTaggingActor.{ Ack, Stop }
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.query.{ EventEnvelope, NoOffset, PersistenceQuery }
+import pekko.stream.testkit.scaladsl.TestSink
+import pekko.testkit.TestProbe
 import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.duration._
-import org.apache.pekko.actor.PoisonPill
+import pekko.actor.PoisonPill
 import org.scalatest.matchers.should.Matchers
 
 object EventsByTagRestartSpec {

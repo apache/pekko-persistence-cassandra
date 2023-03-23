@@ -13,10 +13,11 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import org.apache.pekko.actor._
-import org.apache.pekko.persistence._
-import org.apache.pekko.persistence.cassandra.CassandraSpec
-import org.apache.pekko.testkit._
+import org.apache.pekko
+import pekko.actor._
+import pekko.persistence._
+import pekko.persistence.cassandra.CassandraSpec
+import pekko.testkit._
 
 import scala.concurrent.duration._
 

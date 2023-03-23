@@ -13,9 +13,10 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import org.apache.pekko.actor.ActorRef
-import org.apache.pekko.persistence._
-import org.apache.pekko.persistence.cassandra.Persister._
+import org.apache.pekko
+import pekko.actor.ActorRef
+import pekko.persistence._
+import pekko.persistence.cassandra.Persister._
 
 object Persister {
   case class CrapEvent(n: Int)

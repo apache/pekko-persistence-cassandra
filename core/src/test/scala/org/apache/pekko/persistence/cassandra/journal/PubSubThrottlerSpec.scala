@@ -18,8 +18,9 @@ import scala.concurrent.duration.DurationInt
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatest.matchers.should.Matchers
 
-import org.apache.pekko.actor.{ ActorSystem, Props }
-import org.apache.pekko.testkit.{ TestKit, TestProbe }
+import org.apache.pekko
+import pekko.actor.{ ActorSystem, Props }
+import pekko.testkit.{ TestKit, TestProbe }
 
 class PubSubThrottlerSpec
     extends TestKit(ActorSystem("CassandraConfigCheckerSpec"))

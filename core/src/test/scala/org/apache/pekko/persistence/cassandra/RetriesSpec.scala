@@ -16,9 +16,10 @@ package org.apache.pekko.persistence.cassandra
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.testkit.TestKit
-import org.apache.pekko.testkit.TestProbe
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.testkit.TestKit
+import pekko.testkit.TestProbe
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers

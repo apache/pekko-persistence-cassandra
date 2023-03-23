@@ -13,10 +13,11 @@
 
 package org.apache.pekko.persistence.cassandra.reconciler
 
-import org.apache.pekko.persistence.cassandra.CassandraSpec
-import org.apache.pekko.persistence.cassandra.TestTaggingActor
-import org.apache.pekko.testkit.TestProbe
-import org.apache.pekko.persistence.RecoveryCompleted
+import org.apache.pekko
+import pekko.persistence.cassandra.CassandraSpec
+import pekko.persistence.cassandra.TestTaggingActor
+import pekko.testkit.TestProbe
+import pekko.persistence.RecoveryCompleted
 
 /**
  * These tests depend on the output of each other, can't be run separately

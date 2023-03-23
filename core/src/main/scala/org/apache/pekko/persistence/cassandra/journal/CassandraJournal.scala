@@ -17,25 +17,26 @@ import java.lang.{ Long => JLong }
 import java.nio.ByteBuffer
 import java.util.{ HashMap => JHMap, Map => JMap, UUID }
 
-import org.apache.pekko.Done
-import org.apache.pekko.actor.SupervisorStrategy.Stop
-import org.apache.pekko.actor._
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.event.{ Logging, LoggingAdapter }
-import org.apache.pekko.pattern.{ ask, pipe }
-import org.apache.pekko.persistence._
-import org.apache.pekko.persistence.cassandra._
-import org.apache.pekko.persistence.cassandra.Extractors
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import org.apache.pekko.persistence.journal.{ AsyncWriteJournal, Tagged }
-import org.apache.pekko.persistence.query.PersistenceQuery
-import org.apache.pekko.persistence.cassandra.journal.TagWriters.{ BulkTagWrite, TagWrite, TagWritersSession }
-import org.apache.pekko.persistence.cassandra.journal.TagWriter.TagProgress
-import org.apache.pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtension }
-import org.apache.pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
-import org.apache.pekko.stream.scaladsl.Sink
-import org.apache.pekko.dispatch.ExecutionContexts
-import org.apache.pekko.util.{ OptionVal, Timeout }
+import org.apache.pekko
+import pekko.Done
+import pekko.actor.SupervisorStrategy.Stop
+import pekko.actor._
+import pekko.annotation.InternalApi
+import pekko.event.{ Logging, LoggingAdapter }
+import pekko.pattern.{ ask, pipe }
+import pekko.persistence._
+import pekko.persistence.cassandra._
+import pekko.persistence.cassandra.Extractors
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.journal.{ AsyncWriteJournal, Tagged }
+import pekko.persistence.query.PersistenceQuery
+import pekko.persistence.cassandra.journal.TagWriters.{ BulkTagWrite, TagWrite, TagWritersSession }
+import pekko.persistence.cassandra.journal.TagWriter.TagProgress
+import pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtension }
+import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
+import pekko.stream.scaladsl.Sink
+import pekko.dispatch.ExecutionContexts
+import pekko.util.{ OptionVal, Timeout }
 import com.datastax.oss.driver.api.core.cql._
 import com.typesafe.config.Config
 import com.datastax.oss.driver.api.core.uuid.Uuids
@@ -49,9 +50,9 @@ import scala.concurrent._
 import scala.util.control.NonFatal
 import scala.util.{ Failure, Success, Try }
 import scala.compat.java8.FutureConverters._
-import org.apache.pekko.annotation.DoNotInherit
-import org.apache.pekko.annotation.InternalStableApi
-import org.apache.pekko.stream.scaladsl.Source
+import pekko.annotation.DoNotInherit
+import pekko.annotation.InternalStableApi
+import pekko.stream.scaladsl.Source
 
 /**
  * INTERNAL API

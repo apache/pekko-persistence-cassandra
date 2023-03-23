@@ -13,12 +13,13 @@
 
 package org.apache.pekko.persistence.cassandra.sharding
 
-import org.apache.pekko.actor.{ ActorLogging, ActorRef, Props, ReceiveTimeout }
-import org.apache.pekko.cluster.sharding.{ ClusterSharding, ClusterShardingSettings, ShardRegion }
-import org.apache.pekko.cluster.{ Cluster, MemberStatus }
-import org.apache.pekko.persistence.PersistentActor
-import org.apache.pekko.persistence.cassandra.CassandraSpec
-import org.apache.pekko.testkit.TestProbe
+import org.apache.pekko
+import pekko.actor.{ ActorLogging, ActorRef, Props, ReceiveTimeout }
+import pekko.cluster.sharding.{ ClusterSharding, ClusterShardingSettings, ShardRegion }
+import pekko.cluster.{ Cluster, MemberStatus }
+import pekko.persistence.PersistentActor
+import pekko.persistence.cassandra.CassandraSpec
+import pekko.testkit.TestProbe
 
 import scala.concurrent.duration._
 

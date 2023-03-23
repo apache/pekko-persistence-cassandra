@@ -13,21 +13,17 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import org.apache.pekko.actor.Actor
-import org.apache.pekko.persistence.CapabilityFlag
-import org.apache.pekko.persistence.{ AtomicWrite, PersistentRepr }
-import org.apache.pekko.persistence.JournalProtocol.{
-  ReplayMessages,
-  WriteMessageFailure,
-  WriteMessages,
-  WriteMessagesFailed
-}
+import org.apache.pekko
+import pekko.actor.Actor
+import pekko.persistence.CapabilityFlag
+import pekko.persistence.{ AtomicWrite, PersistentRepr }
+import pekko.persistence.JournalProtocol.{ ReplayMessages, WriteMessageFailure, WriteMessages, WriteMessagesFailed }
 
 import scala.concurrent.duration._
-import org.apache.pekko.persistence.journal._
-import org.apache.pekko.persistence.cassandra.CassandraLifecycle
-import org.apache.pekko.stream.connectors.cassandra.CassandraMetricsRegistry
-import org.apache.pekko.testkit.TestProbe
+import pekko.persistence.journal._
+import pekko.persistence.cassandra.CassandraLifecycle
+import pekko.stream.connectors.cassandra.CassandraMetricsRegistry
+import pekko.testkit.TestProbe
 import com.typesafe.config.ConfigFactory
 
 object CassandraJournalConfiguration {

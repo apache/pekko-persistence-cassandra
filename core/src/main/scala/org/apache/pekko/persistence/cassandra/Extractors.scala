@@ -17,20 +17,21 @@ import com.datastax.oss.driver.api.core.cql.Row
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-import org.apache.pekko.persistence.PersistentRepr
-import org.apache.pekko.persistence.cassandra.journal._
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal._
-import org.apache.pekko.annotation.InternalApi
+import org.apache.pekko
+import pekko.persistence.PersistentRepr
+import pekko.persistence.cassandra.journal._
+import pekko.persistence.cassandra.journal.CassandraJournal._
+import pekko.annotation.InternalApi
 import java.{ util => ju }
 
-import org.apache.pekko.util.OptionVal
-import org.apache.pekko.serialization.Serialization
+import pekko.util.OptionVal
+import pekko.serialization.Serialization
 import scala.jdk.CollectionConverters._
 import java.nio.ByteBuffer
 
 import com.datastax.oss.protocol.internal.util.Bytes
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.persistence.query.TimeBasedUUID
+import pekko.actor.ActorSystem
+import pekko.persistence.query.TimeBasedUUID
 
 /**
  * An Extractor takes reads a row from the messages table. There are different extractors

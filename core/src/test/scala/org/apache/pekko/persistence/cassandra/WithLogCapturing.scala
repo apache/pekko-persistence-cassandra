@@ -13,8 +13,9 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import org.apache.pekko.event.Logging._
-import org.apache.pekko.testkit.TestEventListener
+import org.apache.pekko
+import pekko.event.Logging._
+import pekko.testkit.TestEventListener
 
 /**
  * An adaption of TestEventListener that never prints debug logs itself. Use together with [[pekko.persistence.cassandra.CassandraSpec]].

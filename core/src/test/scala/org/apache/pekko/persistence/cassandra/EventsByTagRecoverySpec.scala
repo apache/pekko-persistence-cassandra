@@ -13,12 +13,13 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import org.apache.pekko.actor.{ ActorSystem, PoisonPill }
-import org.apache.pekko.persistence.cassandra.TestTaggingActor.{ Ack, DoASnapshotPlease, SnapShotAck }
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import org.apache.pekko.persistence.query.{ EventEnvelope, NoOffset, PersistenceQuery }
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
-import org.apache.pekko.testkit.TestProbe
+import org.apache.pekko
+import pekko.actor.{ ActorSystem, PoisonPill }
+import pekko.persistence.cassandra.TestTaggingActor.{ Ack, DoASnapshotPlease, SnapShotAck }
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.query.{ EventEnvelope, NoOffset, PersistenceQuery }
+import pekko.stream.testkit.scaladsl.TestSink
+import pekko.testkit.TestProbe
 import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.duration._

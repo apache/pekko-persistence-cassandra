@@ -16,20 +16,21 @@ package org.apache.pekko.persistence.cassandra.snapshot
 import com.datastax.oss.driver.api.core.cql._
 import com.datastax.oss.protocol.internal.util.Bytes
 import com.typesafe.config.Config
-import org.apache.pekko.{ Done, NotUsed }
-import org.apache.pekko.actor._
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.dispatch.ExecutionContexts
-import org.apache.pekko.event.Logging
-import org.apache.pekko.pattern.pipe
-import org.apache.pekko.persistence._
-import org.apache.pekko.persistence.cassandra._
-import org.apache.pekko.persistence.serialization.Snapshot
-import org.apache.pekko.persistence.snapshot.SnapshotStore
-import org.apache.pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtension, Serializers }
-import org.apache.pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
-import org.apache.pekko.stream.scaladsl.{ Sink, Source }
-import org.apache.pekko.util.{ unused, OptionVal }
+import org.apache.pekko
+import pekko.{ Done, NotUsed }
+import pekko.actor._
+import pekko.annotation.InternalApi
+import pekko.dispatch.ExecutionContexts
+import pekko.event.Logging
+import pekko.pattern.pipe
+import pekko.persistence._
+import pekko.persistence.cassandra._
+import pekko.persistence.serialization.Snapshot
+import pekko.persistence.snapshot.SnapshotStore
+import pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtension, Serializers }
+import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
+import pekko.stream.scaladsl.{ Sink, Source }
+import pekko.util.{ unused, OptionVal }
 
 import java.lang.{ Long => JLong }
 import java.nio.ByteBuffer

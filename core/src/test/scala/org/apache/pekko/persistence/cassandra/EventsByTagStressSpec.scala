@@ -13,11 +13,12 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import org.apache.pekko.persistence.cassandra.query.TestActor
-import org.apache.pekko.persistence.journal.Tagged
-import org.apache.pekko.persistence.query.NoOffset
-import org.apache.pekko.stream.testkit.TestSubscriber
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
+import org.apache.pekko
+import pekko.persistence.cassandra.query.TestActor
+import pekko.persistence.journal.Tagged
+import pekko.persistence.query.NoOffset
+import pekko.stream.testkit.TestSubscriber
+import pekko.stream.testkit.scaladsl.TestSink
 
 import scala.collection.immutable
 import scala.concurrent.Future

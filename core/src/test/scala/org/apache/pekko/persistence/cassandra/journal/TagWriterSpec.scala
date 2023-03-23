@@ -15,17 +15,18 @@ package org.apache.pekko.persistence.cassandra.journal
 
 import java.nio.ByteBuffer
 import java.util.UUID
-import org.apache.pekko.Done
-import org.apache.pekko.actor.{ ActorRef, ActorSystem }
-import org.apache.pekko.event.Logging.Warning
-import org.apache.pekko.persistence.cassandra.Day
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal._
-import org.apache.pekko.persistence.cassandra.journal.TagWriter._
-import org.apache.pekko.persistence.cassandra.journal.TagWriters.TagWrite
-import org.apache.pekko.persistence.cassandra.journal.TagWriterSpec.{ EventWrite, ProgressWrite, TestEx }
-import org.apache.pekko.persistence.cassandra.formatOffset
-import org.apache.pekko.persistence.cassandra.journal.TagWriters.TagWritersSession
-import org.apache.pekko.testkit.{ TestKit, TestProbe }
+import org.apache.pekko
+import pekko.Done
+import pekko.actor.{ ActorRef, ActorSystem }
+import pekko.event.Logging.Warning
+import pekko.persistence.cassandra.Day
+import pekko.persistence.cassandra.journal.CassandraJournal._
+import pekko.persistence.cassandra.journal.TagWriter._
+import pekko.persistence.cassandra.journal.TagWriters.TagWrite
+import pekko.persistence.cassandra.journal.TagWriterSpec.{ EventWrite, ProgressWrite, TestEx }
+import pekko.persistence.cassandra.formatOffset
+import pekko.persistence.cassandra.journal.TagWriters.TagWritersSession
+import pekko.testkit.{ TestKit, TestProbe }
 import com.datastax.oss.driver.api.core.cql.{ PreparedStatement, Statement }
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import com.typesafe.config.{ Config, ConfigFactory }

@@ -9,9 +9,10 @@
 
 package org.apache.pekko.persistence.cassandra.example
 
-import org.apache.pekko.actor.typed.pubsub.Topic
-import org.apache.pekko.actor.typed.scaladsl.ActorContext
-import org.apache.pekko.actor.typed.ActorRef
+import org.apache.pekko
+import pekko.actor.typed.pubsub.Topic
+import pekko.actor.typed.scaladsl.ActorContext
+import pekko.actor.typed.ActorRef
 
 object ReadSideTopic {
 

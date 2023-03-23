@@ -15,14 +15,15 @@ package org.apache.pekko.persistence.cassandra.journal
 
 import java.nio.ByteBuffer
 
-import org.apache.pekko.Done
-import org.apache.pekko.actor.{ Actor, ActorRef, ActorSystem, PoisonPill, Props }
-import org.apache.pekko.persistence.cassandra.Hour
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal.Serialized
-import org.apache.pekko.persistence.cassandra.journal.TagWriter._
-import org.apache.pekko.persistence.cassandra.journal.TagWriters._
-import org.apache.pekko.testkit.{ ImplicitSender, TestKit, TestProbe }
-import org.apache.pekko.util.Timeout
+import org.apache.pekko
+import pekko.Done
+import pekko.actor.{ Actor, ActorRef, ActorSystem, PoisonPill, Props }
+import pekko.persistence.cassandra.Hour
+import pekko.persistence.cassandra.journal.CassandraJournal.Serialized
+import pekko.persistence.cassandra.journal.TagWriter._
+import pekko.persistence.cassandra.journal.TagWriters._
+import pekko.testkit.{ ImplicitSender, TestKit, TestProbe }
+import pekko.util.Timeout
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import com.typesafe.config.{ Config, ConfigFactory }
 import org.scalatest.BeforeAndAfterAll

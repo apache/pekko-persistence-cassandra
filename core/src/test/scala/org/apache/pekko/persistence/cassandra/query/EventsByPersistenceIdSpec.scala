@@ -14,14 +14,15 @@
 package org.apache.pekko.persistence.cassandra.query
 
 import com.typesafe.config.ConfigFactory
-import org.apache.pekko.actor.ActorRef
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
-import org.apache.pekko.persistence.query.TimeBasedUUID
-import org.apache.pekko.persistence.{ DeleteMessagesSuccess, PersistentRepr }
-import org.apache.pekko.stream.KillSwitches
-import org.apache.pekko.stream.scaladsl.{ Keep, Sink }
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
-import org.apache.pekko.util.UUIDComparator
+import org.apache.pekko
+import pekko.actor.ActorRef
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
+import pekko.persistence.query.TimeBasedUUID
+import pekko.persistence.{ DeleteMessagesSuccess, PersistentRepr }
+import pekko.stream.KillSwitches
+import pekko.stream.scaladsl.{ Keep, Sink }
+import pekko.stream.testkit.scaladsl.TestSink
+import pekko.util.UUIDComparator
 import org.scalatest.Inside
 
 import java.util.UUID

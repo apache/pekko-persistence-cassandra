@@ -16,14 +16,15 @@ package org.apache.pekko.persistence.cassandra.cleanup
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-import org.apache.pekko.actor.ActorRef
-import org.apache.pekko.actor.Props
-import org.apache.pekko.persistence.{ PersistentActor, SaveSnapshotSuccess, SnapshotMetadata, SnapshotOffer }
-import org.apache.pekko.persistence.cassandra.{ CassandraSpec, RequiresCassandraThree }
-import org.apache.pekko.persistence.cassandra.query.{ firstBucketFormatter, DirectWriting }
-import org.apache.pekko.persistence.journal.Tagged
-import org.apache.pekko.persistence.query.NoOffset
-import org.apache.pekko.stream.scaladsl.Sink
+import org.apache.pekko
+import pekko.actor.ActorRef
+import pekko.actor.Props
+import pekko.persistence.{ PersistentActor, SaveSnapshotSuccess, SnapshotMetadata, SnapshotOffer }
+import pekko.persistence.cassandra.{ CassandraSpec, RequiresCassandraThree }
+import pekko.persistence.cassandra.query.{ firstBucketFormatter, DirectWriting }
+import pekko.persistence.journal.Tagged
+import pekko.persistence.query.NoOffset
+import pekko.stream.scaladsl.Sink
 import com.typesafe.config.ConfigFactory
 
 object CleanupSpec {

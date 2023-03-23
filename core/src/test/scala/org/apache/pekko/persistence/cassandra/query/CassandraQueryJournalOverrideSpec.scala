@@ -13,13 +13,14 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
-import org.apache.pekko.actor.ExtendedActorSystem
-import org.apache.pekko.persistence.PersistentRepr
-import org.apache.pekko.persistence.cassandra.TestTaggingActor.Ack
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, TestTaggingActor }
-import org.apache.pekko.persistence.query.{ PersistenceQuery, ReadJournalProvider }
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
+import org.apache.pekko
+import pekko.actor.ExtendedActorSystem
+import pekko.persistence.PersistentRepr
+import pekko.persistence.cassandra.TestTaggingActor.Ack
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, TestTaggingActor }
+import pekko.persistence.query.{ PersistenceQuery, ReadJournalProvider }
+import pekko.stream.testkit.scaladsl.TestSink
 import com.typesafe.config.{ Config, ConfigFactory }
 
 import scala.concurrent.duration._

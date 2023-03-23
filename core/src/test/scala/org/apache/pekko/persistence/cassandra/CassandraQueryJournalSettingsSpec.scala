@@ -13,12 +13,13 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.persistence.cassandra.journal.TimeBucket
-import org.apache.pekko.persistence.cassandra.EventsByTagSettings.BackTrackSettings
-import org.apache.pekko.persistence.cassandra.EventsByTagSettings.Fixed
-import org.apache.pekko.persistence.cassandra.EventsByTagSettings.Max
-import org.apache.pekko.testkit.TestKit
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.persistence.cassandra.journal.TimeBucket
+import pekko.persistence.cassandra.EventsByTagSettings.BackTrackSettings
+import pekko.persistence.cassandra.EventsByTagSettings.Fixed
+import pekko.persistence.cassandra.EventsByTagSettings.Max
+import pekko.testkit.TestKit
 import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike

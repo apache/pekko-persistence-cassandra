@@ -10,14 +10,15 @@
 package org.apache.pekko.cluster.persistence.cassandra
 
 import com.typesafe.config.ConfigFactory
-import org.apache.pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import org.apache.pekko.persistence.cassandra.testkit.CassandraLauncher
-import org.apache.pekko.persistence.journal.Tagged
-import org.apache.pekko.persistence.query.{ NoOffset, PersistenceQuery }
-import org.apache.pekko.remote.testkit.{ MultiNodeConfig, MultiNodeSpec }
-import org.apache.pekko.stream.ActorMaterializer
-import org.apache.pekko.stream.testkit.TestSubscriber
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
+import org.apache.pekko
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.cassandra.testkit.CassandraLauncher
+import pekko.persistence.journal.Tagged
+import pekko.persistence.query.{ NoOffset, PersistenceQuery }
+import pekko.remote.testkit.{ MultiNodeConfig, MultiNodeSpec }
+import pekko.stream.ActorMaterializer
+import pekko.stream.testkit.TestSubscriber
+import pekko.stream.testkit.scaladsl.TestSink
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 

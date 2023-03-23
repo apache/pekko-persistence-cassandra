@@ -14,10 +14,11 @@
 package doc.reconciler
 
 //#imports
-import org.apache.pekko.persistence.cassandra.reconciler.Reconciliation
-import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko
+import pekko.persistence.cassandra.reconciler.Reconciliation
+import pekko.actor.ActorSystem
 import scala.concurrent.Future
-import org.apache.pekko.Done
+import pekko.Done
 
 //#imports
 

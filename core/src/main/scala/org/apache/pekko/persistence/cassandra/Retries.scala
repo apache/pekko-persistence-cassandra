@@ -13,9 +13,10 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import org.apache.pekko.actor.Scheduler
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.pattern.{ after, BackoffSupervisor }
+import org.apache.pekko
+import pekko.actor.Scheduler
+import pekko.annotation.InternalApi
+import pekko.pattern.{ after, BackoffSupervisor }
 
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration.FiniteDuration

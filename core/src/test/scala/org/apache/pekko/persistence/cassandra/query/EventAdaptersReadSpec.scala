@@ -13,10 +13,11 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
-import org.apache.pekko.actor.ActorRef
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
-import org.apache.pekko.persistence.query.NoOffset
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
+import org.apache.pekko
+import pekko.actor.ActorRef
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
+import pekko.persistence.query.NoOffset
+import pekko.stream.testkit.scaladsl.TestSink
 import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.duration._

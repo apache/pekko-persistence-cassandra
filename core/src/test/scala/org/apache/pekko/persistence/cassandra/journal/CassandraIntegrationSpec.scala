@@ -15,10 +15,11 @@ package org.apache.pekko.persistence.cassandra.journal
 
 import java.util.UUID
 
-import org.apache.pekko.actor._
-import org.apache.pekko.persistence._
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
-import org.apache.pekko.testkit._
+import org.apache.pekko
+import pekko.actor._
+import pekko.persistence._
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
+import pekko.testkit._
 import com.typesafe.config.ConfigFactory
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -114,7 +115,7 @@ object CassandraIntegrationSpec {
 
 }
 
-import org.apache.pekko.persistence.cassandra.journal.CassandraIntegrationSpec._
+import pekko.persistence.cassandra.journal.CassandraIntegrationSpec._
 
 class CassandraIntegrationSpec extends CassandraSpec(config) with ImplicitSender with AnyWordSpecLike with Matchers {
 

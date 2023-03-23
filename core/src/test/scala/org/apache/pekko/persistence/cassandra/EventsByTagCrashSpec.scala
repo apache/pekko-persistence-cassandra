@@ -13,11 +13,12 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.persistence.cassandra.TestTaggingActor.{ Ack, Crash }
-import org.apache.pekko.persistence.query.{ EventEnvelope, NoOffset }
-import org.apache.pekko.stream.scaladsl.Source
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.persistence.cassandra.TestTaggingActor.{ Ack, Crash }
+import pekko.persistence.query.{ EventEnvelope, NoOffset }
+import pekko.stream.scaladsl.Source
+import pekko.stream.testkit.scaladsl.TestSink
 
 import scala.concurrent.duration._
 

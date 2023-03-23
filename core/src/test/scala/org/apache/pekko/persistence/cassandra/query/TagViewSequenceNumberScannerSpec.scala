@@ -16,22 +16,23 @@ package org.apache.pekko.persistence.cassandra.query
 import java.time.{ LocalDateTime, ZoneOffset }
 import java.util.UUID
 
-import org.apache.pekko.persistence.PersistentRepr
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal.PersistenceId
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal.TagPidSequenceNr
-import org.apache.pekko.persistence.cassandra.query.TagViewSequenceNumberScannerSpec.config
-import org.apache.pekko.persistence.cassandra.CassandraLifecycle
-import org.apache.pekko.persistence.cassandra.CassandraSpec
-import org.apache.pekko.serialization.Serialization
-import org.apache.pekko.serialization.SerializationExtension
+import org.apache.pekko
+import pekko.persistence.PersistentRepr
+import pekko.persistence.cassandra.journal.CassandraJournal.PersistenceId
+import pekko.persistence.cassandra.journal.CassandraJournal.TagPidSequenceNr
+import pekko.persistence.cassandra.query.TagViewSequenceNumberScannerSpec.config
+import pekko.persistence.cassandra.CassandraLifecycle
+import pekko.persistence.cassandra.CassandraSpec
+import pekko.serialization.Serialization
+import pekko.serialization.SerializationExtension
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfter
 import org.scalatest.time.{ Seconds, Span }
 import scala.concurrent.duration.Duration
 
-import org.apache.pekko.persistence.cassandra.Hour
-import org.apache.pekko.persistence.cassandra.PluginSettings
+import pekko.persistence.cassandra.Hour
+import pekko.persistence.cassandra.PluginSettings
 
 object TagViewSequenceNumberScannerSpec {
   val bucketSize = Hour

@@ -18,20 +18,21 @@ import java.time.{ Instant, LocalDateTime, ZoneOffset }
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
-import org.apache.pekko.Done
-import org.apache.pekko.persistence.cassandra.journal.TimeBucket
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal.{ Serialized, SerializedMeta }
-import org.apache.pekko.serialization.Serialization
+import org.apache.pekko
+import pekko.Done
+import pekko.persistence.cassandra.journal.TimeBucket
+import pekko.persistence.cassandra.journal.CassandraJournal.{ Serialized, SerializedMeta }
+import pekko.serialization.Serialization
 
 import scala.concurrent._
 import scala.util.control.NonFatal
 import scala.jdk.CollectionConverters._
 import com.typesafe.config.{ Config, ConfigValueType }
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.actor.ExtendedActorSystem
-import org.apache.pekko.serialization.AsyncSerializer
-import org.apache.pekko.serialization.Serializers
-import org.apache.pekko.annotation.InternalApi
+import pekko.actor.ActorSystem
+import pekko.actor.ExtendedActorSystem
+import pekko.serialization.AsyncSerializer
+import pekko.serialization.Serializers
+import pekko.annotation.InternalApi
 import com.datastax.oss.driver.api.core.uuid.Uuids
 
 package object cassandra {

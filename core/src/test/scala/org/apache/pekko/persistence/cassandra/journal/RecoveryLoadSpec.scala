@@ -13,10 +13,11 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import org.apache.pekko.actor._
-import org.apache.pekko.persistence.{ PersistentActor, RecoveryCompleted, SnapshotOffer }
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
-import org.apache.pekko.persistence.journal.Tagged
+import org.apache.pekko
+import pekko.actor._
+import pekko.persistence.{ PersistentActor, RecoveryCompleted, SnapshotOffer }
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
+import pekko.persistence.journal.Tagged
 import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.duration._

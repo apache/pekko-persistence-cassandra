@@ -13,10 +13,11 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import org.apache.pekko.actor.{ ActorLogging, ActorRef, PoisonPill, Props }
-import org.apache.pekko.persistence.{ PersistentActor, RecoveryCompleted }
-import org.apache.pekko.persistence.cassandra.CassandraCorruptJournalSpec.{ FullEventLog, GetEventLog, Ping, Pong }
-import org.apache.pekko.testkit.{ EventFilter, TestProbe }
+import org.apache.pekko
+import pekko.actor.{ ActorLogging, ActorRef, PoisonPill, Props }
+import pekko.persistence.{ PersistentActor, RecoveryCompleted }
+import pekko.persistence.cassandra.CassandraCorruptJournalSpec.{ FullEventLog, GetEventLog, Ping, Pong }
+import pekko.testkit.{ EventFilter, TestProbe }
 
 object CassandraCorruptJournalSpec {
 

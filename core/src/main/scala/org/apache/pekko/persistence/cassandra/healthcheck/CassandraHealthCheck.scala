@@ -13,13 +13,14 @@
 
 package org.apache.pekko.persistence.cassandra.healthcheck
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.event.Logging
-import org.apache.pekko.pattern.{ ask, AskTimeoutException }
-import org.apache.pekko.persistence.Persistence
-import org.apache.pekko.persistence.cassandra.PluginSettings
-import org.apache.pekko.persistence.cassandra.journal.CassandraJournal.HealthCheckQuery
-import org.apache.pekko.util.Timeout
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.event.Logging
+import pekko.pattern.{ ask, AskTimeoutException }
+import pekko.persistence.Persistence
+import pekko.persistence.cassandra.PluginSettings
+import pekko.persistence.cassandra.journal.CassandraJournal.HealthCheckQuery
+import pekko.util.Timeout
 
 import scala.concurrent.{ ExecutionContextExecutor, Future }
 import scala.util.control.NonFatal

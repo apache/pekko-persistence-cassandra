@@ -14,9 +14,10 @@
 package org.apache.pekko.persistence.cassandra.journal
 
 import scala.concurrent.duration.FiniteDuration
-import org.apache.pekko.actor.{ Actor, ActorRef }
-import org.apache.pekko.actor.Props
-import org.apache.pekko.annotation.InternalApi
+import org.apache.pekko
+import pekko.actor.{ Actor, ActorRef }
+import pekko.actor.Props
+import pekko.annotation.InternalApi
 
 /**
  * INTERNAL API: Proxies messages to another actor, only allowing identical messages through once every [interval].
