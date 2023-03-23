@@ -15,7 +15,7 @@ for clustering columns than Cassandra. This will probably be fixed in CosmosDB.
 When using CosmosDB you need to configure:
 
 ```
-akka.persistence.cassandra {
+pekko.persistence.cassandra {
   compatibility.cosmosdb = on
   journal.gc-grace-seconds = 0
   events-by-tag.gc-grace-seconds = 0

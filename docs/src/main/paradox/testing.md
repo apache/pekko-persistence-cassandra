@@ -19,7 +19,7 @@ Then there are options with tighter unit test framework integration:
 
 For testing it can be convenient to enable automatic creation of keyspace and tables with configuration:
 
-    akka.persistence.cassandra {
+    pekko.persistence.cassandra {
       journal.keyspace-autocreate = on
       journal.tables-autocreate = on
       snapshot.keyspace-autocreate = on

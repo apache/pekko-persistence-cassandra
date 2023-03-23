@@ -24,12 +24,12 @@ NetworkTopology replication strategy with a replication factor of at least 3:
 CREATE KEYSPACE IF NOT EXISTS akka_snapshot WITH replication = {'class': 'NetworkTopologyStrategy', '<your_dc_name>' : 3 }; 
 ```
 
-For local testing, and the default if you enable `akka.persistence.cassandra.snapshot.keyspace-autocreate` you can use the following:
+For local testing, and the default if you enable `pekko.persistence.cassandra.snapshot.keyspace-autocreate` you can use the following:
 
 @@snip [snapshot-keyspace](/target/snapshot-keyspace.txt) { #snapshot-keyspace } 
 
 A single table is required. This needs to be created before starting your application.
-For local testing you can enable `akka.persistence.cassandra.snapshot.tables-autocreate`.
+For local testing you can enable `pekko.persistence.cassandra.snapshot.tables-autocreate`.
 The default table definitions look like this:
 
 @@snip [snapshot-tables](/target/snapshot-tables.txt) { #snapshot-tables}
@@ -47,7 +47,7 @@ The consistency level for snapshots can be changed with:
 
 ```
 datastax-java-driver.profiles {
-  akka-persistence-cassandra-snapshot-profile {
+  pekko-persistence-cassandra-snapshot-profile {
     basic.request.consistency = QUORUM
   }
 }
@@ -57,11 +57,11 @@ datastax-java-driver.profiles {
 
 To activate the snapshot-store plugin, add the following line to your Akka `application.conf`:
 
-    akka.persistence.snapshot-store.plugin = "akka.persistence.cassandra.snapshot"
+    pekko.persistence.snapshot-store.plugin = "pekko.persistence.cassandra.snapshot"
 
 This will run the snapshot store with its default settings. The default settings can be changed with the configuration
 properties defined in @ref:[reference.conf](configuration.md#default-configuration). Journal configuration is under 
-`akka.persistence.cassandra.snapshot`.
+`pekko.persistence.cassandra.snapshot`.
 
 ## Limitations
 

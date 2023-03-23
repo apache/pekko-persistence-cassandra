@@ -19,7 +19,7 @@ import org.apache.pekko.actor.ActorSystem
 
 /**
  * Main application that prints the create keyspace and create table statements.
- * It's using `pekko.persistence.cassandra` configuration from default application.conf.
+ * It's using `org.apache.pekko.persistence.cassandra` configuration from default application.conf.
  *
  * These statements can be copy-pasted and run in `cqlsh`.
  */

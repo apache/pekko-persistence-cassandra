@@ -50,7 +50,7 @@ object CassandraReadJournal {
 
   /**
    * The default identifier for [[CassandraReadJournal]] to be used with
-   * `akka.persistence.query.PersistenceQuery#readJournalFor`.
+   * `org.apache.pekko.persistence.query.PersistenceQuery#readJournalFor`.
    *
    * The value is `"pekko.persistence.cassandra.query"` and corresponds
    * to the absolute path to the read journal configuration entry.
@@ -77,7 +77,7 @@ object CassandraReadJournal {
 }
 
 /**
- * Scala API `akka.persistence.query.scaladsl.ReadJournal` implementation for Cassandra.
+ * Scala API `org.apache.pekko.persistence.query.scaladsl.ReadJournal` implementation for Cassandra.
  *
  * It is retrieved with:
  * {{{
@@ -259,8 +259,8 @@ class CassandraReadJournal protected (
    * `eventsByTag` is used for retrieving events that were marked with
    * a given tag, e.g. all events of an Aggregate Root type.
    *
-   * To tag events you create an `akka.persistence.journal.EventAdapter` that wraps the events
-   * in a `akka.persistence.journal.Tagged` with the given `tags`.
+   * To tag events you create an `org.apache.pekko.persistence.journal.EventAdapter` that wraps the events
+   * in a `org.apache.pekko.persistence.journal.Tagged` with the given `tags`.
    * The tags must be defined in the `tags` section of the `pekko.persistence.cassandra` configuration.
    *
    * You can use [[NoOffset]] to retrieve all events with a given tag or
@@ -269,7 +269,7 @@ class CassandraReadJournal protected (
    * The offset of each event is provided in the streamed envelopes returned,
    * which makes it possible to resume the stream at a later point from a given offset.
    * The `offset` parameter is exclusive, i.e. the event corresponding to the given `offset` parameter is not
-   * included in the stream. The `Offset` type is `akka.persistence.query.TimeBasedUUID`.
+   * included in the stream. The `Offset` type is `org.apache.pekko.persistence.query.TimeBasedUUID`.
    *
    * For querying events that happened after a long unix timestamp you can use [[timeBasedUUIDFrom]]
    * to create the offset to use with this method.
@@ -541,7 +541,7 @@ class CassandraReadJournal protected (
    * The `fromSequenceNr` and `toSequenceNr` are inclusive.
    *
    * The `EventEnvelope` also provides an `offset`, which is the same kind of offset as is used in the
-   * `eventsByTag` query. The `Offset` type is `akka.persistence.query.TimeBasedUUID`.
+   * `eventsByTag` query. The `Offset` type is `org.apache.pekko.persistence.query.TimeBasedUUID`.
    *
    * The returned event stream is ordered by `sequenceNr`.
    *

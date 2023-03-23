@@ -28,12 +28,12 @@ NetworkTopology replication strategy with a replication factor of at least 3:
 CREATE KEYSPACE IF NOT EXISTS akka WITH replication = {'class': 'NetworkTopologyStrategy', '<your_dc_name>' : 3 }; 
 ```
 
-For local testing, and the default if you enable `akka.persistence.cassandra.journal.keyspace-autocreate` you can use the following:
+For local testing, and the default if you enable `pekko.persistence.cassandra.journal.keyspace-autocreate` you can use the following:
 
 @@snip [journal-schema](/target/journal-keyspace.txt) { #journal-keyspace } 
 
 There are multiple tables required. These need to be created before starting your application.
-For local testing you can enable `akka.persistence.cassandra.journal.tables-autocreate`. The default table definitions look like this:
+For local testing you can enable `pekko.persistence.cassandra.journal.tables-autocreate`. The default table definitions look like this:
 
 @@snip [journal-tables](/target/journal-tables.txt) { #journal-tables } 
 
@@ -67,10 +67,10 @@ Old columns, no longer needed but may be in your schema if you have used older v
 
 To activate the journal plugin, add the following line to your Akka `application.conf`:
 
-    akka.persistence.journal.plugin = "akka.persistence.cassandra.journal"
+    pekko.persistence.journal.plugin = "pekko.persistence.cassandra.journal"
 
 This will run the journal with its default settings. The default settings can be changed with the configuration properties defined in
-@ref:[reference.conf](configuration.md#default-configuration). Journal configuration is under `akka.persistence.cassandra.journal`.
+@ref:[reference.conf](configuration.md#default-configuration). Journal configuration is under `pekko.persistence.cassandra.journal`.
 
 All Cassandra driver settings are via its @extref:[standard profile mechanism](java-driver:manual/core/configuration/).
 
@@ -86,7 +86,7 @@ The messages table that stores the events is partitioned by `(persistence_id, pa
 artificial partition key to ensure that the Cassandra partition does not get too large if there are a lot of events for
 a single `persistence_id`.
 
-`akka.persistence.cassandra.journal.target-partition-size` controls the number of events that the journal tries to put
+`pekko.persistence.cassandra.journal.target-partition-size` controls the number of events that the journal tries to put
 in each Cassandra partition. It is a target as `persistAll` calls will have all the events in the same partition
 even if it will exceed the target partition size to ensure atomicity.
 
@@ -119,7 +119,7 @@ Using a consistency level other than `QUORUM` or `LOCAL_QUORUM` is highly discou
 
 ```
 datastax-java-driver.profiles {
-  akka-persistence-cassandra-profile {
+  pekko-persistence-cassandra-profile {
     basic.request.consistency = QUORUM
   }
 }

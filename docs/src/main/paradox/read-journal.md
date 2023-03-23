@@ -18,9 +18,9 @@ Persistence Query usage example to obtain a stream with all events tagged with "
 The default settings can be changed with the configuration properties defined in
 @ref:[reference.conf](configuration.md#default-configuration).
 
-Query configuration is under `akka.persistence.cassandra.query`.
+Query configuration is under `pekko.persistence.cassandra.query`.
 
-Events by tag configuration is under `akka.persistence.cassandra.events-by-tag` and shared
+Events by tag configuration is under `pekko.persistence.cassandra.events-by-tag` and shared
 by `journal` and `query`.
 
 If using events by tag query it is important to set the @ref:[first time bucket](events-by-tag.md#first-time-bucket)
