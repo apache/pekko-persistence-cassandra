@@ -18,7 +18,7 @@ When there is no offset provided to a query then it is not known which bucket to
 It is important to override the first time bucket used to a recent time as the default will
 result in a delay for queries without an offset as it is a long time ago:
 
-`akka.persistence.cassandra.events-by-tag.first-time-bucket = "20151120T00:00"`
+`pekko.persistence.cassandra.events-by-tag.first-time-bucket = "20151120T00:00"`
 
 ## Consistency
 
@@ -75,7 +75,7 @@ To detect missed events without receiving another event for the same persistence
 to find events. Queries are run in the background to detect delayed events. A high frequency short back track is done
 for finding events delayed a small amount and a low frequency backtrack that scans further back. 
 
-These are configured with `akka.persistence.cassandra.events-by-tag.back-track`:
+These are configured with `pekko.persistence.cassandra.events-by-tag.back-track`:
 
 @@snip [reference.conf](/core/src/main/resources/reference.conf) { #backtrack }                                                                                                                                
 
@@ -92,7 +92,7 @@ depending on the load and performance of your Cassandra cluster.
 It is possible to flush the tag writes right away. By default they are batched and written as an unlogged batch which increases throughput. To write each individually
 without delay use:
 ```
-akka.persistence.cassandra.events-by-tag.flush-interval = 0s
+pekko.persistence.cassandra.events-by-tag.flush-interval = 0s
 ```
 
 Alternatively set a very small value e.g. `25ms` so some batching is done. If your application has a large number of tagged events per second
@@ -102,15 +102,15 @@ Enable pub sub notifications so events by tag queries can execute a query right 
 `refresh-interval`. Lower the `refresh-interval` for cases where the pub sub messages take a long time to arrive at the
 query.
 ```
-akka.persistence.cassandra.events-by-tag.pubsub-notification = on
-akka.persistence.cassandra.query.refresh-interval = 2s
+pekko.persistence.cassandra.events-by-tag.pubsub-notification = on
+pekko.persistence.cassandra.query.refresh-interval = 2s
 ```
 
 Reduce `eventual-consistency-delay`. You must test this has positive results for your use case. Setting this too low
 can decrease throughput and latency as more events will be missed initially and expensive searches carried out.
 
 ```
-akka.persistence.cassandra.events-by-tag.eventual-consistency-delay = 50ms
+pekko.persistence.cassandra.events-by-tag.eventual-consistency-delay = 50ms
 ```
 
 ## Missing searches and gap detection
@@ -168,7 +168,7 @@ getting too large.
 * 100,000s  of events per day per tag -- Hour
 * 1,000,000s of events per day per tag -- Minute
  
-The default is `Hour` and can be overridden by setting `akka.persistence.cassandra.events-by-tag.bucket-size`.
+The default is `Hour` and can be overridden by setting `pekko.persistence.cassandra.events-by-tag.bucket-size`.
 This setting can not be changed after data has been written.
  
 More billion per day per tag? You probably need a specialised schema rather than a general library like this.

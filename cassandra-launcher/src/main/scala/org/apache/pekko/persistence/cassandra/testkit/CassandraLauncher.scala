@@ -195,7 +195,7 @@ object CassandraLauncher {
    * @param port the `native_transport_port` to use, if 0 a random
    *   free port is used, which can be retrieved (before starting)
    *   with [[CassandraLauncher.randomPort]].
-   * @throws akka.persistence.cassandra.testkit.CassandraLauncher.CleanFailedException if `clean`
+   * @throws org.apache.pekko.persistence.cassandra.testkit.CassandraLauncher.CleanFailedException if `clean`
    *   is `true` and removal of the directory fails
    */
   def start(cassandraDirectory: File, configResource: String, clean: Boolean, port: Int): Unit =
@@ -214,7 +214,7 @@ object CassandraLauncher {
    *   with [[CassandraLauncher.randomPort]].
    * @param classpath Any additional jars/directories to add to the classpath. Use
    *                  [[CassandraLauncher#classpathForResources]] to assist in calculating this.
-   * @throws akka.persistence.cassandra.testkit.CassandraLauncher.CleanFailedException if `clean`
+   * @throws org.apache.pekko.persistence.cassandra.testkit.CassandraLauncher.CleanFailedException if `clean`
    *   is `true` and removal of the directory fails
    */
   def start(
@@ -239,7 +239,7 @@ object CassandraLauncher {
    * @param classpath Any additional jars/directories to add to the classpath. Use
    *                  [[CassandraLauncher#classpathForResources]] to assist in calculating this.
    * @param host the host to bind the embeded Cassandra to. If None, then 127.0.0.1 is used.
-   * @throws akka.persistence.cassandra.testkit.CassandraLauncher.CleanFailedException if `clean`
+   * @throws org.apache.pekko.persistence.cassandra.testkit.CassandraLauncher.CleanFailedException if `clean`
    *   is `true` and removal of the directory fails
    */
   def start(

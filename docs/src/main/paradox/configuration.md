@@ -8,17 +8,17 @@ The reference configuration file with the default values:
 
 @@snip [reference.conf](/core/src/main/resources/reference.conf)
 
-Journal configuration is under `akka.persistence.cassandra.journal`.
+Journal configuration is under `pekko.persistence.cassandra.journal`.
 
-Snapshot configuration is under `akka.persistence.cassandra.snapshot`.
+Snapshot configuration is under `pekko.persistence.cassandra.snapshot`.
 
-Query configuration is under `akka.persistence.cassandra.query`.
+Query configuration is under `pekko.persistence.cassandra.query`.
 
-Events by tag configuration is under `akka.persistence.cassandra.events-by-tag` and shared
+Events by tag configuration is under `pekko.persistence.cassandra.events-by-tag` and shared
 b `journal` and `query`.
 
 The settings that shared by the `journal`, `query`, and `snapshot` parts of the plugin and are under
-`akka.persistence.cassandra`.
+`pekko.persistence.cassandra`.
 
 ## Cassandra driver configuration
 
