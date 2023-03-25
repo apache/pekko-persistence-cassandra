@@ -17,16 +17,16 @@ object Dependencies {
   val scala3Version = "3.1.2" // not yet enabled - missing pekko-http/pekko-management Scala 3 artifacts
   val scalaVersions = Seq(scala212Version, scala213Version)
 
-  val pekkoVersion = System.getProperty("override.pekko.version", "0.0.0+26599-83545a33-SNAPSHOT")
+  val pekkoVersion = System.getProperty("override.pekko.version", "0.0.0+26623-85c2a469-SNAPSHOT")
   val pekkoVersionInDocs = "current"
   val cassandraVersionInDocs = "4.0"
   // Should be sync with the version of the driver in Pekko Connectors Cassandra
   val driverVersionInDocs = "4.6"
 
-  val pekkoConnectorsVersion = "0.0.0+54-ee23f1bc-SNAPSHOT"
+  val pekkoConnectorsVersion = "0.0.0+62-041915c9-SNAPSHOT"
   val pekkoConnectorsVersionInDocs = "current"
   // for example
-  val pekkoManagementVersion = "0.0.0+707-9cd493ec-SNAPSHOT"
+  val pekkoManagementVersion = "0.0.0+710-b49055bd-SNAPSHOT"
 
   val logback = "ch.qos.logback" % "logback-classic" % "1.2.10"
 
