@@ -10,7 +10,6 @@
 import com.lightbend.paradox.projectinfo.ParadoxProjectInfoPluginKeys._
 import de.heikoseeberger.sbtheader._
 import org.mdedetrich.apache.sonatype.SonatypeApachePlugin
-import org.scalafmt.sbt.ScalafmtPlugin.autoImport._
 import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
@@ -63,7 +62,6 @@ object Common extends AutoPlugin {
       "pekko.pattern" // for some reason Scaladoc creates this
     ),
     Compile / doc / scalacOptions --= Seq("-Xfatal-warnings"),
-    scalafmtOnCompile := true,
     autoAPIMappings := true,
     Test / logBuffered := System.getProperty("pekko.logBufferedTests", "false").toBoolean,
     // show full stack traces and test case durations
