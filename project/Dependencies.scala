@@ -26,7 +26,7 @@ object Dependencies {
   val pekkoConnectorsVersion = "0.0.0+64-20da4165-SNAPSHOT"
   val pekkoConnectorsVersionInDocs = "current"
   // for example
-  val pekkoManagementVersion = "0.0.0+710-b49055bd-SNAPSHOT"
+  val pekkoManagementVersion = "0.0.0+714-a034fd01-SNAPSHOT"
 
   val logback = "ch.qos.logback" % "logback-classic" % "1.2.10"
 
