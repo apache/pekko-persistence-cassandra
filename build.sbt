@@ -1,6 +1,8 @@
 import com.typesafe.sbt.packager.docker._
 
 ThisBuild / apacheSonatypeProjectProfile := "pekko"
+sourceDistName := "incubating-pekko-persistence-cassandra"
+
 ThisBuild / resolvers += Resolver.jcenterRepo
 ThisBuild / resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
 
