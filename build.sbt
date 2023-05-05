@@ -4,7 +4,7 @@ ThisBuild / apacheSonatypeProjectProfile := "pekko"
 sourceDistName := "incubating-pekko-persistence-cassandra"
 
 ThisBuild / resolvers += Resolver.jcenterRepo
-ThisBuild / resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
+ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
 
 // make version compatible with docker for publishing example project
 ThisBuild / dynverSeparator := "-"
