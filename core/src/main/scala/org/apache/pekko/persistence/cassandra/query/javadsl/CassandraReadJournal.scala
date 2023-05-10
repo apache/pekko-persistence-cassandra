@@ -24,8 +24,7 @@ import pekko.persistence.query.TimeBasedUUID
 import pekko.persistence.query.javadsl._
 import pekko.stream.connectors.cassandra.javadsl.CassandraSession
 import pekko.stream.javadsl.Source
-
-import scala.compat.java8.FutureConverters
+import pekko.util.FutureConverters._
 
 object CassandraReadJournal {
 
@@ -78,7 +77,7 @@ class CassandraReadJournal(
    * using the read journal.
    */
   def initialize(): CompletionStage[Done] =
-    FutureConverters.toJava(scaladslReadJournal.initialize())
+    scaladslReadJournal.initialize().asJava
 
   /**
    * Use this as the UUID offset in `eventsByTag` queries when you want all

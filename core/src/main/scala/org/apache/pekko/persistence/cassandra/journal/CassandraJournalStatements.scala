@@ -13,18 +13,16 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import scala.compat.java8.FutureConverters._
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import com.datastax.oss.driver.api.core.CqlSession
 
 import org.apache.pekko
 import pekko.Done
 import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
-import pekko.persistence.cassandra.PluginSettings
-import pekko.persistence.cassandra.indent
-import com.datastax.oss.driver.api.core.CqlSession
-import pekko.persistence.cassandra.FutureDone
+import pekko.persistence.cassandra.{ indent, FutureDone, PluginSettings }
+import pekko.util.FutureConverters._
+
+import scala.concurrent.{ ExecutionContext, Future }
 
 /**
  * INTERNAL API
@@ -345,15 +343,15 @@ import pekko.persistence.cassandra.FutureDone
     def tagStatements: Future[Done] =
       if (eventsByTagSettings.eventsByTagEnabled) {
         for {
-          _ <- session.executeAsync(createTagsTable).toScala
-          _ <- session.executeAsync(createTagsProgressTable).toScala
-          _ <- session.executeAsync(createTagScanningTable).toScala
+          _ <- session.executeAsync(createTagsTable).asScala
+          _ <- session.executeAsync(createTagsProgressTable).asScala
+          _ <- session.executeAsync(createTagScanningTable).asScala
         } yield Done
       } else FutureDone
 
     def keyspace: Future[Done] =
       if (journalSettings.keyspaceAutoCreate)
-        session.executeAsync(createKeyspace).toScala.map(_ => Done)
+        session.executeAsync(createKeyspace).asScala.map(_ => Done)
       else FutureDone
 
     val done = if (journalSettings.tablesAutoCreate) {
@@ -361,11 +359,11 @@ import pekko.persistence.cassandra.FutureDone
       session.setSchemaMetadataEnabled(false)
       val result = for {
         _ <- keyspace
-        _ <- session.executeAsync(createTable).toScala
-        _ <- session.executeAsync(createMetadataTable).toScala
+        _ <- session.executeAsync(createTable).asScala
+        _ <- session.executeAsync(createMetadataTable).asScala
         _ <- {
           if (settings.journalSettings.supportAllPersistenceIds)
-            session.executeAsync(createAllPersistenceIdsTable).toScala
+            session.executeAsync(createAllPersistenceIdsTable).asScala
           else
             FutureDone
         }
@@ -390,5 +388,4 @@ import pekko.persistence.cassandra.FutureDone
 
     done
   }
-
 }

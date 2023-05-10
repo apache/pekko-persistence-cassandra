@@ -28,6 +28,7 @@ import pekko.persistence.cassandra.query.EventsByTagStage._
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.EventByTagStatements
 import pekko.stream.stage._
 import pekko.stream.{ Attributes, Outlet, SourceShape }
+import pekko.util.FutureConverters._
 import pekko.util.PrettyDuration._
 import pekko.util.UUIDComparator
 
@@ -35,7 +36,6 @@ import java.lang.{ Long => JLong }
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import scala.annotation.tailrec
-import scala.compat.java8.FutureConverters._
 import scala.concurrent.duration.{ Duration, _ }
 import scala.concurrent.{ ExecutionContext, ExecutionContextExecutor, Future }
 import scala.util.{ Failure, Success, Try }
@@ -106,7 +106,7 @@ import scala.util.{ Failure, Success, Try }
       Retries.retry({ () =>
           val bound =
             statements.byTagWithUpperLimit.bind(tag, bucket.key: JLong, from, to).setExecutionProfileName(readProfile)
-          session.executeAsync(bound).toScala
+          session.executeAsync(bound).asScala
         }, retries.retries, onFailure, retries.minDuration, retries.maxDuration, retries.randomFactor)
     }
   }
@@ -957,7 +957,7 @@ import scala.util.{ Failure, Success, Try }
 
       private def fetchMore(rs: AsyncResultSet): Unit = {
         log.debug("[{}] No more results without paging. Requesting more.", stageUuid)
-        val moreResults = rs.fetchNextPage().toScala
+        val moreResults = rs.fetchNextPage().asScala
         updateQueryState(QueryInProgress(abortForMissingSearch = false))
         moreResults.onComplete(newResultSetCb.invoke)
       }

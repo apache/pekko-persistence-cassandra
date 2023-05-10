@@ -37,6 +37,7 @@ import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraS
 import pekko.stream.scaladsl.Sink
 import pekko.dispatch.ExecutionContexts
 import pekko.util.{ OptionVal, Timeout }
+import pekko.util.FutureConverters._
 import com.datastax.oss.driver.api.core.cql._
 import com.typesafe.config.Config
 import com.datastax.oss.driver.api.core.uuid.Uuids
@@ -49,7 +50,6 @@ import scala.collection.immutable.Seq
 import scala.concurrent._
 import scala.util.control.NonFatal
 import scala.util.{ Failure, Success, Try }
-import scala.compat.java8.FutureConverters._
 import pekko.annotation.DoNotInherit
 import pekko.annotation.InternalStableApi
 import pekko.stream.scaladsl.Source
@@ -701,7 +701,7 @@ import pekko.stream.scaladsl.Source
     var batch =
       new BatchStatementBuilder(BatchType.UNLOGGED).build().setExecutionProfileName(journalSettings.writeProfile)
     batch = body(batch)
-    session.underlying().flatMap(_.executeAsync(batch).toScala).map(_ => ())
+    session.underlying().flatMap(_.executeAsync(batch).asScala).map(_ => ())
   }
 
   private def selectOne[T <: Statement[T]](stmt: Statement[T]): Future[Option[Row]] = {
