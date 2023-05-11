@@ -13,11 +13,11 @@
 
 package org.apache.pekko.persistence.cassandra.snapshot
 
-import scala.compat.java8.FutureConverters._
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import org.apache.pekko
+import pekko.util.FutureConverters._
 import pekko.Done
 import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
@@ -122,7 +122,7 @@ import pekko.persistence.cassandra.FutureDone
       implicit ec: ExecutionContext): Future[Done] = {
     def keyspace: Future[Done] =
       if (snapshotSettings.keyspaceAutoCreate)
-        session.executeAsync(createKeyspace).toScala.map(_ => Done)
+        session.executeAsync(createKeyspace).asScala.map(_ => Done)
       else FutureDone
 
     if (snapshotSettings.tablesAutoCreate) {
@@ -130,7 +130,7 @@ import pekko.persistence.cassandra.FutureDone
       session.setSchemaMetadataEnabled(false)
       val result = for {
         _ <- keyspace
-        _ <- session.executeAsync(createTable).toScala
+        _ <- session.executeAsync(createTable).asScala
       } yield {
         session.setSchemaMetadataEnabled(null)
         Done

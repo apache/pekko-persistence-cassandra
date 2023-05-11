@@ -31,13 +31,14 @@ import pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtens
 import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
 import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.util.{ unused, OptionVal }
+import pekko.util.FutureConverters._
 
 import java.lang.{ Long => JLong }
 import java.nio.ByteBuffer
 import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Future }
-import scala.util.{ Failure, Success }
 import scala.util.control.NonFatal
+import scala.util.{ Failure, Success }
 
 /**
  * INTERNAL API
@@ -243,11 +244,10 @@ import scala.util.control.NonFatal
   }
 
   def executeBatch(body: BatchStatementBuilder => Unit): Future[Unit] = {
-    import scala.compat.java8.FutureConverters._
     val batch =
       new BatchStatementBuilder(BatchType.UNLOGGED).setExecutionProfileName(snapshotSettings.writeProfile)
     body(batch)
-    session.underlying().flatMap(_.executeAsync(batch.build()).toScala).map(_ => ())
+    session.underlying().flatMap(_.executeAsync(batch.build()).asScala).map(_ => ())
   }
 
   private def metadata(
