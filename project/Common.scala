@@ -9,7 +9,7 @@
 
 import com.lightbend.paradox.projectinfo.ParadoxProjectInfoPluginKeys._
 import de.heikoseeberger.sbtheader._
-import org.mdedetrich.apache.sonatype.SonatypeApachePlugin
+import org.mdedetrich.apache.sonatype.ApacheSonatypePlugin
 import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
@@ -20,7 +20,7 @@ object Common extends AutoPlugin {
 
   override def trigger = allRequirements
 
-  override def requires = JvmPlugin && HeaderPlugin && SonatypeApachePlugin && DynVerPlugin
+  override def requires = JvmPlugin && HeaderPlugin && ApacheSonatypePlugin && DynVerPlugin
 
   override def globalSettings =
     Seq(
