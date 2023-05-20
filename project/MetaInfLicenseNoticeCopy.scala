@@ -7,8 +7,8 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
-import org.mdedetrich.apache.sonatype.SonatypeApachePlugin
-import org.mdedetrich.apache.sonatype.SonatypeApachePlugin.autoImport.apacheSonatypeDisclaimerFile
+import org.mdedetrich.apache.sonatype.ApacheSonatypePlugin
+import org.mdedetrich.apache.sonatype.ApacheSonatypePlugin.autoImport.apacheSonatypeDisclaimerFile
 import sbt._
 import sbt.Keys._
 
@@ -19,7 +19,7 @@ object MetaInfLicenseNoticeCopy extends AutoPlugin {
 
   override def trigger = allRequirements
 
-  override def requires = SonatypeApachePlugin
+  override def requires = ApacheSonatypePlugin
 
   override lazy val projectSettings = Seq(
     apacheSonatypeDisclaimerFile := Some((LocalRootProject / baseDirectory).value / "DISCLAIMER"))
