@@ -1,7 +1,7 @@
 # DataStax Astra
 
 You can spin up a free Apache Cassandra cluster in the cloud using [DataStax
-Astra](https://www.datastax.com/products/datastax-astra). To use a Cassandra-as-a-Service cluster as Akka persistence,
+Astra](https://www.datastax.com/products/datastax-astra). To use a Cassandra-as-a-Service cluster as Pekko persistence,
 specify your secure connect bundle and credentials in your configuration instead of the contact points:
 
 ```

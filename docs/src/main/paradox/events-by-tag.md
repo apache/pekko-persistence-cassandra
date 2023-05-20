@@ -55,7 +55,7 @@ delayed greater than the `eventual-consistency-delay` those events will not be d
 
 Events can be delayed for many reasons:
 
-* GC pause between serializing the event in the Akka node and writing it to the database
+* GC pause between serializing the event in the Pekko node and writing it to the database
 * Event waiting to be written as part of a batch to the `tag_views` table
 * Out of sync clocks
 * Overloaded database

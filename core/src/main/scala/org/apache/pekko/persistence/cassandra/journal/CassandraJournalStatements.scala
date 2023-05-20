@@ -39,7 +39,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 
   // The event's serialization manifest is stored in ser_manifest and the
   // PersistentRepr.manifest is stored in event_manifest (sorry for naming confusion).
-  // PersistentRepr.manifest is used by the event adapters (in akka-persistence).
+  // PersistentRepr.manifest is used by the event adapters (in pekko-persistence).
   // ser_manifest together with ser_id is used for the serialization of the event (payload).
   def createTable =
     s"""

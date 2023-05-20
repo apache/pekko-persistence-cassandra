@@ -2,7 +2,7 @@
 
 @@@ warning
 
-**This project is not continuously tested against Keyspaces, and Keyspaces is not supported as part of the [Lightbend Subscription](https://www.lightbend.com/lightbend-subscription).**
+**This project is not continuously tested against Keyspaces.**
 
 @@@
 
@@ -10,9 +10,6 @@
 that provides a Cassandra-like API, but it's not real Cassandra and has
 different behaviour for some things (for example atomic persist of several
 events is not possible).
-
-Keyspaces is known not to work on akka-persistence-cassandra version 1.0.3 and
-earlier.
 
 ## Configuration
 

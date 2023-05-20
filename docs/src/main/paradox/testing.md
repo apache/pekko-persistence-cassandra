@@ -1,9 +1,9 @@
 # Testing
 
-There are a number of options for testing persistent actors when using the Akka Persistence Cassandra plugin.
+There are a number of options for testing persistent actors when using the Pekko Persistence Cassandra plugin.
 The two main methods are:
 
-* Testing using the inmem journal as shown in the [Akka docs](https://doc.akka.io/docs/akka/current/typed/persistence-testing.html).
+* Testing using the inmem journal as shown in the [Pekko docs](https://pekko.apache.org/docs/pekko/current/typed/persistence-testing.html).
 * Testing against a real Cassandra instance.
 
 For testing against Cassandra you can:
@@ -17,7 +17,7 @@ Then there are options with tighter unit test framework integration:
 * [Cassandra unit](https://github.com/jsevellec/cassandra-unit)
 * [Test Containers](https://www.testcontainers.org/modules/databases/cassandra/)
 
-For testing it can be convenient to enable automatic creation of keyspace and tables with configuration:
+For testing, it can be convenient to enable automatic creation of keyspace and tables with configuration:
 
     pekko.persistence.cassandra {
       journal.keyspace-autocreate = on

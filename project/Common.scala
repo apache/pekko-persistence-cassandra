@@ -57,9 +57,9 @@ object Common extends AutoPlugin {
         s"https://github.com/apache/incubator-pekko-persistence-cassandra/tree/${branch}€{FILE_PATH_EXT}#L€{FILE_LINE}"
       },
       "-doc-canonical-base-url",
-      "https://doc.akka.io/api/akka-persistence-cassandra/current/",
+      "https://pekko.apache.org/api/pekko-persistence-cassandra/current/",
       "-skip-packages",
-      "pekko.pattern" // for some reason Scaladoc creates this
+      "org.apache.pekko.pattern" // for some reason Scaladoc creates this
     ),
     Compile / doc / scalacOptions --= Seq("-Xfatal-warnings"),
     autoAPIMappings := true,

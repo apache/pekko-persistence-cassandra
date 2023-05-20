@@ -1,4 +1,4 @@
 # Serialization
 
-The events and snapshots are serialized with @extref:[Akka Serialization](akka:serialization.html).
+The events and snapshots are serialized with @extref:[Pekko Serialization](pekko:serialization.html).
 
