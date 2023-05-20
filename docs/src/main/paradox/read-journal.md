@@ -1,6 +1,6 @@
 # Query Plugin
 
-It implements the following @extref:[Persistence Queries](akka:persistence-query.html):
+It implements the following @extref:[Persistence Queries](pekko:persistence-query.html):
 
 * eventsByPersistenceId, currentEventsByPersistenceId
 * eventsByTag, currentEventsByTag

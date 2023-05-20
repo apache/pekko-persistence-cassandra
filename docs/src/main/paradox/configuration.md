@@ -52,7 +52,7 @@ datastax-java-driver {
 }
 ```
 
-Alternatively, Akka Discovery can be used for finding the Cassandra server contact points as described
-in the @extref:[Alpakka Cassandra documentation](alpakka:cassandra.html#using-akka-discovery).
+Alternatively, Pekko Discovery can be used for finding the Cassandra server contact points as described
+in the @extref:[Pekko Connectors Cassandra documentation](pekko-connectors:cassandra.html#using-pekko-discovery).
 
 Without any configuration it will use `localhost:9042` as default.

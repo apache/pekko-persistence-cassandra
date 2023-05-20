@@ -288,7 +288,7 @@ object CassandraLauncher {
         new File(cassandraDirectory, "cassandra-bundle.jar")
       if (!cassandraBundleFile.exists()) {
         val is =
-          this.getClass.getClassLoader.getResourceAsStream("akka/persistence/cassandra/launcher/cassandra-bundle.jar")
+          this.getClass.getClassLoader.getResourceAsStream("pekko/persistence/cassandra/launcher/cassandra-bundle.jar")
         try {
           Files.copy(is, cassandraBundleFile.toPath)
         } finally {

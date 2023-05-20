@@ -50,7 +50,7 @@ lazy val cassandraBundle = project
     libraryDependencies += ("org.apache.cassandra" % "cassandra-all" % "3.11.3")
       .exclude("commons-logging", "commons-logging"),
     dependencyOverrides += "com.github.jbellis" % "jamm" % "0.3.3", // See jamm comment in https://issues.apache.org/jira/browse/CASSANDRA-9608
-    assembly / target := target.value / "bundle" / "akka" / "persistence" / "cassandra" / "launcher",
+    assembly / target := target.value / "bundle" / "pekko" / "persistence" / "cassandra" / "launcher",
     assembly / assemblyJarName := "cassandra-bundle.jar")
 
 // Used for testing events by tag in various environments
@@ -104,19 +104,17 @@ lazy val docs = project
     Preprocess / sourceDirectory := (LocalRootProject / ScalaUnidoc / unidoc / target).value,
     Paradox / siteSubdirName := s"docs/pekko-persistence-cassandra/${projectInfoVersion.value}",
     Compile / paradoxProperties ++= Map(
-      "project.url" -> "https://doc.akka.io/docs/akka-persistence-cassandra/current/",
-      "canonical.base_url" -> "https://doc.akka.io/docs/akka-persistence-cassandra/current",
-      "akka.version" -> Dependencies.pekkoVersion,
-      // Akka
-      "extref.akka.base_url" -> s"https://doc.akka.io/docs/akka/${Dependencies.pekkoVersionInDocs}/%s",
-      "scaladoc.akka.base_url" -> s"https://doc.akka.io/api/akka/${Dependencies.pekkoVersionInDocs}/",
-      "javadoc.akka.base_url" -> s"https://doc.akka.io/japi/akka/${Dependencies.pekkoVersionInDocs}/",
-      // Alpakka
-      "extref.alpakka.base_url" -> s"https://doc.akka.io/docs/alpakka/${Dependencies.pekkoConnectorsVersionInDocs}/%s",
-      "scaladoc.akka.stream.alpakka.base_url" -> s"https://doc.akka.io/api/alpakka/${Dependencies.pekkoConnectorsVersionInDocs}/",
-      "javadoc.akka.stream.alpakka.base_url" -> "",
-      // APC 0.x
-      "extref.apc-0.x.base_url" -> s"https://doc.akka.io/docs/akka-persistence-cassandra/0.103/%s",
+      "project.url" -> "https://pekko.apache.org/docs/pekko-persistence-cassandra/current/",
+      "canonical.base_url" -> "https://pekko.apache.org/docs/pekko-persistence-cassandra/current",
+      "pekko.version" -> Dependencies.pekkoVersion,
+      // Pekko
+      "extref.pekko.base_url" -> s"https://pekko.apache.org/docs/pekko/${Dependencies.pekkoVersionInDocs}/%s",
+      "scaladoc.pekko.base_url" -> s"https://pekko.apache.org/api/pekko/${Dependencies.pekkoVersionInDocs}/",
+      "javadoc.pekko.base_url" -> s"https://pekko.apache.org/japi/pekko/${Dependencies.pekkoVersionInDocs}/",
+      // Connectors
+      "extref.pekko-connectors.base_url" -> s"https://pekko.apache.org/docs/pekko-connectors/${Dependencies.pekkoConnectorsVersionInDocs}/%s",
+      "scaladoc.org.apache.pekko.stream.connectors.base_url" -> s"https://pekko.apache.org/api/pekko-connectors/${Dependencies.pekkoConnectorsVersionInDocs}/",
+      "javadoc.org.apache.pekko.stream.connectors.base_url" -> "",
       // Cassandra
       "extref.cassandra.base_url" -> s"https://cassandra.apache.org/doc/${Dependencies.cassandraVersionInDocs}/%s",
       // Datastax Java driver

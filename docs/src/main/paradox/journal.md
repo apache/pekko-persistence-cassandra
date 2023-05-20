@@ -2,11 +2,11 @@
 
 ## Features
 
-- All operations required by the Akka Persistence @extref:[journal plugin API](akka:persistence-journals.html#journal-plugin-api) are fully supported.
+- All operations required by the Pekko Persistence @extref:[journal plugin API](pekko:persistence-journals.html#journal-plugin-api) are fully supported.
 - The plugin uses Cassandra in a pure log-oriented way i.e. data is only ever inserted but never updated (deletions are made on user request only).
-- Writes of messages are batched to optimize throughput for `persistAsync`. See @extref:[batch writes](akka:persistence.html#batch-writes) for details how to configure batch sizes. The plugin was tested to work properly under high load.
+- Writes of messages are batched to optimize throughput for `persistAsync`. See @extref:[batch writes](pekko:persistence.html#batch-writes) for details how to configure batch sizes. The plugin was tested to work properly under high load.
 - Messages written by a single persistent actor are partitioned across the cluster to achieve scalability with data volume by adding nodes.
-- @extref:[Persistence Query](akka:persistence-query.html) support by `CassandraReadJournal`
+- @extref:[Persistence Query](pekko:persistence-query.html) support by `CassandraReadJournal`
 
 ## Schema 
 
@@ -16,16 +16,16 @@ The keyspace and tables needs to be created before using the plugin.
 
 Auto creation of the keyspace and tables
 is included as a development convenience and should never be used in production. Cassandra does not handle
-concurrent schema migrations well and if every Akka node tries to create the schema at the same time you'll
+concurrent schema migrations well and if every Pekko node tries to create the schema at the same time you'll
 get column id mismatch errors in Cassandra.
 
 @@@
 
-The default keyspace used by the plugin is `akka`, it should be created with the
+The default keyspace used by the plugin is `pekko`, it should be created with the
 NetworkTopology replication strategy with a replication factor of at least 3:
 
 ```
-CREATE KEYSPACE IF NOT EXISTS akka WITH replication = {'class': 'NetworkTopologyStrategy', '<your_dc_name>' : 3 }; 
+CREATE KEYSPACE IF NOT EXISTS pekko WITH replication = {'class': 'NetworkTopologyStrategy', '<your_dc_name>' : 3 }; 
 ```
 
 For local testing, and the default if you enable `pekko.persistence.cassandra.journal.keyspace-autocreate` you can use the following:
@@ -60,12 +60,12 @@ Old columns, no longer needed but may be in your schema if you have used older v
 | Column  | Description                                                                                                                             |
 |---------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | used    | A static column to record that the artificial partition has been used to detected that all events in a partition have been deleted      |
-| message | Pre 0.6 serialized the PersistentRepr (an internal Akka type) into this column. Newer versions use event and serialize the user payload |
+| message | Pre 0.6 serialized the PersistentRepr (an internal Pekko type) into this column. Newer versions use event and serialize the user payload |
 |         |                                                                                                                                         |
 
 ## Configuration
 
-To activate the journal plugin, add the following line to your Akka `application.conf`:
+To activate the journal plugin, add the following line to your Pekko `application.conf`:
 
     pekko.persistence.journal.plugin = "pekko.persistence.cassandra.journal"
 
@@ -108,7 +108,7 @@ If a persistent actor for which this has happened is started in another datacent
 if it wasn't replicated.
 If the Cassandra data in the datacenter with the outage is recovered then the event that was not replicated will 
 eventually be replicated to all datacenters resulting in a duplicate sequence number.
-With the default [`replay-filter`](https://doc.akka.io/docs/akka/current/typed/persistence.html#replay-filter) the
+With the default [`replay-filter`](https://pekko.apache.org/docs/pekko/current/typed/persistence.html#replay-filter) the
 duplicate event from the original datacenter will is discarded in subsequent replays of the persistent actor.
 
 Using `QUORUM` for multi datacenter setups increases latency and decreased availability as to reach `QUORUM` nodes in

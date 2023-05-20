@@ -7,10 +7,7 @@ There are several alternative Cassandra server implementations. This project is 
 [DataStax Astra](https://www.datastax.com/products/datastax-astra) is built on Apache Cassandra and should therefore also work without
 surprises even though there is no continuous integration tests for it in this project. See @ref:[DataStax Astra configuration](astra.md).
 
-[Lightbend support](https://www.lightbend.com/lightbend-subscription) only covers usage with Apache Cassandra, DSE and DataStax Astra. 
-
-Several other alternatives are listed below. Be aware of that this project is not continuously tested against those
-and currently not covered by Lightbend support. 
+Several other alternatives are listed below. Be aware of that this project is not continuously tested against those. 
 
 * @ref:[CosmosDB](cosmosdb.md)
 * @ref:[DataStax Astra](astra.md)

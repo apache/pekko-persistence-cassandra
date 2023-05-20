@@ -159,7 +159,7 @@ class CassandraSnapshotStoreSpec
 
       // Somewhat confusing that two things are called meta data, SnapshotMetadata and SnapshotWithMetaData.
       // However, user facing is only SnapshotWithMetaData, and we can't change SnapshotMetadata because that
-      // is in akka-persistence
+      // is in pekko-persistence
       snapshotStore.tell(SaveSnapshot(SnapshotMetadata(pid, 100).withMetadata("meta"), "snap"), probe.ref)
       probe.expectMsgType[SaveSnapshotSuccess]
 

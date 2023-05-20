@@ -2,7 +2,7 @@
 
 ## Features
 
-- Implements the Akka Persistence @extref:[snapshot store plugin API](akka:persistence-journals.html#snapshot-store-plugin-api).
+- Implements the Pekko Persistence @extref:[snapshot store plugin API](pekko:persistence-journals.html#snapshot-store-plugin-api).
 
 ## Schema
 
@@ -12,16 +12,16 @@ The keyspace and tables needs to be created before using the plugin.
 
 Auto creation of the keyspace and tables
 is included as a development convenience and should never be used in production. Cassandra does not handle
-concurrent schema migrations well and if every Akka node tries to create the schema at the same time you'll
+concurrent schema migrations well and if every Pekko node tries to create the schema at the same time you'll
 get column id mismatch errors in Cassandra.
 
 @@@
 
-The default keyspace used by the plugin is `akka_snapshot`, it should be created with the
+The default keyspace used by the plugin is `pekko_snapshot`, it should be created with the
 NetworkTopology replication strategy with a replication factor of at least 3:
 
 ```
-CREATE KEYSPACE IF NOT EXISTS akka_snapshot WITH replication = {'class': 'NetworkTopologyStrategy', '<your_dc_name>' : 3 }; 
+CREATE KEYSPACE IF NOT EXISTS pekko_snapshot WITH replication = {'class': 'NetworkTopologyStrategy', '<your_dc_name>' : 3 }; 
 ```
 
 For local testing, and the default if you enable `pekko.persistence.cassandra.snapshot.keyspace-autocreate` you can use the following:
@@ -55,7 +55,7 @@ datastax-java-driver.profiles {
 
 ## Configuration
 
-To activate the snapshot-store plugin, add the following line to your Akka `application.conf`:
+To activate the snapshot-store plugin, add the following line to your Pekko `application.conf`:
 
     pekko.persistence.snapshot-store.plugin = "pekko.persistence.cassandra.snapshot"
 
