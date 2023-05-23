@@ -9,7 +9,6 @@ addSbtPlugin("org.mdedetrich" % "sbt-apache-sonatype" % "0.1.7")
 addSbtPlugin("com.github.pjfanning" % "sbt-source-dist" % "0.1.5")
 
 // Documentation
-addSbtPlugin("com.lightbend.sbt" % "sbt-publish-rsync" % "0.2")
 addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.5.0")
 addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.4.1")
 
@@ -18,7 +17,7 @@ resolvers += Resolver.ApacheMavenSnapshotsRepo
 
 // We have to deliberately use older versions of sbt-paradox because current Pekko sbt build
 // only loads on JDK 1.8 so we need to bring in older versions of parboiled which support JDK 1.8
-addSbtPlugin(("org.apache.pekko" % "pekko-sbt-paradox" % "0.0.0+30-8bee46d0-SNAPSHOT").excludeAll(
+addSbtPlugin(("org.apache.pekko" % "pekko-sbt-paradox" % "0.0.0+38-68da3106-SNAPSHOT").excludeAll(
   "com.lightbend.paradox", "sbt-paradox",
   "com.lightbend.paradox" % "sbt-paradox-apidoc",
   "com.lightbend.paradox" % "sbt-paradox-project-info"))
