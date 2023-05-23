@@ -4,7 +4,7 @@
   class="ch.qos.logback.core.ConsoleAppender">
     <target>System.out</target>
     <encoder>
-      <pattern>%date{MM/dd HH:mm:ss} %-5level[%thread] %logger{1} [%X{akkaSource}] - %m%n%xException</pattern>
+      <pattern>%date{MM/dd HH:mm:ss} %-5level[%thread] %logger{1} [%X{pekkoSource}] - %m%n%xException</pattern>
     </encoder>
   </appender>
   <logger name="org.apache.cassandra" level="ERROR" />
