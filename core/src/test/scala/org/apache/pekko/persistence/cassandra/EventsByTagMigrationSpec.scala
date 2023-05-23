@@ -402,7 +402,7 @@ abstract class AbstractEventsByTagMigrationSpec
     PersistenceQuery(systemThree).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
 
   override protected def beforeAll(): Unit = {
-    // this uses the alpakka connection, not the journal one as otherwise
+    // this uses the pekko connector connection, not the journal one as otherwise
     if (!CassandraSessionRegistry(system).sessionFor("test-setup-session").serverMetaData.futureValue.isVersion2) {
       println("Creating old tables")
       super.beforeAll()

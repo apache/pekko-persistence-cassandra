@@ -65,7 +65,7 @@ lazy val endToEndExample = project
         case ExecCmd("ENTRYPOINT", args @ _*) => Seq(Cmd("ENTRYPOINT", args.mkString(" ")))
         case v                                => Seq(v)
       },
-    dockerExposedPorts := Seq(8080, 8558, 2552),
+    dockerExposedPorts := Seq(8080, 8558, 17355),
     dockerUsername := Some("kubakka"),
     dockerUpdateLatest := true,
     // update if deploying to some where that can't see docker hu
@@ -92,7 +92,7 @@ lazy val dseTest = project
   .settings(libraryDependencies ++= Dependencies.dseTestDependencies)
 
 lazy val docs = project
-  .enablePlugins(Common, PekkoParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin, PublishRsyncPlugin)
+  .enablePlugins(Common, ParadoxPlugin, PekkoParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin)
   .dependsOn(core)
   .settings(
     name := "Apache Pekko Persistence Cassandra",
@@ -128,9 +128,6 @@ lazy val docs = project
       "javadoc.org.apache.pekko.persistence.cassandra.base_url" -> ""), // no Javadoc is published
     paradoxGroups := Map("Language" -> Seq("Java", "Scala")),
     ApidocPlugin.autoImport.apidocRootPackage := "org.apache.pekko",
-    resolvers += Resolver.jcenterRepo,
-    publishRsyncArtifacts += makeSite.value -> "www/",
-    publishRsyncHost := "akkarepo@gustav.akka.io",
     apidocRootPackage := "org.apache.pekko")
 
 TaskKey[Unit]("verifyCodeFmt") := {

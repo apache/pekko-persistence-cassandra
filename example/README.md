@@ -28,20 +28,20 @@ A cassandra cluster must be available on localhost:9042
 
 The first node can be run with the default ports but you must provide a role and to use the local configuration e.g.:
 
-`sbt -Dconfig.resource=local.conf  -Dakka.cluster.roles.0=write run` 
+`sbt -Dconfig.resource=local.conf  -Dpekko.cluster.roles.0=write run` 
 
-Each subsequent node needs its akka management and remoting port overriden. The second node should use port 2552 for remoting
-and port 8552 as these are configured in bootstrap. 
+Each subsequent node needs its pekko management and remoting port overridden. The second node should use port 17355 for remoting
+and port 7626 as these are configured in bootstrap. 
 
-`sbt -Dakka.remote.artery.canonical.port=2552 -Dakka.management.http.port=8552 -Dconfig.resource=local.conf -Dakka.cluster.roles.0=write run`
+`sbt -Dpekko.remote.artery.canonical.port=17355 -Dpekko.management.http.port=7626 -Dconfig.resource=local.conf -Dpekko.cluster.roles.0=write run`
 
 Then add at least one load node:
 
-`sbt -Dakka.remote.artery.canonical.port=2553 -Dakka.management.http.port=8553 -Dconfig.resource=local.conf -Dakka.cluster.roles.0=load run`
+`sbt -Dpekko.remote.artery.canonical.port=17356 -Dpekko.management.http.port=7627 -Dconfig.resource=local.conf -Dpekko.cluster.roles.0=load run`
 
 And finally at least one read node:
 
-`sbt -Dakka.remote.artery.canonical.port=2554 -Dakka.management.http.port=8554 -Dconfig.resource=local.conf -Dakka.cluster.roles.0=read  -Dakka.cluster.roles.1=report run`
+`sbt -Dpekko.remote.artery.canonical.port=17357 -Dpekko.management.http.port=7628 -Dconfig.resource=local.conf -Dpekko.cluster.roles.0=read  -Dpekko.cluster.roles.1=report run`
 
 IntelliJ run configurations are included.
 
