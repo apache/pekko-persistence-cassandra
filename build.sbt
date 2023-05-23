@@ -92,7 +92,7 @@ lazy val dseTest = project
   .settings(libraryDependencies ++= Dependencies.dseTestDependencies)
 
 lazy val docs = project
-  .enablePlugins(Common, ParadoxPlugin, PekkoParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin)
+  .enablePlugins(ParadoxPlugin, PekkoParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin)
   .dependsOn(core)
   .settings(
     name := "Apache Pekko Persistence Cassandra",
