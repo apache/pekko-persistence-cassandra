@@ -185,7 +185,7 @@ abstract class CassandraSpec(
         if (system.settings.config.getBoolean("pekko.persistence.cassandra.events-by-tag.enabled")) {
           println("tag_views")
           cluster
-            .execute(s"select * from ${journalName}.tag_views")
+            .execute(s"select * from $journalName.tag_views")
             .asScala
             .foreach(row => {
               println(s"""Row:${row.getString("tag_name")},${row.getLong("timebucket")},${formatOffset(

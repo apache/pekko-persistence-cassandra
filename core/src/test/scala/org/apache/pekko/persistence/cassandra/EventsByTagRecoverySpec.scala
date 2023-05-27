@@ -112,8 +112,8 @@ class EventsByTagRecoverySpec extends CassandraSpec(EventsByTagRecoverySpec.conf
 
         Thread.sleep(500)
         systemTwo.terminate().futureValue
-        cluster.execute(s"truncate ${journalName}.tag_views")
-        cluster.execute(s"truncate ${journalName}.tag_write_progress")
+        cluster.execute(s"truncate $journalName.tag_views")
+        cluster.execute(s"truncate $journalName.tag_write_progress")
 
         val tProbe = TestProbe()(system)
         val p2take2 = system.actorOf(TestTaggingActor.props("p2", Set("red", "orange")))
@@ -158,8 +158,8 @@ class EventsByTagRecoverySpec extends CassandraSpec(EventsByTagRecoverySpec.conf
         Thread.sleep(500)
 
         systemTwo.terminate().futureValue
-        cluster.execute(s"truncate ${journalName}.tag_views")
-        cluster.execute(s"truncate ${journalName}.tag_write_progress")
+        cluster.execute(s"truncate $journalName.tag_views")
+        cluster.execute(s"truncate $journalName.tag_write_progress")
 
         val tProbe = TestProbe()(system)
         val p3take2 = system.actorOf(TestTaggingActor.props("p3", Set("red", "orange")))

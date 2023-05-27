@@ -269,7 +269,7 @@ class EventsByTagMigrationSpec extends AbstractEventsByTagMigrationSpec {
     }
 
     "have a peek in the messages table" taggedAs RequiresCassandraThree in {
-      val row = cluster.execute(SimpleStatement.newInstance(s"select * from ${messagesTableName} limit 1")).one()
+      val row = cluster.execute(SimpleStatement.newInstance(s"select * from $messagesTableName limit 1")).one()
       system.log.debug("New messages table looks like: {}", row)
       system.log.debug("{}", row.getColumnDefinitions)
     }
