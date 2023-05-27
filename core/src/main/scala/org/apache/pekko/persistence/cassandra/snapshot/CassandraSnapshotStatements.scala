@@ -40,7 +40,7 @@ import pekko.persistence.cassandra.FutureDone
   // snapshot is for backwards compatibility and not used for new rows
   def createTable =
     s"""
-    |CREATE TABLE IF NOT EXISTS ${tableName} (
+    |CREATE TABLE IF NOT EXISTS $tableName (
     |  persistence_id text,
     |  sequence_nr bigint,
     |  timestamp bigint,
@@ -57,19 +57,19 @@ import pekko.persistence.cassandra.FutureDone
     """.stripMargin.trim
 
   def writeSnapshot(withMeta: Boolean): String = s"""
-      INSERT INTO ${tableName} (persistence_id, sequence_nr, timestamp, ser_manifest, ser_id, snapshot_data
+      INSERT INTO $tableName (persistence_id, sequence_nr, timestamp, ser_manifest, ser_id, snapshot_data
       ${if (withMeta) ", meta_ser_id, meta_ser_manifest, meta" else ""})
       VALUES (?, ?, ?, ?, ?, ? ${if (withMeta) ", ?, ?, ?" else ""})
     """
 
   def deleteSnapshot = s"""
-      DELETE FROM ${tableName} WHERE
+      DELETE FROM $tableName WHERE
         persistence_id = ? AND
         sequence_nr = ?
     """
 
   def deleteAllSnapshotForPersistenceIdAndSequenceNrBetween = s"""
-    DELETE FROM ${tableName}
+    DELETE FROM $tableName
     WHERE persistence_id = ?
     AND sequence_nr >= ?
     AND sequence_nr <= ?
@@ -77,34 +77,34 @@ import pekko.persistence.cassandra.FutureDone
 
   def deleteSnapshotsBefore =
     s"""
-        DELETE FROM ${tableName}
+        DELETE FROM $tableName
         WHERE persistence_id = ?
         AND sequence_nr < ?
        """
 
   def selectSnapshot = s"""
-      SELECT * FROM ${tableName} WHERE
+      SELECT * FROM $tableName WHERE
         persistence_id = ? AND
         sequence_nr = ?
     """
 
   def selectSnapshotMetadata(limit: Option[Int] = None) = s"""
-      SELECT persistence_id, sequence_nr, timestamp FROM ${tableName} WHERE
+      SELECT persistence_id, sequence_nr, timestamp FROM $tableName WHERE
         persistence_id = ? AND
         sequence_nr <= ? AND
         sequence_nr >= ?
-        ${limit.map(l => s"LIMIT ${l}").getOrElse("")}
+        ${limit.map(l => s"LIMIT $l").getOrElse("")}
     """
 
   def selectLatestSnapshotMeta =
-    s"""SELECT persistence_id, sequence_nr, timestamp FROM ${tableName} WHERE
+    s"""SELECT persistence_id, sequence_nr, timestamp FROM $tableName WHERE
     persistence_id = ? 
     ORDER BY sequence_nr DESC
     LIMIT ?
     """
 
   def selectAllSnapshotMeta =
-    s"""SELECT sequence_nr, timestamp FROM ${tableName} WHERE
+    s"""SELECT sequence_nr, timestamp FROM $tableName WHERE
     persistence_id = ? 
     ORDER BY sequence_nr DESC
     """

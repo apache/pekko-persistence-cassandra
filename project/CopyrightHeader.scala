@@ -66,7 +66,7 @@ trait CopyrightHeader extends AutoPlugin {
         case Some(existedText) if isOnlyLightbendCopyrightAnnotated(existedText) =>
           HeaderCommentStyle.cStyleBlockComment.commentCreator(text, existingText) + NewLine * 2 + existedText
         case Some(existedText) =>
-          throw new IllegalStateException(s"Unable to detect Copyright for header:[${existedText}]")
+          throw new IllegalStateException(s"Unable to detect Copyright for header:[$existedText]")
         case None =>
           HeaderCommentStyle.cStyleBlockComment.commentCreator(text, existingText)
       }

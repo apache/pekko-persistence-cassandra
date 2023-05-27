@@ -147,7 +147,7 @@ import scala.util.{ Failure, Success, Try }
     // don't include buffered in the toString
     override def toString =
       s"LookingForMissing{min=$minOffset maxOffset=$maxOffset bucket=$bucket " +
-      s"queryPrevious=$queryPrevious searchingFor=${remainingMissing} " +
+      s"queryPrevious=$queryPrevious searchingFor=$remainingMissing " +
       s"missing=$remainingMissing deadline=$deadline gapDetected=$gapDetected"
   }
 
