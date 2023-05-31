@@ -1,7 +1,7 @@
 import com.typesafe.sbt.packager.docker._
 
 ThisBuild / apacheSonatypeProjectProfile := "pekko"
-ThisBuild / versionScheme := Some("semver-spec")
+ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 sourceDistName := "incubating-pekko-persistence-cassandra"
 
 ThisBuild / resolvers += Resolver.jcenterRepo
