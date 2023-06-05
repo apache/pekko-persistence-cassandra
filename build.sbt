@@ -5,7 +5,9 @@ ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 sourceDistName := "incubating-pekko-persistence-cassandra"
 
 ThisBuild / resolvers += Resolver.jcenterRepo
+// TODO: Remove when Pekko has a proper release
 ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
+ThisBuild / updateOptions := updateOptions.value.withLatestSnapshots(false)
 
 // make version compatible with docker for publishing example project
 ThisBuild / dynverSeparator := "-"
