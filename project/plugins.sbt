@@ -1,3 +1,12 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * license agreements; and to You under the Apache License, version 2.0:
+ *
+ *   https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * This file is part of the Apache Pekko project, which was derived from Akka.
+ */
+
 addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.9.9")
 
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.9.0")
@@ -6,7 +15,7 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.10")
 addSbtPlugin("com.typesafe.sbt" % "sbt-multi-jvm" % "0.4.0")
 addSbtPlugin("com.dwijnand" % "sbt-dynver" % "4.1.1")
 addSbtPlugin("org.mdedetrich" % "sbt-apache-sonatype" % "0.1.10")
-addSbtPlugin("com.github.pjfanning" % "sbt-source-dist" % "0.1.5")
+addSbtPlugin("com.github.pjfanning" % "sbt-source-dist" % "0.1.6")
 
 // Documentation
 addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.5.0")
