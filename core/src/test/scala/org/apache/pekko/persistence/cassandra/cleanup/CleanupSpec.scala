@@ -566,7 +566,7 @@ class CleanupSpec extends CassandraSpec(CleanupSpec.config) with DirectWriting {
   }
 
   private def allSnapshots(pid: String): Seq[SnapshotMetadata] = {
-    import scala.jdk.CollectionConverters._
+    import pekko.util.ccompat.JavaConverters._
     cluster
       .execute(s"select * from ${snapshotName}.snapshots where persistence_id = '${pid}' order by sequence_nr")
       .asScala

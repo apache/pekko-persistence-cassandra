@@ -21,7 +21,8 @@ import org.apache.pekko
 import pekko.Done
 import pekko.actor.SupervisorStrategy.Stop
 import pekko.actor._
-import pekko.annotation.InternalApi
+import pekko.annotation.{ DoNotInherit, InternalApi, InternalStableApi }
+import pekko.dispatch.ExecutionContexts
 import pekko.event.{ Logging, LoggingAdapter }
 import pekko.pattern.{ ask, pipe }
 import pekko.persistence._
@@ -34,25 +35,21 @@ import pekko.persistence.cassandra.journal.TagWriters.{ BulkTagWrite, TagWrite, 
 import pekko.persistence.cassandra.journal.TagWriter.TagProgress
 import pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtension }
 import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
-import pekko.stream.scaladsl.Sink
-import pekko.dispatch.ExecutionContexts
+import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.util.{ OptionVal, Timeout }
 import pekko.util.FutureConverters._
+import pekko.util.ccompat.JavaConverters._
 import com.datastax.oss.driver.api.core.cql._
 import com.typesafe.config.Config
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import com.datastax.oss.protocol.internal.util.Bytes
 
 import scala.annotation.tailrec
-import scala.jdk.CollectionConverters._
 import scala.collection.immutable
 import scala.collection.immutable.Seq
 import scala.concurrent._
 import scala.util.control.NonFatal
 import scala.util.{ Failure, Success, Try }
-import pekko.annotation.DoNotInherit
-import pekko.annotation.InternalStableApi
-import pekko.stream.scaladsl.Source
 
 /**
  * INTERNAL API
