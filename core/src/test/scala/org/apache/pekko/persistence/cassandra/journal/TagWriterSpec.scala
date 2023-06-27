@@ -33,6 +33,7 @@ import com.typesafe.config.{ Config, ConfigFactory }
 import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach }
 import org.scalatest.wordspec.AnyWordSpecLike
 
+import scala.collection.compat.immutable.LazyList
 import scala.concurrent.duration._
 import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.util.control.NoStackTrace
