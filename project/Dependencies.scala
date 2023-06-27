@@ -54,7 +54,6 @@ object Dependencies {
     "org.apache.pekko" %% "pekko-stream" % pekkoVersion,
     "org.apache.pekko" %% "pekko-cluster-tools" % pekkoVersion,
     "com.datastax.oss" % "java-driver-core" % driverVersion,
-    "org.scala-lang.modules" %% "scala-collection-compat" % "2.7.0",
     logback % Test,
     "org.scalatest" %% "scalatest" % "3.2.14" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test,

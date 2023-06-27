@@ -14,7 +14,8 @@
 package org.apache.pekko.persistence.cassandra.journal
 
 import com.typesafe.config.ConfigFactory
-import org.apache.pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, TestTaggingActor }
+import org.apache.pekko
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, TestTaggingActor }
 
 object TagScanningSpec {
   private val config = ConfigFactory.parseString(s"""
@@ -36,7 +37,7 @@ class TagScanningSpec extends CassandraSpec(TagScanningSpec.config) {
       }
 
       awaitAssert {
-        import scala.jdk.CollectionConverters._
+        import pekko.util.ccompat.JavaConverters._
         val expected = (0 until nrActors).map(n => (s"$n".toInt, 1L)).toList
         val scanning = cluster
           .execute(s"select * from $journalName.tag_scanning")

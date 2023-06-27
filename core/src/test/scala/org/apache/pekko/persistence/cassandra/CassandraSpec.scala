@@ -17,12 +17,15 @@ import java.io.{ OutputStream, PrintStream }
 import java.util.concurrent.atomic.AtomicInteger
 
 import org.apache.pekko
-import pekko.actor.ActorSystem
+import pekko.actor.{ ActorSystem, PoisonPill }
 import pekko.event.Logging
 import pekko.event.Logging.{ LogEvent, StdOutLogger }
 import pekko.persistence.cassandra.CassandraSpec._
+import pekko.persistence.cassandra.TestTaggingActor.Ack
+import pekko.persistence.cassandra.journal.CassandraJournal
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
 import pekko.persistence.query.{ NoOffset, PersistenceQuery }
+import pekko.serialization.SerializationExtension
 import pekko.stream.scaladsl.{ Keep, Sink }
 import pekko.stream.testkit.TestSubscriber
 import pekko.stream.testkit.scaladsl.TestSink
@@ -33,15 +36,10 @@ import org.scalatest.time.{ Milliseconds, Seconds, Span }
 import org.scalatest.{ Outcome, Suite }
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatest.matchers.should.Matchers
+
 import scala.collection.immutable
 import scala.concurrent.duration._
-
-import pekko.persistence.cassandra.journal.CassandraJournal
-import pekko.serialization.SerializationExtension
 import scala.util.control.NonFatal
-
-import pekko.persistence.cassandra.TestTaggingActor.Ack
-import pekko.actor.PoisonPill
 
 object CassandraSpec {
   def getCallerName(clazz: Class[_]): String = {
@@ -181,7 +179,7 @@ abstract class CassandraSpec(
     try {
       if (failed && dumpRowsOnFailure) {
         println("RowDump::")
-        import scala.jdk.CollectionConverters._
+        import pekko.util.ccompat.JavaConverters._
         if (system.settings.config.getBoolean("pekko.persistence.cassandra.events-by-tag.enabled")) {
           println("tag_views")
           cluster

@@ -20,19 +20,16 @@ import java.util.UUID
 
 import org.apache.pekko
 import pekko.Done
+import pekko.actor.{ ActorSystem, ExtendedActorSystem }
+import pekko.annotation.InternalApi
 import pekko.persistence.cassandra.journal.TimeBucket
 import pekko.persistence.cassandra.journal.CassandraJournal.{ Serialized, SerializedMeta }
-import pekko.serialization.Serialization
+import pekko.serialization.{ AsyncSerializer, Serialization, Serializers }
+import pekko.util.ccompat.JavaConverters._
 
 import scala.concurrent._
 import scala.util.control.NonFatal
-import scala.jdk.CollectionConverters._
 import com.typesafe.config.{ Config, ConfigValueType }
-import pekko.actor.ActorSystem
-import pekko.actor.ExtendedActorSystem
-import pekko.serialization.AsyncSerializer
-import pekko.serialization.Serializers
-import pekko.annotation.InternalApi
 import com.datastax.oss.driver.api.core.uuid.Uuids
 
 package object cassandra {
