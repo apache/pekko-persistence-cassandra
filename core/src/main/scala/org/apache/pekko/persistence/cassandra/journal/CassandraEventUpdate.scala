@@ -26,7 +26,6 @@ import com.datastax.oss.driver.api.core.cql.{ PreparedStatement, Row, Statement 
 import scala.concurrent.{ ExecutionContext, Future }
 import java.lang.{ Long => JLong }
 
-
 /** INTERNAL API */
 @InternalApi private[pekko] trait CassandraEventUpdate {
 
