@@ -11,7 +11,8 @@ import com.typesafe.sbt.packager.docker._
 
 ThisBuild / apacheSonatypeProjectProfile := "pekko"
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
-sourceDistName := "incubating-pekko-persistence-cassandra"
+sourceDistName := "apache-pekko-persistence-cassandra"
+sourceDistIncubating := true
 
 ThisBuild / resolvers += Resolver.jcenterRepo
 // TODO: Remove when Pekko has a proper release
