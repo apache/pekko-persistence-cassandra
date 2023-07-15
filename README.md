@@ -6,7 +6,7 @@ Apache Pekko Persistence Cassandra is a fork of [Akka Persistence Cassandra](htt
 
 ## Documentation
 
-See https://pekko.apache.org for the documentation including the API docs. The docs for all the Apache Pekko modules can be found there.
+See the [pekko-persistence-cassandra website](https://pekko.apache.org/docs/pekko-persistence-cassandra/current/) for the application documentation. The docs for all the Apache Pekko modules can be found at https://pekko.apache.org.
 
 ## Community
 
