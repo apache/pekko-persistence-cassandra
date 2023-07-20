@@ -24,7 +24,7 @@ object Common extends AutoPlugin {
 
   override def globalSettings =
     Seq(
-      startYear := Some(2016),
+      startYear := Some(2022),
       homepage := Some(url("https://pekko.apache.org/")),
       // apiURL defined in projectSettings because version.value is not correct here
       scmInfo := Some(
