@@ -84,10 +84,10 @@ To increase the load edit values in `common.conf` e.g. increase the load-tick du
 
 ### Running in a real Kubernetes cluster
 
-#### Publish to a registry the cluster can access e.g. Dockerhub with the kubakka user
+#### Publish to a registry the cluster can access e.g. Dockerhub with the kubpekko user
 
 The app image must be in a registry the cluster can see.
-The build.sbt uses DockerHub and the `kubakka` user. Update this if your cluster can't 
+The build.sbt uses DockerHub and the `kubpekko` user. Update this if your cluster can't 
 access DockerHub.
 
 To push an image to docker hub run:

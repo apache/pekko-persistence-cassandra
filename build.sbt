@@ -79,7 +79,7 @@ lazy val endToEndExample = project
         case v                                => Seq(v)
       },
     dockerExposedPorts := Seq(8080, 8558, 17355),
-    dockerUsername := Some("kubakka"),
+    dockerUsername := Some("kubpekko"),
     dockerUpdateLatest := true,
     // update if deploying to some where that can't see docker hu
     // dockerRepository := Some("some-registry"),
