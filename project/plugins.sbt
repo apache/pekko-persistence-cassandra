@@ -16,6 +16,7 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-multi-jvm" % "0.4.0")
 addSbtPlugin("com.dwijnand" % "sbt-dynver" % "4.1.1")
 addSbtPlugin("org.mdedetrich" % "sbt-apache-sonatype" % "0.1.10")
 addSbtPlugin("com.github.pjfanning" % "sbt-source-dist" % "0.1.8")
+addSbtPlugin("net.bzzt" % "sbt-reproducible-builds" % "0.31")
 
 // Documentation
 addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.5.0")
