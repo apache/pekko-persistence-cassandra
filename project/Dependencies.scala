@@ -8,7 +8,6 @@
  */
 
 import sbt._
-import Keys._
 
 object Dependencies {
   // keep in sync with .github/workflows/unit-tests.yml
@@ -17,7 +16,7 @@ object Dependencies {
   val scala3Version = "3.1.2" // not yet enabled - missing pekko-http/pekko-management Scala 3 artifacts
   val scalaVersions = Seq(scala212Version, scala213Version)
 
-  val pekkoVersion = System.getProperty("override.pekko.version", "1.0.0")
+  val pekkoVersion = System.getProperty("override.pekko.version", "1.0.1")
   val pekkoVersionInDocs = "current"
   val cassandraVersionInDocs = "4.0"
 
@@ -25,10 +24,10 @@ object Dependencies {
   val driverVersion = "4.15.0"
   val driverVersionInDocs = "4.14"
 
-  val pekkoConnectorsVersion = "0.0.0+131-79ec6fa6-SNAPSHOT"
+  val pekkoConnectorsVersion = "0.0.0+140-7d704044-SNAPSHOT"
   val pekkoConnectorsVersionInDocs = "current"
   // for example
-  val pekkoManagementVersion = "0.0.0+757-f7d48cde-SNAPSHOT"
+  val pekkoManagementVersion = "1.0.0-RC1+1-15f8c323-SNAPSHOT"
 
   val logback = "ch.qos.logback" % "logback-classic" % "1.2.10"
 
