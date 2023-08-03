@@ -88,7 +88,7 @@ class EventsByTagMigration(
   private lazy val queries = PersistenceQuery(system).readJournalFor[CassandraReadJournal](pluginConfigPath + ".query")
   private implicit val sys: ActorSystem = system
 
-  implicit val ec =
+  implicit val ec: ExecutionContext =
     system.dispatchers.lookup(system.settings.config.getString(s"$pluginConfigPath.journal.plugin-dispatcher"))
   private val settings: PluginSettings =
     new PluginSettings(system, system.settings.config.getConfig(pluginConfigPath))

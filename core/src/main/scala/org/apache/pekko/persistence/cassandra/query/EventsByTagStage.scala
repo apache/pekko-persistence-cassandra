@@ -37,7 +37,7 @@ import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import scala.annotation.tailrec
 import scala.concurrent.duration.{ Duration, _ }
-import scala.concurrent.{ ExecutionContext, ExecutionContextExecutor, Future }
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.{ Failure, Success, Try }
 
 /**
@@ -244,7 +244,7 @@ import scala.util.{ Failure, Success, Try }
         toOffset.map(Uuids.unixTimestamp).getOrElse(Long.MaxValue)
 
       lazy val system = materializer.system
-      lazy implicit val scheduler = system.scheduler
+      lazy implicit val scheduler: Scheduler = system.scheduler
 
       private def calculateToOffset(): UUID = {
         val to: Long = Uuids.unixTimestamp(Uuids.timeBased()) - eventsByTagSettings.eventualConsistency.toMillis
@@ -271,7 +271,7 @@ import scala.util.{ Failure, Success, Try }
       private def updateQueryState(state: QueryState): Unit =
         updateStageState(_.copy(state = state))
 
-      implicit def ec: ExecutionContextExecutor = materializer.executionContext
+      implicit def ec: ExecutionContext = materializer.executionContext
 
       setHandler(out, this)
 

@@ -42,7 +42,7 @@ private[pekko] final class DeleteTagViewForPersistenceId(
     settings: PluginSettings,
     queries: CassandraReadJournal) {
   private val log = Logging(system, s"DeleteTagView($tag)")
-  private implicit val sys = system
+  private implicit val sys: ActorSystem = system
   import system.dispatcher
 
   def execute(): Future[Done] = {

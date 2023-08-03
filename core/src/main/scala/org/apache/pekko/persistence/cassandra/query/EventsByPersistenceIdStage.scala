@@ -132,7 +132,7 @@ import scala.util.{ Failure, Success, Try }
       override protected def logSource: Class[_] =
         classOf[EventsByPersistenceIdStage]
 
-      implicit def ec = materializer.executionContext
+      implicit def ec: ExecutionContext = materializer.executionContext
 
       val donePromise = Promise[Done]()
 
