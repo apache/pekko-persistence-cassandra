@@ -22,7 +22,7 @@ import pekko.persistence.cassandra.PluginSettings
 import pekko.persistence.cassandra.journal.CassandraJournal.HealthCheckQuery
 import pekko.util.Timeout
 
-import scala.concurrent.{ ExecutionContextExecutor, Future }
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.control.NonFatal
 
 final class CassandraHealthCheck(system: ActorSystem) extends (() => Future[Boolean]) {
@@ -34,7 +34,7 @@ final class CassandraHealthCheck(system: ActorSystem) extends (() => Future[Bool
   private val journalPluginId = s"${healthCheckSettings.pluginLocation}.journal"
   private val journalRef = Persistence(system).journalFor(journalPluginId)
 
-  private implicit val ec: ExecutionContextExecutor = system.dispatchers.lookup(s"$journalPluginId.plugin-dispatcher")
+  private implicit val ec: ExecutionContext = system.dispatchers.lookup(s"$journalPluginId.plugin-dispatcher")
   private implicit val timeout: Timeout = healthCheckSettings.timeout
 
   override def apply(): Future[Boolean] = {

@@ -13,11 +13,10 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import scala.concurrent.Future
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
-
 import org.apache.pekko
-import pekko.actor.ActorSystem
+import pekko.actor.{ ActorSystem, Scheduler }
 import pekko.testkit.TestKit
 import pekko.testkit.TestProbe
 import org.scalatest.BeforeAndAfterAll
@@ -31,8 +30,8 @@ class RetriesSpec
     with ScalaFutures
     with BeforeAndAfterAll
     with Matchers {
-  implicit val scheduler = system.scheduler
-  implicit val ec = system.dispatcher
+  implicit val scheduler: Scheduler = system.scheduler
+  implicit val ec: ExecutionContext = system.dispatcher
   "Retries" should {
     "retry N number of times" in {
       val failProbe = TestProbe()

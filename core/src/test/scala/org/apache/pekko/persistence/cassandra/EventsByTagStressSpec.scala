@@ -21,7 +21,7 @@ import pekko.stream.testkit.TestSubscriber
 import pekko.stream.testkit.scaladsl.TestSink
 
 import scala.collection.immutable
-import scala.concurrent.Future
+import scala.concurrent.{ ExecutionContext, Future }
 
 class EventsByTagStressSpec extends CassandraSpec(s"""
     pekko.persistence.cassandra {
@@ -31,7 +31,7 @@ class EventsByTagStressSpec extends CassandraSpec(s"""
     }
   """) {
 
-  implicit val ec = system.dispatcher
+  implicit val ec: ExecutionContext = system.dispatcher
 
   val writers = 10
   val readers = 20

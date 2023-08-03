@@ -14,14 +14,13 @@
 package org.apache.pekko.persistence.cassandra.cleanup
 
 import java.lang.{ Integer => JInt, Long => JLong }
-
 import scala.collection.immutable
 import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
 import org.apache.pekko
 import pekko.{ Done, NotUsed }
-import pekko.actor.{ ActorRef, ClassicActorSystemProvider }
+import pekko.actor.{ ActorRef, ActorSystem, ClassicActorSystemProvider }
 import pekko.annotation.ApiMayChange
 import pekko.event.Logging
 import pekko.pattern.ask
@@ -59,7 +58,7 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
       new CleanupSettings(
         systemProvider.classicSystem.settings.config.getConfig("pekko.persistence.cassandra.cleanup")))
 
-  private implicit val system = systemProvider.classicSystem
+  private implicit val system: ActorSystem = systemProvider.classicSystem
   import settings._
   import system.dispatcher
 

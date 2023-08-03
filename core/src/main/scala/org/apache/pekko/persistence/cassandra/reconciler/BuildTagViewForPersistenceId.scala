@@ -45,7 +45,7 @@ private[pekko] final class BuildTagViewForPersisetceId(
 
   import system.dispatcher
 
-  private implicit val sys = system
+  private implicit val sys: ActorSystem = system
   private val log = Logging(system, classOf[BuildTagViewForPersisetceId])
   private val serialization = SerializationExtension(system)
 
@@ -53,7 +53,7 @@ private[pekko] final class BuildTagViewForPersisetceId(
     PersistenceQuery(system.asInstanceOf[ExtendedActorSystem])
       .readJournalFor[CassandraReadJournal]("pekko.persistence.cassandra.query")
 
-  private implicit val flushTimeout = Timeout(30.seconds)
+  private implicit val flushTimeout: Timeout = Timeout(30.seconds)
 
   def reconcile(flushEvery: Int = 1000): Future[Done] = {
 

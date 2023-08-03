@@ -100,7 +100,7 @@ abstract class EventsByTagMultiJvmSpec
 
     "be readable across nodes" in {
 
-      implicit val materializer = ActorMaterializer()(system)
+      implicit val materializer: ActorMaterializer = ActorMaterializer()(system)
       val queryJournal = PersistenceQuery(system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
 
       var readers: Seq[(Int, TestSubscriber.Probe[(String, Int)])] = Nil
