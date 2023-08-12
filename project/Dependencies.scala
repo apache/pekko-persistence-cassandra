@@ -24,10 +24,10 @@ object Dependencies {
   val driverVersion = "4.15.0"
   val driverVersionInDocs = "4.14"
 
-  val pekkoConnectorsVersion = "0.0.0+140-7d704044-SNAPSHOT"
+  val pekkoConnectorsVersion = "0.0.0+144-703e9cca-SNAPSHOTT"
   val pekkoConnectorsVersionInDocs = "current"
   // for example
-  val pekkoManagementVersion = "1.0.0-RC1+1-15f8c323-SNAPSHOT"
+  val pekkoManagementVersion = "1.0.0"
 
   val logback = "ch.qos.logback" % "logback-classic" % "1.2.10"
 
