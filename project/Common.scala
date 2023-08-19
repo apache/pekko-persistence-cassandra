@@ -57,10 +57,13 @@ object Common extends AutoPlugin {
         s"https://github.com/apache/incubator-pekko-persistence-cassandra/tree/${branch}€{FILE_PATH_EXT}#L€{FILE_LINE}"
       },
       "-doc-canonical-base-url",
-      "https://pekko.apache.org/api/pekko-persistence-cassandra/current/",
-      "-skip-packages",
-      "org.apache.pekko.pattern" // for some reason Scaladoc creates this
-    ),
+      "https://pekko.apache.org/api/pekko-persistence-cassandra/current/") ++ {
+      // for some reason Scaladoc creates this
+      if (scalaBinaryVersion == "3")
+        List("-skip-packages:org.apache.pekko.pattern")
+      else
+        List("-skip-packages", "org.apache.pekko.pattern")
+    },
     Compile / doc / scalacOptions --= Seq("-Xfatal-warnings"),
     autoAPIMappings := true,
     Test / logBuffered := System.getProperty("pekko.logBufferedTests", "false").toBoolean,
