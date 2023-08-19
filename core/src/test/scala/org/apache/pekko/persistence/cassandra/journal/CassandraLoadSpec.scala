@@ -64,8 +64,8 @@ object CassandraLoadSpec {
     override def receiveRecover: Receive = onEvent
 
     override def receiveCommand: Receive = {
-      case c @ "start"     => onStart(c)
-      case c @ "stop"      => onStop(c)
+      case "start"         => onStart("start")
+      case "stop"          => onStop("stop")
       case payload: String => onCommand(payload)
     }
 

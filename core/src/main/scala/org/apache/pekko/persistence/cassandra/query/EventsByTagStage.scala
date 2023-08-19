@@ -24,7 +24,6 @@ import pekko.persistence.cassandra.EventsByTagSettings.RetrySettings
 import pekko.persistence.cassandra._
 import pekko.persistence.cassandra.journal.CassandraJournal._
 import pekko.persistence.cassandra.journal.TimeBucket
-import pekko.persistence.cassandra.query.EventsByTagStage._
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.EventByTagStatements
 import pekko.stream.stage._
 import pekko.stream.{ Attributes, Outlet, SourceShape }
@@ -212,7 +211,7 @@ import scala.util.{ Failure, Success, Try }
 
 /** INTERNAL API */
 @InternalApi private[pekko] class EventsByTagStage(
-    session: TagStageSession,
+    session: EventsByTagStage.TagStageSession,
     initialQueryOffset: UUID,
     toOffset: Option[UUID],
     settings: PluginSettings,
@@ -221,8 +220,9 @@ import scala.util.{ Failure, Success, Try }
     usingOffset: Boolean,
     initialTagPidSequenceNrs: Map[PersistenceId, (TagPidSequenceNr, UUID)],
     scanner: TagViewSequenceNumberScanner)
-    extends GraphStage[SourceShape[UUIDRow]] {
+    extends GraphStage[SourceShape[EventsByTagStage.UUIDRow]] {
 
+  import EventsByTagStage._
   import settings.{ eventsByTagSettings, querySettings }
 
   private val out: Outlet[UUIDRow] = Outlet("event.out")

@@ -20,6 +20,7 @@ import com.typesafe.config.Config
 import org.apache.pekko
 import pekko.actor.{ ActorSystem, ExtendedActorSystem }
 import pekko.annotation.InternalApi
+import pekko.dispatch.MessageDispatcher
 import pekko.event.Logging
 import pekko.persistence.cassandra.Extractors.Extractor
 import pekko.persistence.cassandra.{ CassandraStatements, Extractors, PluginSettings }
@@ -113,7 +114,7 @@ class CassandraReadJournal protected (
 
   import CassandraReadJournal.CombinedEventsByPersistenceIdStmts
 
-  private val log = Logging.getLogger(system, getClass)
+  private val log = Logging.getLogger(system, classOf[CassandraReadJournal])
 
   private val settings = new PluginSettings(system, sharedConfig)
   private val statements = new CassandraStatements(settings)
@@ -139,7 +140,7 @@ class CassandraReadJournal protected (
     new CassandraJournal.EventDeserializer(system)
 
   private val serialization = SerializationExtension(system)
-  implicit private val ec =
+  implicit private val ec: MessageDispatcher =
     system.dispatchers.lookup(querySettings.pluginDispatcher)
   implicit private val sys: ActorSystem = system
 
