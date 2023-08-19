@@ -14,11 +14,10 @@
 package org.apache.pekko.persistence.cassandra.journal
 
 import scala.collection.immutable
+import scala.concurrent.Promise
 import java.lang.{ Integer => JInt, Long => JLong }
 import java.net.URLEncoder
 import java.util.UUID
-
-import scala.concurrent.Promise
 import org.apache.pekko
 import pekko.Done
 import pekko.actor.SupervisorStrategy.Escalate
@@ -37,7 +36,6 @@ import pekko.dispatch.ExecutionContexts
 import pekko.event.LoggingAdapter
 import pekko.persistence.cassandra.journal.CassandraJournal._
 import pekko.persistence.cassandra.journal.TagWriter._
-import pekko.persistence.cassandra.journal.TagWriters._
 import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
 import pekko.util.ByteString
 import pekko.util.Timeout
@@ -180,11 +178,13 @@ import scala.util.Try
  * INTERNAL API
  * Manages all the tag writers.
  */
-@InternalApi private[pekko] class TagWriters(settings: TagWriterSettings, tagWriterSession: TagWritersSession)
+@InternalApi private[pekko] class TagWriters(settings: TagWriterSettings,
+    tagWriterSession: TagWriters.TagWritersSession)
     extends Actor
     with Timers
     with ActorLogging {
 
+  import TagWriters._
   import context.dispatcher
 
   // eager init and val because used from Future callbacks
@@ -210,7 +210,7 @@ import scala.util.Try
   scheduleWriteTagScanningTick()
 
   def receive: Receive = {
-    case FlushAllTagWriters(t) =>
+    case FlushAllTagWriters(t: Timeout) =>
       implicit val timeout: Timeout = t
       if (log.isDebugEnabled)
         log.debug("Flushing all tag writers [{}]", tagActors.keySet.mkString(", "))

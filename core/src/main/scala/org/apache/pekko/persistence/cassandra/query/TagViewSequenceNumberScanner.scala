@@ -62,7 +62,7 @@ import pekko.stream.scaladsl.Sink
 @InternalApi private[pekko] class TagViewSequenceNumberScanner(session: Session, pluginDispatcher: String)(
     implicit materializer: Materializer,
     @nowarn("msg=never used") ec: ExecutionContext) {
-  private val log = Logging(materializer.system, getClass)
+  private val log = Logging(materializer.system, classOf[TagViewSequenceNumberScanner])
 
   /**
    * This could be its own stage and return half way through a query to better meet the deadline

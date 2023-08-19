@@ -215,7 +215,7 @@ import scala.util.{ Failure, Success }
           // this meta query gets slower than slower if snapshots are deleted without a criteria.minSequenceNr as
           // all previous tombstones are scanned in the meta data query
           metadata(snapshotMetaPs, persistenceId, criteria, limit = None).flatMap {
-            mds: immutable.Seq[SnapshotMetadata] =>
+            (mds: immutable.Seq[SnapshotMetadata]) =>
               val boundStatementBatches = mds
                 .map(md =>
                   preparedDeleteSnapshot.map(_.bind(md.persistenceId, md.sequenceNr: JLong)
@@ -306,7 +306,7 @@ import scala.util.{ Failure, Success }
   @InternalApi
   private[pekko] class SnapshotSerialization(system: ActorSystem)(implicit val ec: ExecutionContext) {
 
-    private val log = Logging(system, this.getClass)
+    private val log = Logging(system, classOf[SnapshotSerialization])
 
     private val serialization = SerializationExtension(system)
 

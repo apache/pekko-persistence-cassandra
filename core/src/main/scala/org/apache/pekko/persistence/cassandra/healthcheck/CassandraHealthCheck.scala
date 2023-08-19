@@ -27,7 +27,7 @@ import scala.util.control.NonFatal
 
 final class CassandraHealthCheck(system: ActorSystem) extends (() => Future[Boolean]) {
 
-  private val log = Logging.getLogger(system, getClass)
+  private val log = Logging.getLogger(system, classOf[CassandraHealthCheck])
 
   private val settings = new PluginSettings(system, system.settings.config.getConfig("pekko.persistence.cassandra"))
   private val healthCheckSettings = settings.healthCheckSettings

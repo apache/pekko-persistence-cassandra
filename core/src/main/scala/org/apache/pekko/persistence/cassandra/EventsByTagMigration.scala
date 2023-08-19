@@ -84,7 +84,7 @@ class EventsByTagMigration(
     systemProvider: ClassicActorSystemProvider,
     pluginConfigPath: String = "pekko.persistence.cassandra") {
   private val system = systemProvider.classicSystem
-  private[pekko] val log = Logging.getLogger(system, getClass)
+  private[pekko] val log = Logging.getLogger(system, classOf[EventsByTagMigration])
   private lazy val queries = PersistenceQuery(system).readJournalFor[CassandraReadJournal](pluginConfigPath + ".query")
   private implicit val sys: ActorSystem = system
 
