@@ -24,7 +24,7 @@ object Dependencies {
   val driverVersion = "4.15.0"
   val driverVersionInDocs = "4.14"
 
-  val pekkoConnectorsVersion = "0.0.0+172-784827a8-SNAPSHOT"
+  val pekkoConnectorsVersion = "0.0.0+173-c12dde2b-SNAPSHOT"
   val pekkoConnectorsVersionInDocs = "current"
   // for example
   val pekkoManagementVersion = "1.0.0"
