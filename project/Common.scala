@@ -59,7 +59,7 @@ object Common extends AutoPlugin {
       "-doc-canonical-base-url",
       "https://pekko.apache.org/api/pekko-persistence-cassandra/current/") ++ {
       // for some reason Scaladoc creates this
-      if (scalaBinaryVersion == "3")
+      if (scalaBinaryVersion.value == "3")
         List("-skip-packages:org.apache.pekko.pattern")
       else
         List("-skip-packages", "org.apache.pekko.pattern")
