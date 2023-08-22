@@ -14,10 +14,9 @@
 package org.apache.pekko.persistence.cassandra.query
 
 import java.time.temporal.ChronoUnit
-import java.time.{ LocalDateTime, ZoneOffset }
+import java.time.{ LocalDate, LocalDateTime, ZoneOffset }
 import java.util.Optional
 import java.util.UUID
-
 import org.apache.pekko
 import pekko.actor.{ PoisonPill, Props }
 import pekko.event.Logging.Warning
@@ -37,8 +36,8 @@ import com.datastax.oss.driver.api.core.CqlIdentifier
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import com.typesafe.config.{ Config, ConfigFactory }
 import org.scalatest.BeforeAndAfterEach
-import scala.concurrent.duration._
 
+import scala.concurrent.duration._
 import pekko.persistence.cassandra.PluginSettings
 
 object EventsByTagSpec {
@@ -50,7 +49,7 @@ object EventsByTagSpec {
     }
   }
 
-  val today = LocalDateTime.now(ZoneOffset.UTC)
+  val today = LocalDate.now(ZoneOffset.UTC).atStartOfDay()
 
   val config = ConfigFactory.parseString(s"""
     pekko.actor.serialize-messages = off
@@ -1122,7 +1121,7 @@ class EventsByTagSpecBackTrackingLongRefreshInterval
       probe.expectNextPF { case e @ EventEnvelope(_, "p2", 1L, "e1") => e }
       // now a delayed events for p1 in the previous bucket, should be found by the short back track
       writeTaggedEvent(
-        today.minusDays(1).minusHours(1),
+        today.minusHours(1),
         PersistentRepr("e1", 1L, "p1", ""),
         Set(tagName),
         1,
@@ -1203,7 +1202,7 @@ class EventsByTagSpecBackTracking
 
       // now a delayed events for p1 in the previous bucket, further back than the short period
       writeTaggedEvent(
-        today.minusDays(1).minusHours(1),
+        today.minusHours(1),
         PersistentRepr("e3", 3L, "p1", ""),
         Set(tagName),
         3,
