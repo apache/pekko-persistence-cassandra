@@ -36,6 +36,7 @@ import com.datastax.oss.driver.api.core.CqlIdentifier
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import com.typesafe.config.{ Config, ConfigFactory }
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.concurrent.Eventually.eventually
 
 import scala.concurrent.duration._
 import pekko.persistence.cassandra.PluginSettings
@@ -1370,23 +1371,28 @@ class EventsByTagPersistenceIdCleanupSpec extends AbstractEventsByTagSpec(Events
 
   "PersistenceId cleanup" must {
     "drop state and trigger new persistence id lookup periodically" in {
-      val t1: LocalDateTime = LocalDateTime.now(ZoneOffset.UTC).minusDays(2)
-      val event1 = PersistentRepr(s"cleanup-1", 1, "cleanup")
-      writeTaggedEvent(t1, event1, Set("cleanup-tag"), 1, bucketSize)
+      // https://github.com/apache/incubator-pekko-persistence-cassandra/issues/33
+      eventually(timeout(20.seconds), interval(3.second)) {
+        val t1: LocalDateTime = LocalDateTime.now(ZoneOffset.UTC).minusDays(2)
+        val event1 = PersistentRepr(s"cleanup-1", 1, "cleanup")
+        writeTaggedEvent(t1, event1, Set("cleanup-tag"), 1, bucketSize)
 
-      val query =
-        queries.eventsByTag("cleanup-tag", TimeBasedUUID(Uuids.startOf(t1.toInstant(ZoneOffset.UTC).toEpochMilli - 1L)))
-      val probe = query.runWith(TestSink.probe[Any])
-      probe.request(10)
-      probe.expectNextPF { case e @ EventEnvelope(_, "cleanup", 1L, "cleanup-1") => e }
-      probe.expectNoMessage(cleanupPeriod + 250.millis)
+        val query =
+          queries.eventsByTag("cleanup-tag",
+            TimeBasedUUID(Uuids.startOf(t1.toInstant(ZoneOffset.UTC).toEpochMilli - 1L)))
+        val probe = query.runWith(TestSink.probe[Any])
+        probe.request(10)
+        probe.expectNextPF { case e @ EventEnvelope(_, "cleanup", 1L, "cleanup-1") => e }
+        probe.expectNoMessage(cleanupPeriod + 250.millis)
 
-      // the metadata for pid cleanup should have been removed meaning the next event will be delayed
-      val event2 = PersistentRepr(s"cleanup-2", 2, "cleanup")
-      writeTaggedEvent(event2, Set("cleanup-tag"), 2, bucketSize)
+        // the metadata for pid cleanup should have been removed meaning the next event will be delayed
+        val event2 = PersistentRepr(s"cleanup-2", 2, "cleanup")
+        writeTaggedEvent(event2, Set("cleanup-tag"), 2, bucketSize)
 
-      probe.expectNoMessage(newPersistenceIdScan - 100.millis) // we don't now when exactly the next persistence id scan will be
-      probe.expectNextPF { case e @ EventEnvelope(_, "cleanup", 2L, "cleanup-2") => e }
+        // we don't now when exactly the next persistence id scan will be
+        probe.expectNoMessage(newPersistenceIdScan - 100.millis)
+        probe.expectNextPF { case e @ EventEnvelope(_, "cleanup", 2L, "cleanup-2") => e }
+      }
     }
   }
 }
