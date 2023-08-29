@@ -20,8 +20,7 @@ commands := commands.value.filterNot { command =>
   }
 }
 
-ThisBuild / resolvers += Resolver.jcenterRepo
-// TODO: Remove when Pekko has a proper release
+// TODO: Remove when Pekko-Connectors has a proper release
 ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
 ThisBuild / updateOptions := updateOptions.value.withLatestSnapshots(false)
 
