@@ -17,6 +17,7 @@ The Pekko Persistence Cassandra plugin allows for using [Apache Cassandra](https
 * [Health check](healthcheck.md)
 * [Configuration](configuration.md)
 * [Cassandra server support](server.md)
+* [Release Notes](release-notes.md)
 * [Migrations](migrations.md)
 * [Cleanup](cleanup.md)
 
