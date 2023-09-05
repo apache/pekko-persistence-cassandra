@@ -18,21 +18,15 @@ import java.util.UUID
 
 import org.apache.pekko
 import pekko.persistence.PersistentRepr
-import pekko.persistence.cassandra.journal.CassandraJournal.PersistenceId
-import pekko.persistence.cassandra.journal.CassandraJournal.TagPidSequenceNr
+import pekko.persistence.cassandra.journal.CassandraJournal.{ PersistenceId, TagPidSequenceNr }
 import pekko.persistence.cassandra.query.TagViewSequenceNumberScannerSpec.config
-import pekko.persistence.cassandra.CassandraLifecycle
-import pekko.persistence.cassandra.CassandraSpec
-import pekko.serialization.Serialization
-import pekko.serialization.SerializationExtension
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, Hour, PluginSettings }
+import pekko.serialization.{ Serialization, SerializationExtension }
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfter
 import org.scalatest.time.{ Seconds, Span }
 import scala.concurrent.duration.Duration
-
-import pekko.persistence.cassandra.Hour
-import pekko.persistence.cassandra.PluginSettings
 
 object TagViewSequenceNumberScannerSpec {
   val bucketSize = Hour
@@ -46,7 +40,8 @@ class TagViewSequenceNumberScannerSpec extends CassandraSpec(config) with TestTa
 
   import TagViewSequenceNumberScannerSpec._
 
-  implicit override val patienceConfig = PatienceConfig(timeout = Span(5, Seconds), interval = Span(1, Seconds))
+  implicit override val patienceConfig: PatienceConfig =
+    PatienceConfig(timeout = Span(5, Seconds), interval = Span(1, Seconds))
 
   override val settings = PluginSettings(system)
   val serialization: Serialization = SerializationExtension(system)

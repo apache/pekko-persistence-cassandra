@@ -20,10 +20,6 @@ commands := commands.value.filterNot { command =>
   }
 }
 
-// TODO: Remove when Pekko-Connectors has a proper release
-ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
-ThisBuild / updateOptions := updateOptions.value.withLatestSnapshots(false)
-
 // make version compatible with docker for publishing example project
 ThisBuild / dynverSeparator := "-"
 
