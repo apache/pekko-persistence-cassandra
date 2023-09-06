@@ -153,9 +153,11 @@ Example:
     * Details 2
     * Details 3
 
-## Source style
+## Applying code style to the project
 
-pekko-persistence-cassandra uses [Scalafmt](https://scalameta.org/scalafmt/) to enforce some of the code style rules.
+The project uses [scalafmt](https://scalameta.org/scalafmt/) to ensure code quality which is automatically checked on
+every PR. If you would like to check for any potential code style problems locally you can run `sbt checkCodeStyle`
+and if you want to apply the code style then you can run `sbt applyCodeStyle`.
 
 ## Ignoring formatting commits in git blame
 
