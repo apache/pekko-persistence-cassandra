@@ -20,9 +20,6 @@ commands := commands.value.filterNot { command =>
   }
 }
 
-// make version compatible with docker for publishing example project
-ThisBuild / dynverSeparator := "-"
-
 lazy val root = project
   .in(file("."))
   .enablePlugins(Common, ScalaUnidocPlugin)
@@ -71,7 +68,11 @@ lazy val cassandraBundle = project
 lazy val endToEndExample = project
   .in(file("example"))
   .dependsOn(core)
-  .settings(libraryDependencies ++= Dependencies.exampleDependencies, publish / skip := true)
+  .settings(
+    libraryDependencies ++= Dependencies.exampleDependencies, publish / skip := true,
+    // make version compatible with docker for publishing example project,
+    // see https://github.com/sbt/sbt-dynver#portable-version-strings
+    inConfig(Docker)(DynVerPlugin.buildSettings ++ Seq(dynverSeparator := "-")))
   .settings(
     dockerBaseImage := "openjdk:8-jre-alpine",
     dockerCommands :=
