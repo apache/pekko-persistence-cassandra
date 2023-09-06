@@ -1,0 +1,27 @@
+name: Headers
+
+on:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  check-java-formatted:
+    name: Check Java code is formatted
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Cache Coursier cache
+        uses: coursier/cache-action@v6.4.3
+
+      # Not sure why need to do docs/javafmtCheckAll, figure out later
+      - name: Check headers
+        run: sbt javafmtCheckAll docs/javafmtCheckAll
