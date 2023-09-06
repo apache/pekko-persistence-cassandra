@@ -156,3 +156,13 @@ Example:
 ## Source style
 
 pekko-persistence-cassandra uses [Scalafmt](https://scalameta.org/scalafmt/) to enforce some of the code style rules.
+
+## Ignoring formatting commits in git blame
+
+Throughout the history of the codebase various formatting commits have been applied as the scalafmt style has evolved over time, if desired
+one can setup git blame to ignore these commits. The hashes for these specific are stored in [this file](.git-blame-ignore-revs) so to configure
+git blame to ignore these commits you can execute the following.
+
+```shell
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+```
