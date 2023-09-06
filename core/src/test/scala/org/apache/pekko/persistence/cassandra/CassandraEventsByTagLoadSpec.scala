@@ -41,7 +41,8 @@ object CassandraEventsByTagLoadSpec {
 
 class CassandraEventsByTagLoadSpec extends CassandraSpec(CassandraEventsByTagLoadSpec.config) {
 
-  implicit override val patienceConfig = PatienceConfig(timeout = Span(60, Seconds), interval = Span(5, Seconds))
+  implicit override val patienceConfig: PatienceConfig =
+    PatienceConfig(timeout = Span(60, Seconds), interval = Span(5, Seconds))
 
   val nrPersistenceIds = 50L
   val eventTags = Set("orange", "green", "red")
