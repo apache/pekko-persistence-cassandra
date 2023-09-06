@@ -20,33 +20,42 @@ import java.time.temporal.ChronoUnit;
 
 public class CleanupDocExample {
 
+  public static void example() {
 
+    ActorSystem system = null;
 
-    public static void example() {
+    // #cleanup
+    CassandraReadJournal queries =
+        PersistenceQuery.get(system)
+            .getReadJournalFor(CassandraReadJournal.class, CassandraReadJournal.Identifier());
+    Cleanup cleanup = new Cleanup(system);
 
-        ActorSystem system = null;
+    int persistenceIdParallelism = 10;
 
-        //#cleanup
-        CassandraReadJournal queries = PersistenceQuery.get(system).getReadJournalFor(CassandraReadJournal.class, CassandraReadJournal.Identifier());
-        Cleanup cleanup = new Cleanup(system);
+    // forall persistence ids, keep two snapshots and delete all events before the oldest kept
+    // snapshot
+    queries
+        .currentPersistenceIds()
+        .mapAsync(
+            persistenceIdParallelism,
+            pid -> FutureConverters.toJava(cleanup.cleanupBeforeSnapshot(pid, 2)))
+        .run(system);
 
-        int persistenceIdParallelism = 10;
+    // forall persistence ids, keep everything after the provided unix timestamp, if there aren't
+    // enough snapshots after this time
+    // go back before the timestamp to find snapshot to delete before
+    // this operation is more expensive that the one above
+    ZonedDateTime keepAfter = ZonedDateTime.now().minus(1, ChronoUnit.MONTHS);
+    queries
+        .currentPersistenceIds()
+        .mapAsync(
+            persistenceIdParallelism,
+            pid ->
+                FutureConverters.toJava(
+                    cleanup.cleanupBeforeSnapshot(pid, 2, keepAfter.toInstant().toEpochMilli())))
+        .run(system);
 
+    // #cleanup
 
-        // forall persistence ids, keep two snapshots and delete all events before the oldest kept snapshot
-        queries.currentPersistenceIds().mapAsync(persistenceIdParallelism, pid -> FutureConverters.toJava(cleanup.cleanupBeforeSnapshot(pid, 2))).run(system);
-
-        // forall persistence ids, keep everything after the provided unix timestamp, if there aren't enough snapshots after this time
-        // go back before the timestamp to find snapshot to delete before
-        // this operation is more expensive that the one above
-        ZonedDateTime keepAfter = ZonedDateTime.now().minus(1, ChronoUnit.MONTHS);
-        queries
-                .currentPersistenceIds()
-                .mapAsync(persistenceIdParallelism, pid -> FutureConverters.toJava(cleanup.cleanupBeforeSnapshot(pid, 2, keepAfter.toInstant().toEpochMilli())))
-                .run(system);
-
-        //#cleanup
-
-
-    }
+  }
 }
