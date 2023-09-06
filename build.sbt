@@ -20,6 +20,10 @@ commands := commands.value.filterNot { command =>
   }
 }
 
+addCommandAlias("applyCodeStyle", ";scalafmtAll; scalafmtSbt; javafmtAll; docs/javafmtAll; +headerCreateAll")
+addCommandAlias("checkCodeStyle",
+  ";+headerCheckAll; scalafmtCheckAll; scalafmtSbtCheck; javafmtCheckAll; docs/javafmtCheckAll")
+
 lazy val root = project
   .in(file("."))
   .enablePlugins(Common, ScalaUnidocPlugin)
@@ -144,14 +148,3 @@ lazy val docs = project
     paradoxGroups := Map("Language" -> Seq("Java", "Scala")),
     ApidocPlugin.autoImport.apidocRootPackage := "org.apache.pekko",
     apidocRootPackage := "org.apache.pekko")
-
-TaskKey[Unit]("verifyCodeFmt") := {
-  scalafmtCheckAll.all(ScopeFilter(inAnyProject)).result.value.toEither.left.foreach { _ =>
-    throw new MessageOnlyException(
-      "Unformatted Scala code found. Please run 'scalafmtAll' and commit the reformatted code")
-  }
-  (Compile / scalafmtSbtCheck).result.value.toEither.left.foreach { _ =>
-    throw new MessageOnlyException(
-      "Unformatted sbt code found. Please run 'scalafmtSbt' and commit the reformatted code")
-  }
-}
