@@ -9,3 +9,10 @@ Copyright (C) 2009-2022 Lightbend Inc. <https://www.lightbend.com>
 
 Apache Pekko Persistence Cassandra is derived from Akka Persistence Cassandra 1.0.x, the last version that was distributed under the
 Apache License, Version 2.0 License.
+
+---------------
+
+Apache Pekko Persistence Cassandra includes some code derived from Apache Cassandra 2.2.
+
+Apache Cassandra
+Copyright 2009-2014 The Apache Software Foundation
