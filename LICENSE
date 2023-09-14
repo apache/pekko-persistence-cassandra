@@ -200,4 +200,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
+---------------
 
+pekko-persistence-cassandra contains includes some code derived from Apache Cassandra 2.2.
+This code is under an Apache 2.0 license.
+
+* core/src/main/scala/org/apache/pekko/persistence/cassandra/compaction/BaseCompactionStrategy.scala
+* core/src/main/scala/org/apache/pekko/persistence/cassandra/compaction/LeveledCompactionStrategy.scala
+* core/src/main/scala/org/apache/pekko/persistence/cassandra/compaction/SizeTieredCompactionStrategy.scala
