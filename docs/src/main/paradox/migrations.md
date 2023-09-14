@@ -7,6 +7,7 @@
 ## Keyspaces
 As noted above the default keyspace has been changed. 
 You can either:
+
 * Adapt your configuration to use your current keyspace
 
 ```
@@ -17,5 +18,6 @@ You can either:
 * Create new keyspaces for "pekko" and "pekko_snapshot" and restore your data into the new keyspace
 
 ## Configuration
+
 All classes, plugin keys and profiles have also been adapted. 
 Please refer to [reference.conf](https://github.com/apache/incubator-pekko-persistence-cassandra/blob/main/core/src/main/resources/reference.conf) on how to adapt your configuration.
