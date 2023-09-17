@@ -68,7 +68,7 @@ Gradle
 
 Snapshot builds are available at [https://repository.apache.org/content/groups/snapshots/org/apache/pekko/](https://repository.apache.org/content/groups/snapshots/org/apache/pekko/). All Pekko modules that belong to the same build have the same version.
 
-The [snapshot documentation](https://pekko.apache.org/docs/pekko-persistence-cassandra/snapshot/) is updated with every snapshot build.
+The [snapshot documentation](https://nightlies.apache.org/pekko/docs/pekko-persistence-cassandra/main-snapshot/) is updated with every snapshot build.
 
 ## History
 
