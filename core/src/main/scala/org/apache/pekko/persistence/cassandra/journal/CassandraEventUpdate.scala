@@ -19,6 +19,7 @@ import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.persistence.cassandra.PluginSettings
 import pekko.persistence.cassandra.journal.CassandraJournal.{ Serialized, TagPidSequenceNr }
+import pekko.persistence.cassandra.util.LazyFutureEval
 import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
 import pekko.util.ccompat.JavaConverters._
 import com.datastax.oss.driver.api.core.cql.{ PreparedStatement, Row, Statement }
@@ -36,11 +37,14 @@ import java.lang.{ Long => JLong }
 
   private def journalSettings = settings.journalSettings
   private lazy val journalStatements = new CassandraJournalStatements(settings)
-  lazy val psUpdateMessage: Future[PreparedStatement] = session.prepare(journalStatements.updateMessagePayloadAndTags)
-  lazy val psSelectTagPidSequenceNr: Future[PreparedStatement] =
-    session.prepare(journalStatements.selectTagPidSequenceNr)
-  lazy val psUpdateTagView: Future[PreparedStatement] = session.prepare(journalStatements.updateMessagePayloadInTagView)
-  lazy val psSelectMessages: Future[PreparedStatement] = session.prepare(journalStatements.selectMessages)
+  private val psUpdateMessage: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+    session.prepare(journalStatements.updateMessagePayloadAndTags))
+  private val psSelectTagPidSequenceNr: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+    session.prepare(journalStatements.selectTagPidSequenceNr))
+  private val psUpdateTagView: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+    session.prepare(journalStatements.updateMessagePayloadInTagView))
+  private val psSelectMessages: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+    session.prepare(journalStatements.selectMessages))
 
   /**
    * Update the given event in the messages table and the tag_views table.
@@ -50,7 +54,7 @@ import java.lang.{ Long => JLong }
   def updateEvent(event: Serialized): Future[Done] =
     for {
       (partitionNr, existingTags) <- findEvent(event)
-      psUM <- psUpdateMessage
+      psUM <- psUpdateMessage.futureResult()
       e = event.copy(tags = existingTags) // do not allow updating of tags
       _ <- session.executeWrite(prepareUpdate(psUM, e, partitionNr))
       _ <- Future.traverse(existingTags) { tag =>
@@ -61,7 +65,7 @@ import java.lang.{ Long => JLong }
   private def findEvent(s: Serialized): Future[(Long, Set[String])] = {
     val firstPartition = partitionNr(s.sequenceNr, journalSettings.targetPartitionSize)
     for {
-      ps <- psSelectMessages
+      ps <- psSelectMessages.futureResult()
       row <- findEvent(ps, s.persistenceId, s.sequenceNr, firstPartition)
     } yield (row.getLong("partition_nr"), row.getSet[String]("tags", classOf[String]).asScala.toSet)
   }
@@ -86,7 +90,7 @@ import java.lang.{ Long => JLong }
       }
 
   private def updateEventInTagViews(event: Serialized, tag: String): Future[Done] =
-    psSelectTagPidSequenceNr
+    psSelectTagPidSequenceNr.futureResult()
       .flatMap { ps =>
         val bound = ps
           .bind()
@@ -107,7 +111,7 @@ import java.lang.{ Long => JLong }
       }
 
   private def updateEventInTagViews(event: Serialized, tag: String, tagPidSequenceNr: TagPidSequenceNr): Future[Done] =
-    psUpdateTagView.flatMap { ps =>
+    psUpdateTagView.futureResult().flatMap { ps =>
       // primary key
       val bound = ps
         .bind()
