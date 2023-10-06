@@ -23,6 +23,11 @@ import java.util.concurrent.atomic.AtomicReference
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.Failure
 
+@InternalApi
+private[cassandra] object LazyFutureEval {
+  def apply[T](evalFunction: () => Future[T]): LazyFutureEval[T] = new LazyFutureEval[T](evalFunction)
+}
+
 /**
  * An internal utility class that lazily creates an instance of T but that can recover if the evalFunction fails.
  *
@@ -31,7 +36,7 @@ import scala.util.Failure
  * This class is not recommended for non-Pekko usage.
  */
 @InternalApi
-case class LazyFutureEval[T](evalFunction: () => Future[T]) {
+private[cassandra] class LazyFutureEval[T](evalFunction: () => Future[T]) {
   private val instance = new AtomicReference[Future[T]]()
 
   def futureResult()(implicit ec: ExecutionContext): Future[T] = {
