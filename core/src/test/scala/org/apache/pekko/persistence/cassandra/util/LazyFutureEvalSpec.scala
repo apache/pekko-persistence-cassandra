@@ -17,6 +17,7 @@
 
 package org.apache.pekko.persistence.cassandra.util
 
+import org.scalatest.concurrent.Eventually
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
@@ -25,7 +26,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ Await, Future }
 
-class LazyFutureEvalSpec extends AnyWordSpecLike with Matchers {
+class LazyFutureEvalSpec extends AnyWordSpecLike with Matchers with Eventually {
   private val timeout = 5.seconds
 
   "LazyFutureEval" should {
@@ -40,9 +41,11 @@ class LazyFutureEvalSpec extends AnyWordSpecLike with Matchers {
       val lazyEval = LazyFutureEval(() => Future(eval.getResult()))
       val res1 = Await.ready(lazyEval.futureResult(), timeout)
       res1.value.get.isFailure shouldBe true
-      // 2nd call should succeed
-      val res2 = Await.ready(lazyEval.futureResult(), timeout)
-      res2.value.get.isSuccess shouldBe true
+      eventually {
+        // 2nd call should succeed but the cached result is removed asynchronously so we need to retry
+        val res2 = Await.ready(lazyEval.futureResult(), timeout)
+        res2.value.get.isSuccess shouldBe true
+      }
     }
   }
 

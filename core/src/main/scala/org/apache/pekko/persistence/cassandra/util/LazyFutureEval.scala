@@ -21,7 +21,7 @@ import org.apache.pekko.annotation.InternalApi
 
 import java.util.concurrent.atomic.AtomicReference
 import scala.concurrent.{ ExecutionContext, Future }
-import scala.util.Success
+import scala.util.Failure
 
 /**
  * An internal utility class that lazily creates an instance of T but that can recover if the evalFunction fails.
@@ -32,19 +32,20 @@ import scala.util.Success
  */
 @InternalApi
 case class LazyFutureEval[T](evalFunction: () => Future[T]) {
-  private val instance = new AtomicReference[T]()
+  private val instance = new AtomicReference[Future[T]]()
 
   def futureResult()(implicit ec: ExecutionContext): Future[T] = {
-    val t = instance.get()
-    if (t == null) {
-      val result = evalFunction.apply()
+    val f = instance.get()
+    if (f == null) {
+      val result = evalFunction()
+      instance.set(result)
       result.onComplete {
-        case Success(v) => instance.set(v)
-        case _          =>
+        case _: Failure[T] => instance.set(null)
+        case _             =>
       }
       result
     } else {
-      Future.successful(t)
+      f
     }
   }
 }
