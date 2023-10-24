@@ -31,7 +31,7 @@ import pekko.persistence.cassandra.journal.CassandraJournal
 import pekko.persistence.cassandra.reconciler.Reconciliation
 import pekko.persistence.cassandra.reconciler.ReconciliationSettings
 import pekko.persistence.cassandra.snapshot.{ CassandraSnapshotStatements, CassandraSnapshotStore }
-import pekko.persistence.cassandra.util.LazyFutureEval
+import pekko.persistence.cassandra.util.RetryableFutureEval
 import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
 import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.util.Timeout
@@ -79,9 +79,9 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
 
   private lazy val pluginSettings = PluginSettings(system, system.settings.config.getConfig(pluginLocation))
   private lazy val statements = new CassandraSnapshotStatements(pluginSettings.snapshotSettings)
-  private val selectLatestSnapshotsPs = LazyFutureEval(() =>
+  private val selectLatestSnapshotsPs = RetryableFutureEval(() =>
     session.prepare(statements.selectLatestSnapshotMeta))
-  private val selectAllSnapshotMetaPs = LazyFutureEval(() =>
+  private val selectAllSnapshotMetaPs = RetryableFutureEval(() =>
     session.prepare(statements.selectAllSnapshotMeta))
 
   if (dryRun) {

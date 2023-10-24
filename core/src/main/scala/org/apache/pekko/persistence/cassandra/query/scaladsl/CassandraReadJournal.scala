@@ -29,7 +29,7 @@ import pekko.persistence.cassandra.journal._
 import pekko.persistence.cassandra.query.EventsByTagStage.TagStageSession
 import pekko.persistence.cassandra.query._
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.EventByTagStatements
-import pekko.persistence.cassandra.util.LazyFutureEval
+import pekko.persistence.cassandra.util.RetryableFutureEval
 import pekko.persistence.query._
 import pekko.persistence.query.scaladsl._
 import pekko.persistence.{ Persistence, PersistentRepr }
@@ -176,25 +176,26 @@ class CassandraReadJournal protected (
           preparedSelectTagSequenceNrs.futureResult()))
       .map(_ => Done)
 
-  private val preparedSelectEventsByPersistenceId: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  private val preparedSelectEventsByPersistenceId: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     session.prepare(statements.journalStatements.selectMessages))
 
-  private val preparedSelectDeletedTo: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  private val preparedSelectDeletedTo: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     session.prepare(statements.journalStatements.selectDeletedTo))
 
-  private val preparedSelectAllPersistenceIds: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  private val preparedSelectAllPersistenceIds: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     session.prepare(queryStatements.selectAllPersistenceIds))
 
-  private val preparedSelectDistinctPersistenceIds: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  private val preparedSelectDistinctPersistenceIds: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     session.prepare(queryStatements.selectDistinctPersistenceIds))
 
-  private val preparedSelectFromTagViewWithUpperBound: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
-    session.prepare(queryStatements.selectEventsFromTagViewWithUpperBound))
+  private val preparedSelectFromTagViewWithUpperBound: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() =>
+      session.prepare(queryStatements.selectEventsFromTagViewWithUpperBound))
 
-  private val preparedSelectTagSequenceNrs: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  private val preparedSelectTagSequenceNrs: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     session.prepare(queryStatements.selectTagSequenceNrs))
 
-  private val preparedSelectHighestSequenceNr: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  private val preparedSelectHighestSequenceNr: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     session.prepare(statements.journalStatements.selectHighestSequenceNr))
 
   /**

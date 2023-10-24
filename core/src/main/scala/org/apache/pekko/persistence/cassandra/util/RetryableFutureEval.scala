@@ -24,8 +24,8 @@ import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.Failure
 
 @InternalApi
-private[cassandra] object LazyFutureEval {
-  def apply[T](evalFunction: () => Future[T]): LazyFutureEval[T] = new LazyFutureEval[T](evalFunction)
+private[cassandra] object RetryableFutureEval {
+  def apply[T](evalFunction: () => Future[T]): RetryableFutureEval[T] = new RetryableFutureEval[T](evalFunction)
 }
 
 /**
@@ -36,7 +36,7 @@ private[cassandra] object LazyFutureEval {
  * This class is not recommended for non-Pekko usage.
  */
 @InternalApi
-private[cassandra] class LazyFutureEval[T](evalFunction: () => Future[T]) {
+private[cassandra] class RetryableFutureEval[T](evalFunction: () => Future[T]) {
   private val instance = new AtomicReference[Future[T]]()
 
   def futureResult()(implicit ec: ExecutionContext): Future[T] = {

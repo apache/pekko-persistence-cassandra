@@ -29,7 +29,7 @@ import pekko.persistence._
 import pekko.persistence.cassandra._
 import pekko.persistence.cassandra.Extractors
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import pekko.persistence.cassandra.util.LazyFutureEval
+import pekko.persistence.cassandra.util.RetryableFutureEval
 import pekko.persistence.journal.{ AsyncWriteJournal, Tagged }
 import pekko.persistence.query.PersistenceQuery
 import pekko.persistence.cassandra.journal.TagWriters.{ BulkTagWrite, TagWrite, TagWritersSession }
@@ -115,30 +115,30 @@ import scala.util.{ Failure, Success, Try }
   private val tagRecovery: Option[CassandraTagRecovery] =
     tagWrites.map(ref => new CassandraTagRecovery(context.system, session, settings, taggedPreparedStatements, ref))
 
-  private val preparedWriteMessage: LazyFutureEval[PreparedStatement] =
-    LazyFutureEval(() => session.prepare(statements.journalStatements.writeMessage(withMeta = false)))
-  private val preparedSelectDeletedTo: Option[LazyFutureEval[PreparedStatement]] = {
+  private val preparedWriteMessage: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.writeMessage(withMeta = false)))
+  private val preparedSelectDeletedTo: Option[RetryableFutureEval[PreparedStatement]] = {
     if (settings.journalSettings.supportDeletes)
-      Some(LazyFutureEval(() => session.prepare(statements.journalStatements.selectDeletedTo)))
+      Some(RetryableFutureEval(() => session.prepare(statements.journalStatements.selectDeletedTo)))
     else
       None
   }
-  private val preparedSelectHighestSequenceNr: LazyFutureEval[PreparedStatement] =
-    LazyFutureEval(() => session.prepare(statements.journalStatements.selectHighestSequenceNr))
+  private val preparedSelectHighestSequenceNr: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.selectHighestSequenceNr))
 
-  private val deletesNotSupportedException: LazyFutureEval[PreparedStatement] =
-    LazyFutureEval(() =>
+  private val deletesNotSupportedException: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() =>
       Future.failed(new IllegalArgumentException(s"Deletes not supported because config support-deletes=off")))
 
-  private val preparedInsertDeletedTo: LazyFutureEval[PreparedStatement] = {
+  private val preparedInsertDeletedTo: RetryableFutureEval[PreparedStatement] = {
     if (settings.journalSettings.supportDeletes)
-      LazyFutureEval(() => session.prepare(statements.journalStatements.insertDeletedTo))
+      RetryableFutureEval(() => session.prepare(statements.journalStatements.insertDeletedTo))
     else
       deletesNotSupportedException
   }
-  private val preparedDeleteMessages: LazyFutureEval[PreparedStatement] = {
+  private val preparedDeleteMessages: RetryableFutureEval[PreparedStatement] = {
     if (settings.journalSettings.supportDeletes) {
-      LazyFutureEval { () =>
+      RetryableFutureEval { () =>
         session.serverMetaData.flatMap { meta =>
           session.prepare(statements.journalStatements.deleteMessages(meta.isVersion2 || settings.cosmosDb))
         }
@@ -146,14 +146,14 @@ import scala.util.{ Failure, Success, Try }
     } else
       deletesNotSupportedException
   }
-  private val preparedInsertIntoAllPersistenceIds: LazyFutureEval[PreparedStatement] = {
-    LazyFutureEval(() => session.prepare(statements.journalStatements.insertIntoAllPersistenceIds))
+  private val preparedInsertIntoAllPersistenceIds: RetryableFutureEval[PreparedStatement] = {
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.insertIntoAllPersistenceIds))
   }
 
-  private val preparedWriteMessageWithMeta: LazyFutureEval[PreparedStatement] =
-    LazyFutureEval(() => session.prepare(statements.journalStatements.writeMessage(withMeta = true)))
-  private val preparedSelectMessages: LazyFutureEval[PreparedStatement] =
-    LazyFutureEval(() => session.prepare(statements.journalStatements.selectMessages))
+  private val preparedWriteMessageWithMeta: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.writeMessage(withMeta = true)))
+  private val preparedSelectMessages: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.selectMessages))
 
   private lazy val queries: CassandraReadJournal =
     PersistenceQuery(context.system.asInstanceOf[ExtendedActorSystem])

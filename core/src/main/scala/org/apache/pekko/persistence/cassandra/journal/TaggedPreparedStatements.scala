@@ -17,7 +17,7 @@ import com.datastax.oss.driver.api.core.cql.PreparedStatement
 
 import scala.concurrent.{ ExecutionContext, Future }
 import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.persistence.cassandra.util.LazyFutureEval
+import org.apache.pekko.persistence.cassandra.util.RetryableFutureEval
 
 /**
  * INTERNAL API
@@ -36,18 +36,18 @@ import org.apache.pekko.persistence.cassandra.util.LazyFutureEval
     SelectTagScanningForPersistenceId.futureResult()
   }
 
-  val WriteTagViewWithoutMeta: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  val WriteTagViewWithoutMeta: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     prepare(statements.writeTags(false)))
-  val WriteTagViewWithMeta: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  val WriteTagViewWithMeta: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     prepare(statements.writeTags(true)))
-  val WriteTagProgress: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  val WriteTagProgress: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     prepare(statements.writeTagProgress))
-  val SelectTagProgress: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  val SelectTagProgress: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     prepare(statements.selectTagProgress))
-  val SelectTagProgressForPersistenceId: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  val SelectTagProgressForPersistenceId: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     prepare(statements.selectTagProgressForPersistenceId))
-  val WriteTagScanning: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  val WriteTagScanning: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     prepare(statements.writeTagScanning))
-  val SelectTagScanningForPersistenceId: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  val SelectTagScanningForPersistenceId: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     prepare(statements.selectTagScanningForPersistenceId))
 }

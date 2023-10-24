@@ -26,19 +26,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ Await, Future }
 
-class LazyFutureEvalSpec extends AnyWordSpecLike with Matchers with Eventually {
+class RetryableFutureEvalSpec extends AnyWordSpecLike with Matchers with Eventually {
   private val timeout = 5.seconds
 
-  "LazyFutureEval" should {
+  "RetryableFutureEval" should {
     "eval only once when there is just 1 thread" in {
-      val lazyEval = LazyFutureEval(() => Future.successful(UUID.randomUUID()))
+      val lazyEval = RetryableFutureEval(() => Future.successful(UUID.randomUUID()))
       val uuid1 = Await.result(lazyEval.futureResult(), timeout)
       uuid1 should not be null
       Await.result(lazyEval.futureResult(), timeout) shouldEqual uuid1
     }
     "not store a failed eval result" in {
       val eval = new EvalThatFailsFirstTime
-      val lazyEval = LazyFutureEval(() => Future(eval.getResult()))
+      val lazyEval = RetryableFutureEval(() => Future(eval.getResult()))
       val res1 = Await.ready(lazyEval.futureResult(), timeout)
       res1.value.get.isFailure shouldBe true
       eventually {

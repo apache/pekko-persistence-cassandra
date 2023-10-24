@@ -19,7 +19,7 @@ import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.persistence.cassandra.PluginSettings
 import pekko.persistence.cassandra.journal.CassandraJournal.{ Serialized, TagPidSequenceNr }
-import pekko.persistence.cassandra.util.LazyFutureEval
+import pekko.persistence.cassandra.util.RetryableFutureEval
 import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
 import pekko.util.ccompat.JavaConverters._
 import com.datastax.oss.driver.api.core.cql.{ PreparedStatement, Row, Statement }
@@ -37,13 +37,13 @@ import java.lang.{ Long => JLong }
 
   private def journalSettings = settings.journalSettings
   private lazy val journalStatements = new CassandraJournalStatements(settings)
-  private val psUpdateMessage: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  private val psUpdateMessage: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     session.prepare(journalStatements.updateMessagePayloadAndTags))
-  private val psSelectTagPidSequenceNr: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  private val psSelectTagPidSequenceNr: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     session.prepare(journalStatements.selectTagPidSequenceNr))
-  private val psUpdateTagView: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  private val psUpdateTagView: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     session.prepare(journalStatements.updateMessagePayloadInTagView))
-  private val psSelectMessages: LazyFutureEval[PreparedStatement] = LazyFutureEval(() =>
+  private val psSelectMessages: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
     session.prepare(journalStatements.selectMessages))
 
   /**
