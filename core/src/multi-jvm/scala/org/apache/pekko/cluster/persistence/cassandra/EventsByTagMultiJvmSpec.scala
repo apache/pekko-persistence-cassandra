@@ -16,7 +16,6 @@ import pekko.persistence.cassandra.testkit.CassandraLauncher
 import pekko.persistence.journal.Tagged
 import pekko.persistence.query.{ NoOffset, PersistenceQuery }
 import pekko.remote.testkit.{ MultiNodeConfig, MultiNodeSpec }
-import pekko.stream.ActorMaterializer
 import pekko.stream.testkit.TestSubscriber
 import pekko.stream.testkit.scaladsl.TestSink
 import org.scalatest.matchers.should.Matchers
@@ -100,7 +99,6 @@ abstract class EventsByTagMultiJvmSpec
 
     "be readable across nodes" in {
 
-      implicit val materializer: ActorMaterializer = ActorMaterializer()(system)
       val queryJournal = PersistenceQuery(system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
 
       var readers: Seq[(Int, TestSubscriber.Probe[(String, Int)])] = Nil
