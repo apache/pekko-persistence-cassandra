@@ -17,19 +17,19 @@ object Dependencies {
   val scalaVersions = Seq(scala212Version, scala213Version, scala3Version)
 
   val pekkoVersion = System.getProperty("override.pekko.version", "1.0.1")
-  val pekkoVersionInDocs = "current"
+  val pekkoVersionInDocs = "1.0"
   val cassandraVersionInDocs = "4.0"
 
   // Should be sync with the version of the driver in Pekko Connectors Cassandra
   val driverVersion = "4.15.0"
   val driverVersionInDocs = "4.14"
 
-  val pekkoConnectorsVersion = "1.0.0"
-  val pekkoConnectorsVersionInDocs = "current"
+  val pekkoConnectorsVersion = "1.0.1"
+  val pekkoConnectorsVersionInDocs = "1.0"
   // for example
   val pekkoManagementVersion = "1.0.0"
 
-  val logback = "ch.qos.logback" % "logback-classic" % "1.2.10"
+  val logback = "ch.qos.logback" % "logback-classic" % "1.2.11"
 
   val reconcilerDependencies = Seq(
     "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
