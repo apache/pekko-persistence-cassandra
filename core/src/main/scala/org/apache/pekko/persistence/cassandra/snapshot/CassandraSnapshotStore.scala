@@ -126,10 +126,10 @@ import scala.util.{ Failure, Success }
     case md +: mds =>
       load1Async(md)
         .map {
-          case DeserializedSnapshot(payload, OptionVal.Some(snapshotMeta)) =>
-            Some(SelectedSnapshot(md.withMetadata(snapshotMeta), payload))
           case DeserializedSnapshot(payload, OptionVal.None) =>
             Some(SelectedSnapshot(md, payload))
+          case DeserializedSnapshot(payload, some) =>
+            Some(SelectedSnapshot(md.withMetadata(some.x), payload))
         }
         .recoverWith {
           case _: NoSuchElementException if metadata.size == 1 =>
