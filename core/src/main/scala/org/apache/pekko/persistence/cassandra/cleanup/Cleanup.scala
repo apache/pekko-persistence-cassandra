@@ -31,6 +31,7 @@ import pekko.persistence.cassandra.journal.CassandraJournal
 import pekko.persistence.cassandra.reconciler.Reconciliation
 import pekko.persistence.cassandra.reconciler.ReconciliationSettings
 import pekko.persistence.cassandra.snapshot.{ CassandraSnapshotStatements, CassandraSnapshotStore }
+import pekko.persistence.cassandra.util.RetryableFutureEval
 import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
 import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.util.Timeout
@@ -78,8 +79,10 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
 
   private lazy val pluginSettings = PluginSettings(system, system.settings.config.getConfig(pluginLocation))
   private lazy val statements = new CassandraSnapshotStatements(pluginSettings.snapshotSettings)
-  private lazy val selectLatestSnapshotsPs = session.prepare(statements.selectLatestSnapshotMeta)
-  private lazy val selectAllSnapshotMetaPs = session.prepare(statements.selectAllSnapshotMeta)
+  private val selectLatestSnapshotsPs = RetryableFutureEval(() =>
+    session.prepare(statements.selectLatestSnapshotMeta))
+  private val selectAllSnapshotMetaPs = RetryableFutureEval(() =>
+    session.prepare(statements.selectAllSnapshotMeta))
 
   if (dryRun) {
     log.info("Cleanup running in dry run mode. No operations will be executed against the database, only logged")
@@ -148,7 +151,7 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
       keepAfterUnixTimestamp: Long): Future[Option[SnapshotMetadata]] = {
     require(snapshotsToKeep >= 1, "must keep at least one snapshot")
     require(keepAfterUnixTimestamp >= 0, "keepAfter must be greater than 0")
-    selectAllSnapshotMetaPs
+    selectAllSnapshotMetaPs.futureResult()
       .flatMap { ps =>
         val allRows: Source[Row, NotUsed] = session.select(ps.bind(persistenceId))
         allRows.zipWithIndex
@@ -179,7 +182,7 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
    */
   def deleteBeforeSnapshot(persistenceId: String, maxSnapshotsToKeep: Int): Future[Option[SnapshotMetadata]] = {
     require(maxSnapshotsToKeep >= 1, "Must keep at least one snapshot")
-    val snapshots: Future[immutable.Seq[Row]] = selectLatestSnapshotsPs.flatMap { ps =>
+    val snapshots: Future[immutable.Seq[Row]] = selectLatestSnapshotsPs.futureResult().flatMap { ps =>
       session.select(ps.bind(persistenceId, maxSnapshotsToKeep: JInt)).runWith(Sink.seq)
     }
     snapshots.flatMap(rows => issueSnapshotDelete(persistenceId, maxSnapshotsToKeep, rows))

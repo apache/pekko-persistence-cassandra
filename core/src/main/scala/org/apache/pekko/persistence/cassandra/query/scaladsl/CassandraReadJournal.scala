@@ -29,6 +29,7 @@ import pekko.persistence.cassandra.journal._
 import pekko.persistence.cassandra.query.EventsByTagStage.TagStageSession
 import pekko.persistence.cassandra.query._
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.EventByTagStatements
+import pekko.persistence.cassandra.util.RetryableFutureEval
 import pekko.persistence.query._
 import pekko.persistence.query.scaladsl._
 import pekko.persistence.{ Persistence, PersistentRepr }
@@ -146,7 +147,7 @@ class CassandraReadJournal protected (
 
   private val queryStatements: CassandraReadStatements =
     new CassandraReadStatements {
-      override def settings = CassandraReadJournal.this.settings
+      override def settings: PluginSettings = CassandraReadJournal.this.settings
     }
 
   /**
@@ -168,48 +169,49 @@ class CassandraReadJournal protected (
     Future
       .sequence(
         List(
-          preparedSelectDeletedTo,
-          preparedSelectAllPersistenceIds,
-          preparedSelectEventsByPersistenceId,
-          preparedSelectFromTagViewWithUpperBound,
-          preparedSelectTagSequenceNrs))
+          preparedSelectDeletedTo.futureResult(),
+          preparedSelectAllPersistenceIds.futureResult(),
+          preparedSelectEventsByPersistenceId.futureResult(),
+          preparedSelectFromTagViewWithUpperBound.futureResult(),
+          preparedSelectTagSequenceNrs.futureResult()))
       .map(_ => Done)
 
-  private lazy val preparedSelectEventsByPersistenceId: Future[PreparedStatement] =
-    session.prepare(statements.journalStatements.selectMessages)
+  private val preparedSelectEventsByPersistenceId: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
+    session.prepare(statements.journalStatements.selectMessages))
 
-  private lazy val preparedSelectDeletedTo: Future[PreparedStatement] =
-    session.prepare(statements.journalStatements.selectDeletedTo)
+  private val preparedSelectDeletedTo: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
+    session.prepare(statements.journalStatements.selectDeletedTo))
 
-  private lazy val preparedSelectAllPersistenceIds: Future[PreparedStatement] =
-    session.prepare(queryStatements.selectAllPersistenceIds)
+  private val preparedSelectAllPersistenceIds: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
+    session.prepare(queryStatements.selectAllPersistenceIds))
 
-  private lazy val preparedSelectDistinctPersistenceIds: Future[PreparedStatement] =
-    session.prepare(queryStatements.selectDistinctPersistenceIds)
+  private val preparedSelectDistinctPersistenceIds: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
+    session.prepare(queryStatements.selectDistinctPersistenceIds))
 
-  private lazy val preparedSelectFromTagViewWithUpperBound: Future[PreparedStatement] =
-    session.prepare(queryStatements.selectEventsFromTagViewWithUpperBound)
+  private val preparedSelectFromTagViewWithUpperBound: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() =>
+      session.prepare(queryStatements.selectEventsFromTagViewWithUpperBound))
 
-  private lazy val preparedSelectTagSequenceNrs: Future[PreparedStatement] =
-    session.prepare(queryStatements.selectTagSequenceNrs)
+  private val preparedSelectTagSequenceNrs: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
+    session.prepare(queryStatements.selectTagSequenceNrs))
 
-  private lazy val preparedSelectHighestSequenceNr: Future[PreparedStatement] =
-    session.prepare(statements.journalStatements.selectHighestSequenceNr)
+  private val preparedSelectHighestSequenceNr: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
+    session.prepare(statements.journalStatements.selectHighestSequenceNr))
 
   /**
    * INTERNAL API
    */
   @InternalApi private[pekko] def combinedEventsByPersistenceIdStmts: Future[CombinedEventsByPersistenceIdStmts] =
     for {
-      ps1 <- preparedSelectEventsByPersistenceId
-      ps2 <- preparedSelectHighestSequenceNr
-      ps3 <- preparedSelectDeletedTo
+      ps1 <- preparedSelectEventsByPersistenceId.futureResult()
+      ps2 <- preparedSelectHighestSequenceNr.futureResult()
+      ps3 <- preparedSelectDeletedTo.futureResult()
     } yield CombinedEventsByPersistenceIdStmts(ps1, ps2, ps3)
 
   /** INTERNAL API */
   @InternalApi private[pekko] def combinedEventsByTagStmts: Future[EventByTagStatements] =
     for {
-      byTagWithUpper <- preparedSelectFromTagViewWithUpperBound
+      byTagWithUpper <- preparedSelectFromTagViewWithUpperBound.futureResult()
     } yield EventByTagStatements(byTagWithUpper)
 
   /**
@@ -393,11 +395,12 @@ class CassandraReadJournal protected (
    * INTERNAL API
    */
   @InternalApi
-  private[pekko] val tagViewScanner: Future[TagViewSequenceNumberScanner] = preparedSelectTagSequenceNrs.map { ps =>
-    new TagViewSequenceNumberScanner(
-      TagViewSequenceNumberScanner.Session(session, ps, querySettings.readProfile),
-      querySettings.pluginDispatcher)
-  }
+  private[pekko] val tagViewScanner: Future[TagViewSequenceNumberScanner] =
+    preparedSelectTagSequenceNrs.futureResult().map { ps =>
+      new TagViewSequenceNumberScanner(
+        TagViewSequenceNumberScanner.Session(session, ps, querySettings.readProfile),
+        querySettings.pluginDispatcher)
+    }
 
   /**
    * INTERNAL API
@@ -726,7 +729,7 @@ class CassandraReadJournal protected (
           "support-all-persistence-ids=off"))
     else {
       createSource[String, PreparedStatement](
-        preparedSelectAllPersistenceIds,
+        preparedSelectAllPersistenceIds.futureResult(),
         (s, ps) =>
           Source
             .fromGraph(new AllPersistenceIdsStage(refreshInterval, ps, s, querySettings.readProfile))
@@ -739,7 +742,7 @@ class CassandraReadJournal protected (
    */
   @InternalApi private[pekko] def currentPersistenceIdsFromMessages(): Source[String, NotUsed] =
     createSource[String, PreparedStatement](
-      preparedSelectDistinctPersistenceIds,
+      preparedSelectDistinctPersistenceIds.futureResult(),
       (s, ps) =>
         Source
           .fromGraph(new AllPersistenceIdsStage(None, ps, s, querySettings.readProfile))
