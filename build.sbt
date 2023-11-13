@@ -24,10 +24,12 @@ addCommandAlias("applyCodeStyle", ";scalafmtAll; scalafmtSbt; javafmtAll; docs/j
 addCommandAlias("checkCodeStyle",
   ";+headerCheckAll; scalafmtCheckAll; scalafmtSbtCheck; javafmtCheckAll; docs/javafmtCheckAll")
 
+val mimaCompareVersion = "1.0.0"
+
 lazy val root = project
   .in(file("."))
   .enablePlugins(Common, ScalaUnidocPlugin)
-  .disablePlugins(SitePlugin)
+  .disablePlugins(SitePlugin, MimaPlugin)
   .aggregate(core, cassandraLauncher)
   .settings(name := "pekko-persistence-cassandra-root", publish / skip := true)
 
@@ -36,18 +38,22 @@ dumpSchema := (core / Test / runMain).toTask(" org.apache.pekko.persistence.cass
 
 lazy val core = project
   .in(file("core"))
-  .enablePlugins(Common, AutomateHeaderPlugin, MultiJvmPlugin)
+  .enablePlugins(Common, AutomateHeaderPlugin, MimaPlugin, MultiJvmPlugin)
   .dependsOn(cassandraLauncher % Test)
   .settings(
     name := "pekko-persistence-cassandra",
     libraryDependencies ++= Dependencies.pekkoPersistenceCassandraDependencies,
     Compile / packageBin / packageOptions += Package.ManifestAttributes(
-      "Automatic-Module-Name" -> "pekko.persistence.cassandra"))
+      "Automatic-Module-Name" -> "pekko.persistence.cassandra"),
+    mimaReportSignatureProblems := true,
+    mimaPreviousArtifacts := Set(
+      organization.value %% name.value % mimaCompareVersion))
   .configs(MultiJvm)
 
 lazy val cassandraLauncher = project
   .in(file("cassandra-launcher"))
   .enablePlugins(Common)
+  .disablePlugins(MimaPlugin)
   .settings(
     name := "pekko-persistence-cassandra-launcher",
     Compile / managedResourceDirectories += (cassandraBundle / target).value / "bundle",
@@ -58,6 +64,7 @@ lazy val cassandraLauncher = project
 lazy val cassandraBundle = project
   .in(file("cassandra-bundle"))
   .enablePlugins(Common, AutomateHeaderPlugin)
+  .disablePlugins(MimaPlugin)
   .settings(
     name := "pekko-persistence-cassandra-bundle",
     crossPaths := false,
@@ -72,6 +79,7 @@ lazy val cassandraBundle = project
 lazy val endToEndExample = project
   .in(file("example"))
   .dependsOn(core)
+  .disablePlugins(MimaPlugin)
   .settings(
     libraryDependencies ++= Dependencies.exampleDependencies, publish / skip := true,
     // make version compatible with docker for publishing example project,
@@ -107,11 +115,13 @@ lazy val endToEndExample = project
 
 lazy val dseTest = project
   .in(file("dse-test"))
+  .disablePlugins(MimaPlugin)
   .dependsOn(core % "test->test")
   .settings(libraryDependencies ++= Dependencies.dseTestDependencies)
 
 lazy val docs = project
   .enablePlugins(ParadoxPlugin, PekkoParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin)
+  .disablePlugins(MimaPlugin)
   .dependsOn(core)
   .settings(
     name := "Apache Pekko Persistence Cassandra",
