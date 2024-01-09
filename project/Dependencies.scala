@@ -21,8 +21,8 @@ object Dependencies {
   val cassandraVersionInDocs = "4.0"
 
   // Should be sync with the version of the driver in Pekko Connectors Cassandra
-  val driverVersion = "4.15.0"
-  val driverVersionInDocs = "4.14"
+  val driverVersion = "4.17.0"
+  val driverVersionInDocs = "4.17"
 
   val pekkoConnectorsVersion = "1.0.1"
   val pekkoConnectorsVersionInDocs = "1.0"
