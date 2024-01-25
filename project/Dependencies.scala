@@ -16,7 +16,7 @@ object Dependencies {
   val scala3Version = "3.3.1"
   val scalaVersions = Seq(scala212Version, scala213Version, scala3Version)
 
-  val pekkoVersion = System.getProperty("override.pekko.version", "1.0.2")
+  val pekkoVersion = PekkoCoreDependency.version
   val pekkoVersionInDocs = "1.0"
   val cassandraVersionInDocs = "4.0"
 
