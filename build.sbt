@@ -9,18 +9,13 @@
 
 import com.typesafe.sbt.packager.docker._
 
-ThisBuild / apacheSonatypeProjectProfile := "pekko"
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 sourceDistName := "apache-pekko-persistence-cassandra"
 sourceDistIncubating := true
 
 ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
 
-commands := commands.value.filterNot { command =>
-  command.nameOption.exists { name =>
-    name.contains("sonatypeRelease") || name.contains("sonatypeBundleRelease")
-  }
-}
+ThisBuild / pekkoInlineEnabled := false
 
 addCommandAlias("applyCodeStyle", ";scalafmtAll; scalafmtSbt; javafmtAll; docs/javafmtAll; +headerCreateAll")
 addCommandAlias("checkCodeStyle",
