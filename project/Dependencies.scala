@@ -12,24 +12,24 @@ import sbt._
 object Dependencies {
   // keep in sync with .github/workflows/unit-tests.yml
   val scala212Version = "2.12.18"
-  val scala213Version = "2.13.11"
+  val scala213Version = "2.13.12"
   val scala3Version = "3.3.1"
   val scalaVersions = Seq(scala212Version, scala213Version, scala3Version)
 
-  val pekkoVersion = System.getProperty("override.pekko.version", "1.0.1")
-  val pekkoVersionInDocs = "current"
+  val pekkoVersion = PekkoCoreDependency.version
+  val pekkoVersionInDocs = "1.0"
   val cassandraVersionInDocs = "4.0"
 
   // Should be sync with the version of the driver in Pekko Connectors Cassandra
-  val driverVersion = "4.15.0"
-  val driverVersionInDocs = "4.14"
+  val driverVersion = "4.17.0"
+  val driverVersionInDocs = "4.17"
 
-  val pekkoConnectorsVersion = "1.0.0"
-  val pekkoConnectorsVersionInDocs = "current"
+  val pekkoConnectorsVersion = "1.0.1"
+  val pekkoConnectorsVersionInDocs = "1.0"
   // for example
   val pekkoManagementVersion = "1.0.0"
 
-  val logback = "ch.qos.logback" % "logback-classic" % "1.2.10"
+  val logback = "ch.qos.logback" % "logback-classic" % "1.2.13"
 
   val reconcilerDependencies = Seq(
     "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
@@ -55,7 +55,7 @@ object Dependencies {
     "com.datastax.oss" % "java-driver-core" % driverVersion,
     logback % Test,
     "org.scala-lang.modules" %% "scala-collection-compat" % "2.7.0" % Test,
-    "org.scalatest" %% "scalatest" % "3.2.14" % Test,
+    "org.scalatest" %% "scalatest" % "3.2.17" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test,
     "org.osgi" % "org.osgi.core" % "5.0.0" % Provided) ++ pekkoTestDeps.map(_ % pekkoVersion % Test)
 

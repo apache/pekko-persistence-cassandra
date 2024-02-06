@@ -14,9 +14,10 @@
 package org.apache.pekko.persistence.cassandra.journal
 
 import com.datastax.oss.driver.api.core.cql.PreparedStatement
-import scala.concurrent.{ ExecutionContext, Future }
 
+import scala.concurrent.{ ExecutionContext, Future }
 import org.apache.pekko.annotation.InternalApi
+import org.apache.pekko.persistence.cassandra.util.RetryableFutureEval
 
 /**
  * INTERNAL API
@@ -26,22 +27,27 @@ import org.apache.pekko.annotation.InternalApi
     prepare: String => Future[PreparedStatement])(implicit val ec: ExecutionContext) {
 
   def init(): Unit = {
-    WriteTagViewWithoutMeta
-    WriteTagViewWithMeta
-    WriteTagProgress
-    SelectTagProgress
-    SelectTagProgressForPersistenceId
-    WriteTagScanning
-    SelectTagScanningForPersistenceId
+    WriteTagViewWithoutMeta.futureResult()
+    WriteTagViewWithMeta.futureResult()
+    WriteTagProgress.futureResult()
+    SelectTagProgress.futureResult()
+    SelectTagProgressForPersistenceId.futureResult()
+    WriteTagScanning.futureResult()
+    SelectTagScanningForPersistenceId.futureResult()
   }
 
-  lazy val WriteTagViewWithoutMeta: Future[PreparedStatement] = prepare(statements.writeTags(false))
-  lazy val WriteTagViewWithMeta: Future[PreparedStatement] = prepare(statements.writeTags(true))
-  lazy val WriteTagProgress: Future[PreparedStatement] = prepare(statements.writeTagProgress)
-  lazy val SelectTagProgress: Future[PreparedStatement] = prepare(statements.selectTagProgress)
-  lazy val SelectTagProgressForPersistenceId: Future[PreparedStatement] =
-    prepare(statements.selectTagProgressForPersistenceId)
-  lazy val WriteTagScanning: Future[PreparedStatement] = prepare(statements.writeTagScanning)
-  lazy val SelectTagScanningForPersistenceId: Future[PreparedStatement] =
-    prepare(statements.selectTagScanningForPersistenceId)
+  val WriteTagViewWithoutMeta: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
+    prepare(statements.writeTags(false)))
+  val WriteTagViewWithMeta: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
+    prepare(statements.writeTags(true)))
+  val WriteTagProgress: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
+    prepare(statements.writeTagProgress))
+  val SelectTagProgress: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
+    prepare(statements.selectTagProgress))
+  val SelectTagProgressForPersistenceId: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
+    prepare(statements.selectTagProgressForPersistenceId))
+  val WriteTagScanning: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
+    prepare(statements.writeTagScanning))
+  val SelectTagScanningForPersistenceId: RetryableFutureEval[PreparedStatement] = RetryableFutureEval(() =>
+    prepare(statements.selectTagScanningForPersistenceId))
 }

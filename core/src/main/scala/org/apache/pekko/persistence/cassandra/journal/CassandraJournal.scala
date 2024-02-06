@@ -29,6 +29,7 @@ import pekko.persistence._
 import pekko.persistence.cassandra._
 import pekko.persistence.cassandra.Extractors
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.cassandra.util.RetryableFutureEval
 import pekko.persistence.journal.{ AsyncWriteJournal, Tagged }
 import pekko.persistence.query.PersistenceQuery
 import pekko.persistence.cassandra.journal.TagWriters.{ BulkTagWrite, TagWrite, TagWritersSession }
@@ -114,42 +115,45 @@ import scala.util.{ Failure, Success, Try }
   private val tagRecovery: Option[CassandraTagRecovery] =
     tagWrites.map(ref => new CassandraTagRecovery(context.system, session, settings, taggedPreparedStatements, ref))
 
-  private lazy val preparedWriteMessage =
-    session.prepare(statements.journalStatements.writeMessage(withMeta = false))
-  private lazy val preparedSelectDeletedTo: Option[Future[PreparedStatement]] = {
+  private val preparedWriteMessage: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.writeMessage(withMeta = false)))
+  private val preparedSelectDeletedTo: Option[RetryableFutureEval[PreparedStatement]] = {
     if (settings.journalSettings.supportDeletes)
-      Some(session.prepare(statements.journalStatements.selectDeletedTo))
+      Some(RetryableFutureEval(() => session.prepare(statements.journalStatements.selectDeletedTo)))
     else
       None
   }
-  private lazy val preparedSelectHighestSequenceNr: Future[PreparedStatement] =
-    session.prepare(statements.journalStatements.selectHighestSequenceNr)
+  private val preparedSelectHighestSequenceNr: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.selectHighestSequenceNr))
 
-  private def deletesNotSupportedException: Future[PreparedStatement] =
-    Future.failed(new IllegalArgumentException(s"Deletes not supported because config support-deletes=off"))
+  private val deletesNotSupportedException: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() =>
+      Future.failed(new IllegalArgumentException(s"Deletes not supported because config support-deletes=off")))
 
-  private lazy val preparedInsertDeletedTo: Future[PreparedStatement] = {
+  private val preparedInsertDeletedTo: RetryableFutureEval[PreparedStatement] = {
     if (settings.journalSettings.supportDeletes)
-      session.prepare(statements.journalStatements.insertDeletedTo)
+      RetryableFutureEval(() => session.prepare(statements.journalStatements.insertDeletedTo))
     else
       deletesNotSupportedException
   }
-  private lazy val preparedDeleteMessages: Future[PreparedStatement] = {
+  private val preparedDeleteMessages: RetryableFutureEval[PreparedStatement] = {
     if (settings.journalSettings.supportDeletes) {
-      session.serverMetaData.flatMap { meta =>
-        session.prepare(statements.journalStatements.deleteMessages(meta.isVersion2 || settings.cosmosDb))
+      RetryableFutureEval { () =>
+        session.serverMetaData.flatMap { meta =>
+          session.prepare(statements.journalStatements.deleteMessages(meta.isVersion2 || settings.cosmosDb))
+        }
       }
     } else
       deletesNotSupportedException
   }
-  private lazy val preparedInsertIntoAllPersistenceIds: Future[PreparedStatement] = {
-    session.prepare(statements.journalStatements.insertIntoAllPersistenceIds)
+  private val preparedInsertIntoAllPersistenceIds: RetryableFutureEval[PreparedStatement] = {
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.insertIntoAllPersistenceIds))
   }
 
-  private lazy val preparedWriteMessageWithMeta =
-    session.prepare(statements.journalStatements.writeMessage(withMeta = true))
-  private lazy val preparedSelectMessages =
-    session.prepare(statements.journalStatements.selectMessages)
+  private val preparedWriteMessageWithMeta: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.writeMessage(withMeta = true)))
+  private val preparedSelectMessages: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.selectMessages))
 
   private lazy val queries: CassandraReadJournal =
     PersistenceQuery(context.system.asInstanceOf[ExtendedActorSystem])
@@ -199,16 +203,16 @@ import scala.util.{ Failure, Success, Try }
 
     case CassandraJournal.Init =>
       // try initialize early, to be prepared for first real request
-      preparedWriteMessage
-      preparedWriteMessageWithMeta
-      preparedSelectMessages
-      preparedSelectHighestSequenceNr
+      preparedWriteMessage.futureResult()
+      preparedWriteMessageWithMeta.futureResult()
+      preparedSelectMessages.futureResult()
+      preparedSelectHighestSequenceNr.futureResult()
       if (settings.journalSettings.supportAllPersistenceIds)
-        preparedInsertIntoAllPersistenceIds
+        preparedInsertIntoAllPersistenceIds.futureResult()
       if (settings.journalSettings.supportDeletes) {
-        preparedDeleteMessages
-        preparedSelectDeletedTo
-        preparedInsertDeletedTo
+        preparedDeleteMessages.futureResult()
+        preparedSelectDeletedTo.map(_.futureResult())
+        preparedInsertDeletedTo.futureResult()
       }
       queries.initialize()
 
@@ -365,7 +369,8 @@ import scala.util.{ Failure, Success, Try }
     require(atomicWrites.head.payload.nonEmpty)
     val allPersistenceId =
       if (settings.journalSettings.supportAllPersistenceIds && atomicWrites.head.payload.head.sequenceNr == 1L)
-        preparedInsertIntoAllPersistenceIds.map(_.bind(atomicWrites.head.persistenceId)).flatMap(execute(_))
+        preparedInsertIntoAllPersistenceIds.futureResult().map(_.bind(atomicWrites.head.persistenceId)).flatMap(
+          execute(_))
       else
         FutureUnit
 
@@ -402,8 +407,8 @@ import scala.util.{ Failure, Success, Try }
       // then users doesn't have to alter table and add the new columns if they don't use
       // the meta data feature
       val stmt =
-        if (m.meta.isDefined) preparedWriteMessageWithMeta
-        else preparedWriteMessage
+        if (m.meta.isDefined) preparedWriteMessageWithMeta.futureResult()
+        else preparedWriteMessage.futureResult()
 
       stmt.map { stmt =>
         val bs = stmt
@@ -540,7 +545,7 @@ import scala.util.{ Failure, Success, Try }
           val deleteResult =
             Future.sequence((lowestPartition to highestPartition).map { partitionNr =>
               val boundDeleteMessages =
-                preparedDeleteMessages.map(_.bind(persistenceId, partitionNr: JLong, toSeqNr: JLong))
+                preparedDeleteMessages.futureResult().map(_.bind(persistenceId, partitionNr: JLong, toSeqNr: JLong))
               boundDeleteMessages.flatMap(execute(_))
             })
           deleteResult.failed.foreach { e =>
@@ -564,7 +569,8 @@ import scala.util.{ Failure, Success, Try }
         toSeqNr: TagPidSequenceNr): Future[Done] = {
       def asyncDeleteMessages(partitionNr: TagPidSequenceNr, messageIds: Seq[MessageId]): Future[Unit] = {
         val boundStatements = messageIds.map(mid =>
-          preparedDeleteMessages.map(_.bind(mid.persistenceId, partitionNr: JLong, mid.sequenceNr: JLong)))
+          preparedDeleteMessages.futureResult().map(_.bind(mid.persistenceId, partitionNr: JLong,
+            mid.sequenceNr: JLong)))
         Future.sequence(boundStatements).flatMap { stmts =>
           executeBatch(batch => stmts.foldLeft(batch) { case (acc, next) => acc.add(next) })
         }
@@ -608,7 +614,7 @@ import scala.util.{ Failure, Success, Try }
           FutureUnit
         } else {
           val boundInsertDeletedTo =
-            preparedInsertDeletedTo.map(_.bind(persistenceId, toSeqNr: JLong))
+            preparedInsertDeletedTo.futureResult().map(_.bind(persistenceId, toSeqNr: JLong))
           boundInsertDeletedTo.flatMap(execute)
         }
       logicalDelete.flatMap(_ => physicalDelete(lowestPartition, highestPartition, toSeqNr))
@@ -643,7 +649,8 @@ import scala.util.{ Failure, Success, Try }
   }
 
   private def partitionInfo(persistenceId: String, partitionNr: Long, maxSequenceNr: Long): Future[PartitionInfo] = {
-    val boundSelectHighestSequenceNr = preparedSelectHighestSequenceNr.map(_.bind(persistenceId, partitionNr: JLong))
+    val boundSelectHighestSequenceNr =
+      preparedSelectHighestSequenceNr.futureResult().map(_.bind(persistenceId, partitionNr: JLong))
     boundSelectHighestSequenceNr
       .flatMap(selectOne)
       .map(row =>
@@ -656,7 +663,7 @@ import scala.util.{ Failure, Success, Try }
   private def asyncHighestDeletedSequenceNumber(persistenceId: String): Future[Long] = {
     preparedSelectDeletedTo match {
       case Some(pstmt) =>
-        val boundSelectDeletedTo = pstmt.map(_.bind(persistenceId))
+        val boundSelectDeletedTo = pstmt.futureResult().map(_.bind(persistenceId))
         boundSelectDeletedTo.flatMap(selectOne).map(rowOption => rowOption.map(_.getLong("deleted_to")).getOrElse(0))
       case None =>
         Future.successful(0L)
@@ -669,7 +676,7 @@ import scala.util.{ Failure, Success, Try }
       partitionSize: Long): Future[Long] = {
     def find(currentPnr: Long, currentSnr: Long, foundEmptyPartition: Boolean): Future[Long] = {
       // if every message has been deleted and thus no sequence_nr the driver gives us back 0 for "null" :(
-      val boundSelectHighestSequenceNr = preparedSelectHighestSequenceNr.map(ps => {
+      val boundSelectHighestSequenceNr = preparedSelectHighestSequenceNr.futureResult().map(ps => {
         val bound = ps.bind(persistenceId, currentPnr: JLong)
         bound
 
@@ -798,9 +805,8 @@ import scala.util.{ Failure, Success, Try }
           Extractors.optionalTaggedPersistentRepr(eventDeserializer, serialization))
         .mapAsync(1) { t =>
           t.tagged match {
-            case OptionVal.Some(tpr) =>
-              tr.sendMissingTagWrite(tp)(tpr)
             case OptionVal.None => FutureDone // no tags, skip
+            case tpr            => tr.sendMissingTagWrite(tp)(tpr.x)
           }
         }
         .runWith(Sink.ignore)

@@ -68,8 +68,8 @@ import scala.util.Try
       val batch = new BatchStatementBuilder(BatchType.UNLOGGED)
       batch.setExecutionProfileName(writeProfile)
       val tagWritePSs = for {
-        withMeta <- taggedPreparedStatements.WriteTagViewWithMeta
-        withoutMeta <- taggedPreparedStatements.WriteTagViewWithoutMeta
+        withMeta <- taggedPreparedStatements.WriteTagViewWithMeta.futureResult()
+        withoutMeta <- taggedPreparedStatements.WriteTagViewWithoutMeta.futureResult()
       } yield (withMeta, withoutMeta)
 
       tagWritePSs
@@ -113,7 +113,7 @@ import scala.util.Try
 
     def writeProgress(tag: Tag, persistenceId: String, seqNr: Long, tagPidSequenceNr: Long, offset: UUID)(
         implicit ec: ExecutionContext): Future[Done] = {
-      WriteTagProgress
+      WriteTagProgress.futureResult()
         .map(ps =>
           ps.bind(persistenceId, tag, seqNr: JLong, tagPidSequenceNr: JLong, offset)
             .setExecutionProfileName(writeProfile))
@@ -394,7 +394,7 @@ import scala.util.Try
             updates.take(maxPrint).mkString(",") + s" ...and ${updates.size - 20} more")
       }
 
-      tagWriterSession.taggedPreparedStatements.WriteTagScanning.foreach { ps =>
+      tagWriterSession.taggedPreparedStatements.WriteTagScanning.futureResult().foreach { ps =>
         val startTime = System.nanoTime()
 
         def writeTagScanningBatch(group: Seq[(String, Long)]): Future[Done] = {
