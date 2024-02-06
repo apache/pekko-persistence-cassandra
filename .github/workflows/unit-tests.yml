@@ -45,13 +45,13 @@ jobs:
           git checkout scratch
 
       - name: Setup Java ${{ matrix.javaVersion }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: ${{ matrix.javaVersion }}
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@v6.4.3
+        uses: coursier/cache-action@v6
 
       - name: Test against ${{ matrix.container }}
         run: |-
@@ -76,13 +76,13 @@ jobs:
           git checkout scratch
 
       - name: Setup Java 8
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 8
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@v6.4.3
+        uses: coursier/cache-action@v6
 
       - name: MiMa Check
         run: sbt +mimaReportBinaryIssues
@@ -108,13 +108,13 @@ jobs:
           git checkout scratch
 
       - name: Setup Java 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 11
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@v6.4.3
+        uses: coursier/cache-action@v6
 
       - name: Create all API docs for artifacts/website and all reference docs
         run: sbt "unidoc; docs/paradox"
