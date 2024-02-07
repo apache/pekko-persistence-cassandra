@@ -29,6 +29,7 @@ object Dependencies {
   // for example
   val pekkoManagementVersion = "1.0.0"
 
+  val nettyVersion = "4.1.106.Final"
   val logback = "ch.qos.logback" % "logback-classic" % "1.2.13"
 
   val reconcilerDependencies = Seq(
@@ -53,6 +54,7 @@ object Dependencies {
     "org.apache.pekko" %% "pekko-stream" % pekkoVersion,
     "org.apache.pekko" %% "pekko-cluster-tools" % pekkoVersion,
     "com.datastax.oss" % "java-driver-core" % driverVersion,
+    "io.netty" % "netty-handler" % nettyVersion,
     logback % Test,
     "org.scala-lang.modules" %% "scala-collection-compat" % "2.7.0" % Test,
     "org.scalatest" %% "scalatest" % "3.2.17" % Test,
