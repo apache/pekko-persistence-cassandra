@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - release-*
+      - 1.0.x
     tags-ignore: [ v.* ]
   schedule:
     - cron: '0 2 * * *'  # every day 2am
@@ -21,10 +21,10 @@ jobs:
       matrix:
         include:
           - { javaVersion: '8',  container: "cassandra-latest",  scalaVersion: "++2.13.11", test: "test" }
-          - { javaVersion: '8',  container: "cassandra-latest",  scalaVersion: "++3.3.0", test: "test" }
+          - { javaVersion: '8',  container: "cassandra-latest",  scalaVersion: "++3.3.1", test: "test" }
           - { javaVersion: '11', container: "cassandra-latest",  scalaVersion: "++2.12.18", test: "test" }
           - { javaVersion: '11', container: "cassandra-latest",  scalaVersion: "++2.13.11", test: "test" }
-          - { javaVersion: '8',  container: "cassandra-latest",  scalaVersion: "++3.3.0", test: "test" }
+          - { javaVersion: '8',  container: "cassandra-latest",  scalaVersion: "++3.3.1", test: "test" }
           - { javaVersion: '11', container: "cassandra2",        scalaVersion: "++2.13.11", test: "'testOnly -- -l RequiresCassandraThree'"}
           - { javaVersion: '11', container: "cassandra3",        scalaVersion: "++2.13.11", test: "test" }
 

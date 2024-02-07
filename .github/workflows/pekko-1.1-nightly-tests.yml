@@ -1,0 +1,47 @@
+name: Run Tests with Pekko 1.1 builds
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # every day 2am
+  workflow_dispatch:  
+
+jobs:
+  test:
+    name: Test
+    if: github.repository == 'apache/incubator-pekko-persistence-cassandra'
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { javaVersion: '8',  container: "cassandra-latest",  scalaVersion: "++2.13.11", test: "test" }
+
+    env:
+      JAVA_OPTS: -Xms2G -Xmx2G -Xss2M -XX:ReservedCodeCacheSize=256M -Dfile.encoding=UTF-8
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Checkout GitHub merge
+        if: github.event.pull_request
+        run: |-
+          git fetch origin pull/${{ github.event.pull_request.number }}/merge:scratch
+          git checkout scratch
+
+      - name: Setup Java ${{ matrix.javaVersion }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.javaVersion }}
+
+      - name: Cache Coursier cache
+        uses: coursier/cache-action@v6
+
+      - name: Test against ${{ matrix.container }}
+        run: |-
+          docker-compose up -d ${{ matrix.container }} && sbt -Dpekko.build.pekko.version=main -Dpekko.build.pekko.connectors.version=main ${{ matrix.scalaVersion }} ${{matrix.test}}
