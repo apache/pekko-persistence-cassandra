@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { javaVersion: '8',  container: "cassandra-latest",  scalaVersion: "++2.13.11", test: "test" }
+          - { javaVersion: '8',  container: "cassandra-latest",  scalaVersion: "++2.13", test: "test" }
 
     env:
       JAVA_OPTS: -Xms2G -Xmx2G -Xss2M -XX:ReservedCodeCacheSize=256M -Dfile.encoding=UTF-8
