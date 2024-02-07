@@ -13,6 +13,7 @@ ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 sourceDistName := "apache-pekko-persistence-cassandra"
 sourceDistIncubating := true
 
+ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
 val mimaCompareVersion = "1.0.0"
 
 lazy val root = project
