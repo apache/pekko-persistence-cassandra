@@ -21,7 +21,7 @@ object Dependencies {
   val cassandraVersionInDocs = "4.0"
 
   // Should be sync with the version of the driver in Pekko Connectors Cassandra
-  val driverVersion = "4.17.0"
+  val driverVersion = "4.18.0"
   val driverVersionInDocs = "4.17"
 
   val pekkoConnectorsVersion = "1.0.1"
@@ -53,7 +53,7 @@ object Dependencies {
     "org.apache.pekko" %% "pekko-persistence-query" % pekkoVersion,
     "org.apache.pekko" %% "pekko-stream" % pekkoVersion,
     "org.apache.pekko" %% "pekko-cluster-tools" % pekkoVersion,
-    "com.datastax.oss" % "java-driver-core" % driverVersion,
+    "org.apache.cassandra" % "java-driver-core" % driverVersion,
     "io.netty" % "netty-handler" % nettyVersion,
     logback % Test,
     "org.scala-lang.modules" %% "scala-collection-compat" % "2.7.0" % Test,
