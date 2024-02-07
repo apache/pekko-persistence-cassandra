@@ -13,13 +13,6 @@ ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 sourceDistName := "apache-pekko-persistence-cassandra"
 sourceDistIncubating := true
 
-// pekkoInlineEnabled will need to be false when this is backported to 1.0.x
-ThisBuild / pekkoInlineEnabled := true
-
-addCommandAlias("applyCodeStyle", ";scalafmtAll; scalafmtSbt; javafmtAll; docs/javafmtAll; +headerCreateAll")
-addCommandAlias("checkCodeStyle",
-  ";+headerCheckAll; scalafmtCheckAll; scalafmtSbtCheck; javafmtCheckAll; docs/javafmtCheckAll")
-
 val mimaCompareVersion = "1.0.0"
 
 lazy val root = project
@@ -154,3 +147,11 @@ lazy val docs = project
     paradoxGroups := Map("Language" -> Seq("Java", "Scala")),
     ApidocPlugin.autoImport.apidocRootPackage := "org.apache.pekko",
     apidocRootPackage := "org.apache.pekko")
+
+Global / onLoad := (Global / onLoad).value.andThen { s =>
+  val v = version.value
+  val log = sLog.value
+  log.info(
+    s"Building Pekko Persistence Cassandra $v against Pekko ${Dependencies.pekkoVersion} and Pekko Connectors ${Dependencies.pekkoConnectorsVersion}")
+  s
+}

@@ -15,7 +15,7 @@ addSbtPlugin("com.lightbend.sbt" % "sbt-java-formatter" % "0.7.0")
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.10")
 addSbtPlugin("com.typesafe.sbt" % "sbt-multi-jvm" % "0.4.0")
 addSbtPlugin("com.dwijnand" % "sbt-dynver" % "4.1.1")
-addSbtPlugin("com.github.pjfanning" % "sbt-pekko-build" % "0.3.2")
+addSbtPlugin("com.github.pjfanning" % "sbt-pekko-build" % "0.3.3")
 addSbtPlugin("com.github.pjfanning" % "sbt-source-dist" % "0.1.11")
 addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "1.1.3")
 
