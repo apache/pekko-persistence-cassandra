@@ -189,7 +189,7 @@ import scala.concurrent.{ ExecutionContext, Future }
   def truncateTagScanning: String =
     s"TRUNCATE $tagScanningTableName"
   def selectAllTagProgress: String =
-    s"""SELECT tag FROM $tagProgressTableName"""
+    s"""SELECT DISTINCT tag FROM $tagProgressTableName"""
 
   def updateMessagePayloadInTagView =
     s"""
