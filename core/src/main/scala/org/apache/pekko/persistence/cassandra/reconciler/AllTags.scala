@@ -36,16 +36,12 @@ private[pekko] final class AllTags(session: ReconciliationSession) {
     session
       .selectAllTagProgress()
       .map(_.getString("tag"))
-      .statefulMapConcat(() => {
-        var seen = Set.empty[String]
-        tag =>
-          if (!seen.contains(tag)) {
-            seen += tag
-            List(tag)
-          } else {
-            Nil
-          }
-      })
+      .statefulMap(() => Set.empty[String])(
+        (seen, tag) => (seen + tag, None), seen => Some(Some(seen)))
+      .flatMapConcat {
+        case Some(seen) => Source(seen)
+        case None => Source.empty
+      }
   }
 
 }
