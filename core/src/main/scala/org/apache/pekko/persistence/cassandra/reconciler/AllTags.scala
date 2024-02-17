@@ -40,7 +40,7 @@ private[pekko] final class AllTags(session: ReconciliationSession) {
         (seen, tag) => (seen + tag, None), seen => Some(Some(seen)))
       .flatMapConcat {
         case Some(seen) => Source(seen)
-        case None => Source.empty
+        case None       => Source.empty
       }
   }
 
