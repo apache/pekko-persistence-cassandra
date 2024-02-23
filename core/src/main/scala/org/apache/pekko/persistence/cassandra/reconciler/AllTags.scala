@@ -39,10 +39,12 @@ private[pekko] final class AllTags(session: ReconciliationSession) {
       .selectAllTagProgress()
       .map(_.getString("tag"))
       .statefulMap(() => mutable.Set.empty[String])(
-        (seen, tag) => {
-          val element = if (seen.contains(tag)) None else Some(tag)
-          (seen.+=(tag), element)
-        },
+        (seen, tag) =>
+          if (seen.contains(tag)) {
+            (seen, None)
+          } else {
+            (seen.+=(tag), Some(tag))
+          },
         _ => None)
       .collect { case Some(tag) => tag }
   }
