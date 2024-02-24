@@ -18,6 +18,8 @@ import pekko.annotation.InternalApi
 import pekko.stream.scaladsl.Source
 import pekko.NotUsed
 
+import scala.collection.mutable
+
 /**
  * Calculates all the tags by scanning the tag_write_progress table.
  *
@@ -36,16 +38,15 @@ private[pekko] final class AllTags(session: ReconciliationSession) {
     session
       .selectAllTagProgress()
       .map(_.getString("tag"))
-      .statefulMapConcat(() => {
-        var seen = Set.empty[String]
-        tag =>
-          if (!seen.contains(tag)) {
-            seen += tag
-            List(tag)
+      .statefulMap(() => mutable.Set.empty[String])(
+        (seen, tag) =>
+          if (seen.contains(tag)) {
+            (seen, None)
           } else {
-            Nil
-          }
-      })
+            (seen += tag, Some(tag))
+          },
+        _ => None)
+      .collect { case Some(tag) => tag }
   }
 
 }
