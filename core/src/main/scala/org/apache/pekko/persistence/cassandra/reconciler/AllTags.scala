@@ -43,7 +43,7 @@ private[pekko] final class AllTags(session: ReconciliationSession) {
           if (seen.contains(tag)) {
             (seen, None)
           } else {
-            (seen.+=(tag), Some(tag))
+            (seen += tag, Some(tag))
           },
         _ => None)
       .collect { case Some(tag) => tag }
