@@ -34,6 +34,11 @@ The default table definitions look like this:
 
 @@snip [snapshot-tables](/target/snapshot-tables.txt) { #snapshot-tables}
 
+### ScyllaDB
+
+ScyllaDB does not [support](https://github.com/apache/incubator-pekko-persistence-cassandra/issues/135)
+`unchecked_tombstone_compaction`. You should adjust the `pekko.messages` table definition to remove this.
+
 ### Consistency
 
 By default, the snapshot store uses `ONE` for all reads and writes, since snapshots
