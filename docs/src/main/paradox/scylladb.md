@@ -13,3 +13,4 @@ Users with ScyllaDB experience and test environments are very welcome contributo
 You can run the tests and having a ScyllaDB instance accessible on localhost port 9042, or adjust the
 `datastax-java-driver.basic.contact-points` and other configuration to connect to your ScyllaDB.
 
+The @ref:[Snapshots](snapshots.md) page describes an issue to watch out for when you install the table definitions.
