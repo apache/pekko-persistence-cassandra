@@ -13,7 +13,7 @@ object Dependencies {
   // keep in sync with .github/workflows/unit-tests.yml
   val scala212Version = "2.12.19"
   val scala213Version = "2.13.13"
-  val scala3Version = "3.3.1"
+  val scala3Version = "3.3.3"
   val scalaVersions = Seq(scala212Version, scala213Version, scala3Version)
 
   val pekkoVersion = System.getProperty("override.pekko.version", "1.0.2")
