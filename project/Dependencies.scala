@@ -11,8 +11,8 @@ import sbt._
 
 object Dependencies {
   // keep in sync with .github/workflows/unit-tests.yml
-  val scala212Version = "2.12.18"
-  val scala213Version = "2.13.12"
+  val scala212Version = "2.12.19"
+  val scala213Version = "2.13.13"
   val scala3Version = "3.3.3"
   val scalaVersions = Seq(scala212Version, scala213Version, scala3Version)
 
