@@ -29,7 +29,7 @@ object Dependencies {
   // for example
   val pekkoManagementVersion = "1.0.0"
 
-  val nettyVersion = "4.1.106.Final"
+  val nettyVersion = "4.1.107.Final"
   val logback = "ch.qos.logback" % "logback-classic" % "1.2.13"
 
   val reconcilerDependencies = Seq(
