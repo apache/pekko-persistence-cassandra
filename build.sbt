@@ -14,6 +14,8 @@ ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 sourceDistName := "apache-pekko-persistence-cassandra"
 sourceDistIncubating := true
 
+ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
+
 commands := commands.value.filterNot { command =>
   command.nameOption.exists { name =>
     name.contains("sonatypeRelease") || name.contains("sonatypeBundleRelease")
