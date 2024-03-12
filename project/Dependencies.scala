@@ -30,7 +30,7 @@ object Dependencies {
   val pekkoManagementVersion = "1.0.0"
 
   val nettyVersion = "4.1.106.Final"
-  val logback = "ch.qos.logback" % "logback-classic" % "1.2.13"
+  val logback = "ch.qos.logback" % "logback-classic" % "1.5.3"
 
   val reconcilerDependencies = Seq(
     "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
