@@ -57,7 +57,7 @@ object Dependencies {
     "io.netty" % "netty-handler" % nettyVersion,
     logback % Test,
     "org.scala-lang.modules" %% "scala-collection-compat" % "2.7.0" % Test,
-    "org.scalatest" %% "scalatest" % "3.2.17" % Test,
+    "org.scalatest" %% "scalatest" % "3.2.18" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test,
     "org.osgi" % "org.osgi.core" % "5.0.0" % Provided) ++ pekkoTestDeps.map(_ % pekkoVersion % Test)
 
