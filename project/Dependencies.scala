@@ -11,9 +11,9 @@ import sbt._
 
 object Dependencies {
   // keep in sync with .github/workflows/unit-tests.yml
-  val scala212Version = "2.12.18"
-  val scala213Version = "2.13.13"
-  val scala3Version = "3.3.1"
+  val scala212Version = "2.12.19"
+  val scala213Version = "2.13.12"
+  val scala3Version = "3.3.3"
   val scalaVersions = Seq(scala212Version, scala213Version, scala3Version)
 
   val pekkoVersion = PekkoCoreDependency.version
@@ -29,7 +29,7 @@ object Dependencies {
   // for example
   val pekkoManagementVersion = "1.0.0"
 
-  val nettyVersion = "4.1.106.Final"
+  val nettyVersion = "4.1.107.Final"
   val logback = "ch.qos.logback" % "logback-classic" % "1.2.13"
 
   val reconcilerDependencies = Seq(
@@ -57,9 +57,9 @@ object Dependencies {
     "io.netty" % "netty-handler" % nettyVersion,
     logback % Test,
     "org.scala-lang.modules" %% "scala-collection-compat" % "2.7.0" % Test,
-    "org.scalatest" %% "scalatest" % "3.2.17" % Test,
+    "org.scalatest" %% "scalatest" % "3.2.18" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test,
-    "org.osgi" % "org.osgi.core" % "5.0.0" % Provided) ++ pekkoTestDeps.map(_ % pekkoVersion % Test)
+    "org.osgi" % "org.osgi.core" % "6.0.0" % Provided) ++ pekkoTestDeps.map(_ % pekkoVersion % Test)
 
   val exampleDependencies = Seq(
     logback,
