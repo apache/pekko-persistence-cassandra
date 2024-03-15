@@ -13,8 +13,6 @@ ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 sourceDistName := "apache-pekko-persistence-cassandra"
 sourceDistIncubating := true
 
-ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
-
 ThisBuild / pekkoInlineEnabled := false
 
 addCommandAlias("applyCodeStyle", ";scalafmtAll; scalafmtSbt; javafmtAll; docs/javafmtAll; +headerCreateAll")
