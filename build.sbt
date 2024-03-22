@@ -8,11 +8,12 @@
  */
 
 import com.typesafe.sbt.packager.docker._
+import org.apache.pekko.PekkoParadoxPlugin.autoImport.pekkoParadoxIncubatorNotice
 
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 sourceDistName := "apache-pekko-persistence-cassandra"
 sourceDistIncubating := false
-Global / pekkoParadoxIncubatorNotice := None
+pekkoParadoxIncubatorNotice := None
 
 val mimaCompareVersion = "1.0.0"
 
