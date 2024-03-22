@@ -20,4 +20,4 @@ You can either:
 ## Configuration
 
 All classes, plugin keys and profiles have also been adapted. 
-Please refer to [reference.conf](https://github.com/apache/incubator-pekko-persistence-cassandra/blob/main/core/src/main/resources/reference.conf) on how to adapt your configuration.
+Please refer to [reference.conf](https://github.com/apache/pekko-persistence-cassandra/blob/main/core/src/main/resources/reference.conf) on how to adapt your configuration.

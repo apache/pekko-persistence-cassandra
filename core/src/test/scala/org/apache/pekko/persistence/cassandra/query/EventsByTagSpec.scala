@@ -1371,7 +1371,7 @@ class EventsByTagPersistenceIdCleanupSpec extends AbstractEventsByTagSpec(Events
 
   "PersistenceId cleanup" must {
     "drop state and trigger new persistence id lookup periodically" in {
-      // https://github.com/apache/incubator-pekko-persistence-cassandra/issues/33
+      // https://github.com/apache/pekko-persistence-cassandra/issues/33
       eventually(timeout(20.seconds), interval(3.second)) {
         val t1: LocalDateTime = LocalDateTime.now(ZoneOffset.UTC).minusDays(2)
         val event1 = PersistentRepr(s"cleanup-1", 1, "cleanup")

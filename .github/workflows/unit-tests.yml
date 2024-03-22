@@ -13,7 +13,7 @@ on:
 jobs:
   test:
     name: Test
-    if: github.repository == 'apache/incubator-pekko-persistence-cassandra'
+    if: github.repository == 'apache/pekko-persistence-cassandra'
     runs-on: ubuntu-22.04
 
     strategy:
@@ -59,7 +59,7 @@ jobs:
 
   mima:
     name: MiMa check
-    if: github.repository == 'apache/incubator-pekko-persistence-cassandra'
+    if: github.repository == 'apache/pekko-persistence-cassandra'
     runs-on: ubuntu-22.04
 
     steps:
@@ -89,7 +89,7 @@ jobs:
 
   docs:
     name: ScalaDoc, Documentation with Paradox
-    if: github.repository == 'apache/incubator-pekko-persistence-cassandra'
+    if: github.repository == 'apache/pekko-persistence-cassandra'
     runs-on: ubuntu-22.04
     env:
       JAVA_OPTS: -Xms2G -Xmx2G -Xss2M -XX:ReservedCodeCacheSize=256M -Dfile.encoding=UTF-8
