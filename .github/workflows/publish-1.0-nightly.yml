@@ -9,7 +9,7 @@ jobs:
   publish-artifacts:
     name: Publish artifacts to Apache Nexus
     runs-on: ubuntu-22.04
-    if: github.repository == 'apache/incubator-pekko-persistence-cassandra'
+    if: github.repository == 'apache/pekko-persistence-cassandra'
     steps:
       - name: Checkout
         uses: actions/checkout@v4

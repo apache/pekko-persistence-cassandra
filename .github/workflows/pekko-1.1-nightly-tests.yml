@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     name: Test
-    if: github.repository == 'apache/incubator-pekko-persistence-cassandra'
+    if: github.repository == 'apache/pekko-persistence-cassandra'
     runs-on: ubuntu-22.04
 
     strategy:

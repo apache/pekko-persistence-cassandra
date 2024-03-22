@@ -36,7 +36,7 @@ The default table definitions look like this:
 
 ### ScyllaDB
 
-ScyllaDB does not [support](https://github.com/apache/incubator-pekko-persistence-cassandra/issues/135)
+ScyllaDB does not [support](https://github.com/apache/pekko-persistence-cassandra/issues/135)
 `unchecked_tombstone_compaction`. You should adjust the `pekko.messages` table definition to remove this.
 
 ### Consistency
