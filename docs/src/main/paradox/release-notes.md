@@ -32,4 +32,4 @@ We have tried to limit the changes to third party dependencies that were used in
 ### Known Issues
 We hope to fix the following issue in a new release in the near future.
 
-* (103)[https://github.com/apache/incubator-pekko-persistence-cassandra/issues/103]: There is a bug where if you experience Cassandra connectivity issues when initializing then Pekko Persistence Cassandra 1.0.0 does not recover.
+* (103)[https://github.com/apache/pekko-persistence-cassandra/issues/103]: There is a bug where if you experience Cassandra connectivity issues when initializing then Pekko Persistence Cassandra 1.0.0 does not recover.
