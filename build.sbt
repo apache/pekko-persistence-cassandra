@@ -12,6 +12,7 @@ import com.typesafe.sbt.packager.docker._
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 sourceDistName := "apache-pekko-persistence-cassandra"
 sourceDistIncubating := false
+Global / pekkoParadoxIncubatorNotice := None
 
 ThisBuild / pekkoInlineEnabled := false
 
