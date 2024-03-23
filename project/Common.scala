@@ -29,13 +29,13 @@ object Common extends AutoPlugin {
       // apiURL defined in projectSettings because version.value is not correct here
       scmInfo := Some(
         ScmInfo(
-          url("https://github.com/apache/incubator-pekko-persistence-cassandra"),
-          "git@github.com:apache/incubator-pekko-persistence-cassandra.git")),
+          url("https://github.com/apache/pekko-persistence-cassandra"),
+          "git@github.com:apache/pekko-persistence-cassandra.git")),
       developers += Developer(
         "contributors",
         "Contributors",
         "dev@pekko.apache.org",
-        url("https://github.com/apache/incubator-pekko-persistence-cassandra/graphs/contributors")),
+        url("https://github.com/apache/pekko-persistence-cassandra/graphs/contributors")),
       description := "A Cassandra plugin for Apache Pekko Persistence.")
 
   override lazy val projectSettings = Seq(
@@ -54,7 +54,7 @@ object Common extends AutoPlugin {
       (ThisBuild / baseDirectory).value.toString,
       "-doc-source-url", {
         val branch = if (isSnapshot.value) "main" else s"v${version.value}"
-        s"https://github.com/apache/incubator-pekko-persistence-cassandra/tree/${branch}€{FILE_PATH_EXT}#L€{FILE_LINE}"
+        s"https://github.com/apache/pekko-persistence-cassandra/tree/${branch}€{FILE_PATH_EXT}#L€{FILE_LINE}"
       },
       "-doc-canonical-base-url",
       "https://pekko.apache.org/api/pekko-persistence-cassandra/current/") ++ {
