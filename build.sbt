@@ -12,7 +12,6 @@ import com.typesafe.sbt.packager.docker._
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 sourceDistName := "apache-pekko-persistence-cassandra"
 sourceDistIncubating := false
-Global / pekkoParadoxIncubatorNotice := None
 
 val mimaCompareVersion = "1.0.0"
 
@@ -147,7 +146,8 @@ lazy val docs = project
       "javadoc.org.apache.pekko.persistence.cassandra.base_url" -> ""), // no Javadoc is published
     paradoxGroups := Map("Language" -> Seq("Java", "Scala")),
     ApidocPlugin.autoImport.apidocRootPackage := "org.apache.pekko",
-    apidocRootPackage := "org.apache.pekko")
+    apidocRootPackage := "org.apache.pekko",
+    Global / pekkoParadoxIncubatorNotice := None)
 
 Global / onLoad := (Global / onLoad).value.andThen { s =>
   val v = version.value
