@@ -84,6 +84,5 @@ object Dependencies {
     logback % Test)
 
   val docsDependencies = Seq(
-    "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2"
-  )
+    "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" % Test)
 }
