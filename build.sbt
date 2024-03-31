@@ -115,7 +115,7 @@ lazy val docs = project
   .settings(
     name := "Apache Pekko Persistence Cassandra",
     (Compile / paradox) := (Compile / paradox).dependsOn(root / dumpSchema).value,
-    libraryDependencies ++= Dependencies.docsDependencies, publish / skip := true,
+    libraryDependencies ++= Dependencies.docsDependencies,
     publish / skip := true,
     makeSite := makeSite.dependsOn(LocalRootProject / ScalaUnidoc / doc).value,
     previewPath := (Paradox / siteSubdirName).value,
