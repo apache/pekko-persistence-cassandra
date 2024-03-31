@@ -82,4 +82,8 @@ object Dependencies {
     "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
     "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test,
     logback % Test)
+
+  val docsDependencies = Seq(
+    "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2"
+  )
 }
