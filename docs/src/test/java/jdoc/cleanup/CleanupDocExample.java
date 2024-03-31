@@ -9,14 +9,13 @@
 
 package jdoc.cleanup;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import org.apache.pekko.actor.ActorSystem;
 import org.apache.pekko.persistence.cassandra.cleanup.Cleanup;
 import org.apache.pekko.persistence.cassandra.query.javadsl.CassandraReadJournal;
 import org.apache.pekko.persistence.query.PersistenceQuery;
 import scala.compat.java8.FutureConverters;
-
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
 public class CleanupDocExample {
 
