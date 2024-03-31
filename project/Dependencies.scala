@@ -59,7 +59,6 @@ object Dependencies {
     "io.netty" % "netty-handler" % nettyVersion,
     logback % Test,
     "org.scala-lang.modules" %% "scala-collection-compat" % "2.11.0" % Test,
-    "org.scala-lang.modules" %% "scala-collection-compat" % "2.7.0" % Test,
     "org.scalatest" %% "scalatest" % "3.2.18" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test,
     "org.osgi" % "org.osgi.core" % "6.0.0" % Provided) ++ pekkoTestDeps.map(_ % pekkoVersion % Test)
@@ -82,4 +81,7 @@ object Dependencies {
     "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
     "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test,
     logback % Test)
+
+  val docsDependencies = Seq(
+    "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" % Test)
 }
