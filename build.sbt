@@ -124,12 +124,15 @@ lazy val docs = project
     Paradox / siteSubdirName := s"docs/pekko-persistence-cassandra/${projectInfoVersion.value}",
     Compile / paradoxProperties ++= Map(
       "project.url" -> "https://pekko.apache.org/docs/pekko-persistence-cassandra/current/",
+      "github.base_url" -> "https://github.com/apache/pekko-persistence-cassandra/",
       "canonical.base_url" -> "https://pekko.apache.org/docs/pekko-persistence-cassandra/current",
       "pekko.version" -> Dependencies.pekkoVersion,
       // Pekko
       "extref.pekko.base_url" -> s"https://pekko.apache.org/docs/pekko/${Dependencies.pekkoVersionInDocs}/%s",
       "scaladoc.pekko.base_url" -> s"https://pekko.apache.org/api/pekko/${Dependencies.pekkoVersionInDocs}/",
       "javadoc.pekko.base_url" -> s"https://pekko.apache.org/japi/pekko/${Dependencies.pekkoVersionInDocs}/",
+      "extref.github.base_url" -> s"https://github.com/apache/pekko-persistence-jdbc/blob/${if (isSnapshot.value) "main"
+        else "v" + version.value}/%s",
       // Connectors
       "extref.pekko-connectors.base_url" -> s"https://pekko.apache.org/docs/pekko-connectors/${Dependencies.pekkoConnectorsVersionInDocs}/%s",
       "scaladoc.org.apache.pekko.stream.connectors.base_url" -> s"https://pekko.apache.org/api/pekko-connectors/${Dependencies.pekkoConnectorsVersionInDocs}/",
@@ -148,7 +151,8 @@ lazy val docs = project
     paradoxGroups := Map("Language" -> Seq("Java", "Scala")),
     ApidocPlugin.autoImport.apidocRootPackage := "org.apache.pekko",
     apidocRootPackage := "org.apache.pekko",
-    Global / pekkoParadoxIncubatorNotice := None)
+    Global / pekkoParadoxIncubatorNotice := None,
+    pekkoParadoxGithub := Some("https://github.com/apache/pekko-persistence-cassandra"))
 
 Global / onLoad := (Global / onLoad).value.andThen { s =>
   val v = version.value
