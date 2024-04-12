@@ -46,7 +46,7 @@ lazy val cassandraLauncher = project
   .settings(
     name := "pekko-persistence-cassandra-launcher",
     Compile / managedResourceDirectories += (cassandraBundle / target).value / "bundle",
-    Compile / managedResources += (cassandraBundle / Compile /  packageBin).value)
+    Compile / managedResources += (cassandraBundle / Compile / packageBin).value)
 
 // This project doesn't get published directly, rather the assembled artifact is included as part of cassandraLaunchers
 // resources
@@ -74,8 +74,7 @@ lazy val cassandraBundle = project
         } else Def.task { file }
       }
       tracker(() => uberJarLocation)
-    }.value,
-  )
+    }.value)
 
 // Used for testing events by tag in various environments
 lazy val endToEndExample = project
