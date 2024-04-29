@@ -18,7 +18,7 @@ addSbtPlugin("com.github.sbt" % "sbt-dynver" % "5.0.1")
 addSbtPlugin("com.github.pjfanning" % "sbt-pekko-build" % "0.3.3")
 addSbtPlugin("com.github.pjfanning" % "sbt-source-dist" % "0.1.12")
 addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "1.1.3")
-addSbtPlugin("net.bzzt" % "sbt-reproducible-builds" % "0.30")
+addSbtPlugin("net.bzzt" % "sbt-reproducible-builds" % "0.32")
 
 // Documentation
 addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.5.0")
