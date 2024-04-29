@@ -287,7 +287,13 @@ object CassandraLauncher {
       val cassandraBundleFile =
         new File(cassandraDirectory, "cassandra-bundle.jar")
       if (!cassandraBundleFile.exists()) {
-        throw new FileNotFoundException("Can not found bundle jar in resources")
+        val is =
+          this.getClass.getClassLoader.getResourceAsStream("cassandra-bundle.jar")
+        try {
+          Files.copy(is, cassandraBundleFile.toPath)
+        } finally {
+          if (is != null) is.close()
+        }
       }
 
       startForked(configFile, cassandraBundleFile, classpath, realHost, realPort)
