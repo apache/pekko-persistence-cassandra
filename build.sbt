@@ -45,8 +45,8 @@ lazy val cassandraLauncher = project
   .disablePlugins(MimaPlugin)
   .settings(
     name := "pekko-persistence-cassandra-launcher",
-    Compile / managedResourceDirectories += (cassandraBundle / target).value / "bundle",
-    Compile / managedResources += (cassandraBundle / assembly).value)
+    Compile / managedResourceDirectories += (cassandraBundle / assembly / assemblyOutputPath).value,
+    Compile / managedResources += (cassandraBundle / Compile / packageBin).value)
 
 // This project doesn't get published directly, rather the assembled artifact is included as part of cassandraLaunchers
 // resources
@@ -61,8 +61,20 @@ lazy val cassandraBundle = project
     libraryDependencies += ("org.apache.cassandra" % "cassandra-all" % "3.11.3")
       .exclude("commons-logging", "commons-logging"),
     dependencyOverrides += "com.github.jbellis" % "jamm" % "0.3.3", // See jamm comment in https://issues.apache.org/jira/browse/CASSANDRA-9608
-    assembly / target := target.value / "bundle" / "pekko" / "persistence" / "cassandra" / "launcher",
-    assembly / assemblyJarName := "cassandra-bundle.jar")
+    assembly / assemblyOutputPath := (assembly / assemblyOutputPath).value / "bundle" / "pekko" / "persistence" / "cassandra" / "launcher",
+    assembly / assemblyJarName := "cassandra-bundle.jar",
+    Compile / packageBin := Def.taskDyn {
+      val store = streams.value.cacheStoreFactory.make("shaded-output")
+      val uberJarLocation = (assembly / assemblyOutputPath).value
+      val tracker = Tracked.outputChanged(store) { (changed: Boolean, file: File) =>
+        if (changed) {
+          Def.task {
+            (Compile / assembly).value
+          }
+        } else Def.task { file }
+      }
+      tracker(() => uberJarLocation)
+    }.value)
 
 // Used for testing events by tag in various environments
 lazy val endToEndExample = project
