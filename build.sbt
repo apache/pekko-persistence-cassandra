@@ -60,7 +60,7 @@ lazy val cassandraBundle = project
     libraryDependencies += ("org.apache.cassandra" % "cassandra-all" % "3.11.3")
       .exclude("commons-logging", "commons-logging"),
     dependencyOverrides += "com.github.jbellis" % "jamm" % "0.3.3", // See jamm comment in https://issues.apache.org/jira/browse/CASSANDRA-9608
-    assembly / assemblyOutputPath := (assembly / assemblyOutputPath).value / "bundle" / "pekko" / "persistence" / "cassandra" / "launcher",
+    assembly / assemblyOutputPath := target.value / "bundle" / "pekko" / "persistence" / "cassandra" / "launcher" / (assembly / assemblyJarName).value,
     assembly / assemblyJarName := "cassandra-bundle.jar",
     Compile / packageBin := Def.taskDyn {
       val store = streams.value.cacheStoreFactory.make("shaded-output")
