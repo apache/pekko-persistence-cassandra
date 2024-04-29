@@ -287,13 +287,7 @@ object CassandraLauncher {
       val cassandraBundleFile =
         new File(cassandraDirectory, "cassandra-bundle.jar")
       if (!cassandraBundleFile.exists()) {
-        val is =
-          this.getClass.getClassLoader.getResourceAsStream("pekko/persistence/cassandra/launcher/cassandra-bundle.jar")
-        try {
-          Files.copy(is, cassandraBundleFile.toPath)
-        } finally {
-          if (is != null) is.close()
-        }
+        throw new FileNotFoundException("Can not found bundle jar in resources")
       }
 
       startForked(configFile, cassandraBundleFile, classpath, realHost, realPort)
