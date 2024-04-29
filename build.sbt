@@ -45,6 +45,7 @@ lazy val cassandraLauncher = project
   .disablePlugins(MimaPlugin)
   .settings(
     name := "pekko-persistence-cassandra-launcher",
+    Compile / managedResourceDirectories += (cassandraBundle / target).value,
     Compile / managedResources += (cassandraBundle / Compile / packageBin).value)
 
 // This project doesn't get published directly, rather the assembled artifact is included as part of cassandraLaunchers
@@ -60,7 +61,6 @@ lazy val cassandraBundle = project
     libraryDependencies += ("org.apache.cassandra" % "cassandra-all" % "3.11.3")
       .exclude("commons-logging", "commons-logging"),
     dependencyOverrides += "com.github.jbellis" % "jamm" % "0.3.3", // See jamm comment in https://issues.apache.org/jira/browse/CASSANDRA-9608
-    assembly / assemblyOutputPath := target.value / "bundle" / "pekko" / "persistence" / "cassandra" / "launcher" / (assembly / assemblyJarName).value,
     assembly / assemblyJarName := "cassandra-bundle.jar",
     Compile / packageBin := Def.taskDyn {
       val store = streams.value.cacheStoreFactory.make("shaded-output")
