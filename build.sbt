@@ -15,6 +15,8 @@ sourceDistIncubating := false
 
 val mimaCompareVersion = "1.0.0"
 
+ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
+
 lazy val root = project
   .in(file("."))
   .enablePlugins(Common, ScalaUnidocPlugin)
