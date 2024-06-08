@@ -8,6 +8,7 @@
  */
 
 import com.typesafe.sbt.packager.docker._
+import net.bzzt.reproduciblebuilds.ReproducibleBuildsPlugin.reproducibleBuildsCheckResolver
 
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 sourceDistName := "apache-pekko-persistence-cassandra"
@@ -16,6 +17,8 @@ sourceDistIncubating := false
 val mimaCompareVersion = "1.0.0"
 
 ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
+
+ThisBuild / reproducibleBuildsCheckResolver := Resolver.ApacheMavenStagingRepo
 
 lazy val root = project
   .in(file("."))
@@ -29,7 +32,7 @@ dumpSchema := (core / Test / runMain).toTask(" org.apache.pekko.persistence.cass
 
 lazy val core = project
   .in(file("core"))
-  .enablePlugins(Common, AutomateHeaderPlugin, MimaPlugin, MultiJvmPlugin)
+  .enablePlugins(Common, AutomateHeaderPlugin, MimaPlugin, MultiJvmPlugin, ReproducibleBuildsPlugin)
   .dependsOn(cassandraLauncher % Test)
   .settings(
     name := "pekko-persistence-cassandra",
@@ -43,12 +46,11 @@ lazy val core = project
 
 lazy val cassandraLauncher = project
   .in(file("cassandra-launcher"))
-  .enablePlugins(Common)
+  .enablePlugins(Common, ReproducibleBuildsPlugin)
   .disablePlugins(MimaPlugin)
   .settings(
     name := "pekko-persistence-cassandra-launcher",
-    Compile / managedResourceDirectories += (cassandraBundle / target).value,
-    Compile / managedResources += (cassandraBundle / Compile / packageBin).value)
+    Compile / unmanagedResources += (cassandraBundle / Compile / packageBin).value)
 
 // This project doesn't get published directly, rather the assembled artifact is included as part of cassandraLaunchers
 // resources
