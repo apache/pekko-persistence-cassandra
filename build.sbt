@@ -50,8 +50,8 @@ lazy val cassandraLauncher = project
   .disablePlugins(MimaPlugin)
   .settings(
     name := "pekko-persistence-cassandra-launcher",
-    Compile / managedResourceDirectories += (cassandraBundle / target).value,
-    Compile / managedResources += (cassandraBundle / Compile / packageBin).value)
+    Compile / unmanagedResourceDirectories += (cassandraBundle / target).value,
+    Compile / unmanagedResources += (cassandraBundle / Compile / packageBin).value)
 
 // This project doesn't get published directly, rather the assembled artifact is included as part of cassandraLaunchers
 // resources
