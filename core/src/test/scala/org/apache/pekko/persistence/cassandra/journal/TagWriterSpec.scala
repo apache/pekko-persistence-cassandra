@@ -509,8 +509,7 @@ class TagWriterSpec
       ref ! TagWrite(tagName, Vector(p2e1))
       probe.expectNoMessage(waitDuration)
       system.log.debug(
-        "Persisting events in bucket: {} and: {}",
-        (p1e1.timeBucket, formatOffset(p1e1.timeUuid)),
+        "Persisting events in bucket: {} and: {}", (p1e1.timeBucket, formatOffset(p1e1.timeUuid)),
         (p1e2.timeBucket, p1e2.timeUuid))
       ref ! TagWrite(tagName, Vector(p1e1, p1e2))
       probe.expectMsg(Vector(toEw(p1e1, 1), toEw(p1e2, 2)))
