@@ -106,7 +106,8 @@ class CassandraEventsByTagLoadSpec extends CassandraSpec(CassandraEventsByTagLoa
           if (event.sequenceNr != currentSeqNr + 1) {
             fail = true
             system.log.error(
-              s"Out of order sequence nrs for pid ${event.persistenceId}. This was event nr [$i]. Expected ${currentSeqNr + 1}, got: ${event.sequenceNr}")
+              s"Out of order sequence nrs for pid ${event
+                  .persistenceId}. This was event nr [$i]. Expected ${currentSeqNr + 1}, got: ${event.sequenceNr}")
           }
           sequenceNrsPerPid += (event.persistenceId -> event.sequenceNr)
         case None =>

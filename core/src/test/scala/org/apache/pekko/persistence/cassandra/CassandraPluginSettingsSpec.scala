@@ -38,27 +38,10 @@ class CassandraPluginSettingsSpec
     def maxKey = Random.alphanumeric.dropWhile(_.toString.matches("[^a-zA-Z]")).take(48).mkString
 
     Table(
-      ("Keyspace", "isValid"),
-      ("test", true),
-      ("_test_123", false),
-      ("", false),
-      ("test-space", false),
-      ("'test'", false),
-      ("a", true),
-      ("a_", true),
-      ("1", false),
-      ("a1", true),
-      ("_", false),
-      ("asdf!", false),
-      (maxKey, true),
-      ("\"_asdf\"", false),
-      ("\"_\"", false),
-      ("\"a\"", true),
-      ("\"a_sdf\"", true),
-      ("\"\"", false),
-      ("\"valid_with_quotes\"", true),
-      ("\"missing_trailing_quote", false),
-      ("missing_leading_quote\"", false),
+      ("Keyspace", "isValid"), ("test", true), ("_test_123", false), ("", false), ("test-space", false),
+      ("'test'", false), ("a", true), ("a_", true), ("1", false), ("a1", true), ("_", false), ("asdf!", false),
+      (maxKey, true), ("\"_asdf\"", false), ("\"_\"", false), ("\"a\"", true), ("\"a_sdf\"", true), ("\"\"", false),
+      ("\"valid_with_quotes\"", true), ("\"missing_trailing_quote", false), ("missing_leading_quote\"", false),
       ('"'.toString + maxKey + '"'.toString, true), // using interpolation here breaks scalafmt :-/
       (maxKey + "_", false))
   }

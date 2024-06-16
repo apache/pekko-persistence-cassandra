@@ -413,10 +413,12 @@ import scala.util.{ Failure, Success, Try }
             } else {
               val row = rs.one()
               val sequenceNr = extractSeqNr(row)
-              if ((sequenceNr < expectedNextSeqNr && fastForwardEnabled) || pendingFastForward.isDefined && pendingFastForward.get > sequenceNr) {
+              if ((sequenceNr < expectedNextSeqNr && fastForwardEnabled) || pendingFastForward
+                  .isDefined && pendingFastForward.get > sequenceNr) {
                 // skip event due to fast forward
                 tryPushOne()
-              } else if (pendingFastForward.isEmpty && querySettings.gapFreeSequenceNumbers && sequenceNr > expectedNextSeqNr) {
+              } else if (pendingFastForward.isEmpty && querySettings
+                  .gapFreeSequenceNumbers && sequenceNr > expectedNextSeqNr) {
                 // we will probably now come in here which isn't what we want
                 lookingForMissingSeqNr match {
                   case Some(_) =>
