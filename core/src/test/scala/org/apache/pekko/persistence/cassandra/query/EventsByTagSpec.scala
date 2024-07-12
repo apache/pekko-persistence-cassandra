@@ -892,10 +892,8 @@ class EventsByTagLongRefreshIntervalSpec
         probe.request(2)
         // less than the refresh interval, previously this would evaluate the new persistence-id timeout and then not re-evaluate
         // it again until the next refresh interval
-        probe.expectNextWithTimeoutPF(2.seconds,
-          {
-            case EventEnvelope(_, `pid`, 2L, "cat2") =>
-          })
+        val f: PartialFunction[Any, Any] = { case EventEnvelope(_, `pid`, 2L, "cat2") => }
+        probe.expectNextWithTimeoutPF(2.seconds, f)
       })
   }
 }
@@ -1128,7 +1126,8 @@ class EventsByTagSpecBackTrackingLongRefreshInterval
         1,
         bucketSize)
       // much smaller than the refresh interval
-      probe.expectNextWithTimeoutPF(3.seconds, { case e @ EventEnvelope(_, "p1", 1L, "e1") => e })
+      val f: PartialFunction[Any, Any] = { case e @ EventEnvelope(_, "p1", 1L, "e1") => e }
+      probe.expectNextWithTimeoutPF(3.seconds, f)
     }
   }
 

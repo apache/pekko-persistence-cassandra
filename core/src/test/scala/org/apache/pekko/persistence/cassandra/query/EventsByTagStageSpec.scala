@@ -290,8 +290,10 @@ class EventsByTagStageSpec
       val sub = tagStream.runWith(TestSink.probe[EventEnvelope])
 
       sub.request(3)
-      sub.expectNextWithTimeoutPF(waitTime, { case EventEnvelope(_, "p-1", 10, "p1e10") => })
-      sub.expectNextWithTimeoutPF(waitTime, { case EventEnvelope(_, "p-1", 11, "p1e11") => })
+      val f0: PartialFunction[Any, Any] = { case EventEnvelope(_, "p-1", 10, "p1e10") => }
+      val f1: PartialFunction[Any, Any] = { case EventEnvelope(_, "p-1", 11, "p1e11") => }
+      sub.expectNextWithTimeoutPF(waitTime, f0)
+      sub.expectNextWithTimeoutPF(waitTime, f1)
       sub.expectComplete()
     }
 
@@ -542,7 +544,8 @@ class EventsByTagStageSpec
       sub.expectNoMessage(100.millis)
       writeTaggedEvent(nowTime, PersistentRepr("p1e11", 11, "p-1"), Set(tag), 11, bucketSize)
       // wait more than the new persistence id timeout but less than the gap-timeout
-      sub.expectNextWithTimeoutPF(newPersistenceIdTimeout * 1.1, { case EventEnvelope(_, "p-1", 11, "p1e11") => })
+      val f: PartialFunction[Any, Any] = { case EventEnvelope(_, "p-1", 11, "p1e11") => }
+      sub.expectNextWithTimeoutPF(newPersistenceIdTimeout * 1.1, f)
 
       // add more events to check that the periodic poll still works
       writeTaggedEvent(LocalDateTime.now(ZoneOffset.UTC), PersistentRepr("p1e12", 12, "p-1"), Set(tag), 12, bucketSize)
