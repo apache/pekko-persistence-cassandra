@@ -1,4 +1,4 @@
-# Release Notes
+# Release Notes (1.0.x)
 
 ## 1.0.0
 Apache Pekko Persistence Cassandra 1.0.0 is based on Akka Persistence Cassandra 1.0.6. Pekko came about as a result of Lightbend's decision to make future
