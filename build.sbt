@@ -155,7 +155,7 @@ lazy val docs = project
       // Cassandra
       "extref.cassandra.base_url" -> s"https://cassandra.apache.org/doc/${Dependencies.cassandraVersionInDocs}/%s",
       // Datastax Java driver
-      "extref.java-driver.base_url" -> s"https://docs.datastax.com/en/developer/java-driver/${Dependencies.driverVersionInDocs}/%s",
+      "extref.java-driver.base_url" -> s"https://docs.datastax.com/en/developer/java-driver/${Dependencies.driverVersionInDocs}/index.html",
       "javadoc.com.datastax.oss.base_url" -> s"https://docs.datastax.com/en/drivers/java/${Dependencies.driverVersionInDocs}/",
       // Java
       "javadoc.base_url" -> "https://docs.oracle.com/javase/8/docs/api/",
