@@ -11,4 +11,4 @@ As with all milestone releases, this release is not recommended for production u
 * Improve the pattern matching for CassandraJournal options ([PR28](https://github.com/apache/pekko-persistence-cassandra/pull/28))
 
 ### Dependency Upgrades
-* Apache assandra Driver 4.18 (replaces the Datastax Driver that was used before, this was donated to Apache Cassandra and they released 4.18 from this)
+* Apache Cassandra Driver 4.18 (replaces the Datastax Driver that was used before, this was donated to Apache Cassandra and they released 4.18 from this)
