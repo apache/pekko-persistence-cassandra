@@ -31,7 +31,7 @@ object Dependencies {
 
   val logbackVersion = "1.3.14"
 
-  val nettyVersion = "4.1.111.Final"
+  val nettyVersion = "4.1.112.Final"
   val logback = "ch.qos.logback" % "logback-classic" % logbackVersion
 
   val reconcilerDependencies = Seq(
