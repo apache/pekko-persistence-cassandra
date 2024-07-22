@@ -5,7 +5,7 @@ Release notes for Apache Pekko Persistence Cassandra 1.1.0-M1. See [GitHub Miles
 As with all milestone releases, this release is not recommended for production use - it is designed to allow users to try out the changes in a test environment.
 
 ### Bug Fixes
-* When PreparedStatement initialization fails, the code used not recover ([#103](https://github.com/apache/pekko-persistence-cassandra/issues/103))
+* When PreparedStatement initialization fails, the code used not to recover ([#103](https://github.com/apache/pekko-persistence-cassandra/issues/103))
 
 ### Other Changes
 * Improve the pattern matching for CassandraJournal options ([PR28](https://github.com/apache/pekko-persistence-cassandra/pull/28))
