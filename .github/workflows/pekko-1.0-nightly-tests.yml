@@ -46,4 +46,4 @@ jobs:
 
       - name: Test against ${{ matrix.container }}
         run: |-
-          docker-compose up -d ${{ matrix.container }} && sbt -Dpekko.build.pekko.version=1.0.x -Dpekko.build.pekko.connectors.version=1.0.x ++${{ matrix.scalaVersion }} ${{matrix.test}}
+          docker compose up -d ${{ matrix.container }} && sbt -Dpekko.build.pekko.version=1.0.x -Dpekko.build.pekko.connectors.version=1.0.x ++${{ matrix.scalaVersion }} ${{matrix.test}}
