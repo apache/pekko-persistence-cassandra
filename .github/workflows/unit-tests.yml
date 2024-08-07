@@ -55,7 +55,7 @@ jobs:
 
       - name: Test against ${{ matrix.container }}
         run: |-
-          docker-compose up -d ${{ matrix.container }} && sbt ${{ matrix.scalaVersion }} ${{matrix.test}}
+          docker compose up -d ${{ matrix.container }} && sbt ${{ matrix.scalaVersion }} ${{matrix.test}}
 
   mima:
     name: MiMa check
