@@ -27,7 +27,7 @@ object Dependencies {
   val pekkoConnectorsVersion = PekkoConnectorsDependency.version
   val pekkoConnectorsVersionInDocs = "1.0"
   // for example
-  val pekkoManagementVersion = "1.0.0"
+  val pekkoManagementVersion = "1.1.0-M1"
 
   val logbackVersion = "1.3.14"
 
