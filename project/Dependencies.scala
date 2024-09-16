@@ -17,7 +17,7 @@ object Dependencies {
   val scalaVersions = Seq(scala212Version, scala213Version, scala3Version)
 
   val pekkoVersion = PekkoCoreDependency.version
-  val pekkoVersionInDocs = "1.0"
+  val pekkoVersionInDocs = PekkoCoreDependency.default.link
   val cassandraVersionInDocs = "4.0"
 
   // Should be sync with the version of the driver in Pekko Connectors Cassandra
@@ -25,7 +25,7 @@ object Dependencies {
   val driverVersionInDocs = "4.17"
 
   val pekkoConnectorsVersion = PekkoConnectorsDependency.version
-  val pekkoConnectorsVersionInDocs = "1.0"
+  val pekkoConnectorsVersionInDocs = PekkoConnectorsDependency.default.link
   // for example
   val pekkoManagementVersion = "1.0.0"
 
