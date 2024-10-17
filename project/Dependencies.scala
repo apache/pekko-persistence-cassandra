@@ -26,60 +26,27 @@ object Dependencies {
 
   val pekkoConnectorsVersion = PekkoConnectorsDependency.version
   val pekkoConnectorsVersionInDocs = PekkoConnectorsDependency.default.link
-  // for example
-  val pekkoManagementVersion = "1.1.0-M1"
 
   val logbackVersion = "1.3.14"
 
   val nettyVersion = "4.1.114.Final"
   val logback = "ch.qos.logback" % "logback-classic" % logbackVersion
 
-  val reconcilerDependencies = Seq(
-    "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
-    "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test)
-
-  val pekkoTestDeps = Seq(
-    "org.apache.pekko" %% "pekko-persistence",
-    "org.apache.pekko" %% "pekko-persistence-typed",
-    "org.apache.pekko" %% "pekko-persistence-query",
-    "org.apache.pekko" %% "pekko-cluster-typed",
-    "org.apache.pekko" %% "pekko-actor-testkit-typed",
-    "org.apache.pekko" %% "pekko-persistence-tck",
-    "org.apache.pekko" %% "pekko-stream-testkit",
-    "org.apache.pekko" %% "pekko-multi-node-testkit",
-    "org.apache.pekko" %% "pekko-cluster-sharding")
-
   val pekkoPersistenceCassandraDependencies = Seq(
-    "org.apache.pekko" %% "pekko-connectors-cassandra" % pekkoConnectorsVersion,
-    "org.apache.pekko" %% "pekko-persistence" % pekkoVersion,
-    "org.apache.pekko" %% "pekko-persistence-query" % pekkoVersion,
-    "org.apache.pekko" %% "pekko-stream" % pekkoVersion,
-    "org.apache.pekko" %% "pekko-cluster-tools" % pekkoVersion,
     "org.apache.cassandra" % "java-driver-core" % driverVersion,
     "io.netty" % "netty-handler" % nettyVersion,
     logback % Test,
     "org.scala-lang.modules" %% "scala-collection-compat" % "2.12.0" % Test,
     "org.scalatest" %% "scalatest" % "3.2.19" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test,
-    "org.osgi" % "org.osgi.core" % "6.0.0" % Provided) ++ pekkoTestDeps.map(_ % pekkoVersion % Test)
+    "org.osgi" % "org.osgi.core" % "6.0.0" % Provided)
 
   val exampleDependencies = Seq(
     logback,
-    "org.apache.pekko" %% "pekko-persistence-typed" % pekkoVersion,
-    "org.apache.pekko" %% "pekko-discovery" % pekkoVersion,
-    "org.apache.pekko" %% "pekko-serialization-jackson" % pekkoVersion,
-    "org.apache.pekko" %% "pekko-cluster-sharding-typed" % pekkoVersion,
-    "org.apache.pekko" %% "pekko-management" % pekkoManagementVersion,
-    "org.apache.pekko" %% "pekko-management-cluster-bootstrap" % pekkoManagementVersion,
-    "org.apache.pekko" %% "pekko-management-cluster-http" % pekkoManagementVersion,
-    "org.apache.pekko" %% "pekko-discovery-kubernetes-api" % pekkoManagementVersion,
     "org.hdrhistogram" % "HdrHistogram" % "2.1.12")
 
   val dseTestDependencies = Seq(
     "com.datastax.dse" % "dse-java-driver-core" % "2.3.0" % Test,
-    "org.apache.pekko" %% "pekko-persistence-tck" % pekkoVersion % Test,
-    "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
-    "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test,
     logback % Test)
 
   val docsDependencies = Seq(

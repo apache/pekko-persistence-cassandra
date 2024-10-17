@@ -7,6 +7,7 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
+import com.github.pjfanning.pekkobuild._
 import com.typesafe.sbt.packager.docker._
 import net.bzzt.reproduciblebuilds.ReproducibleBuildsPlugin.reproducibleBuildsCheckResolver
 
@@ -15,8 +16,6 @@ sourceDistName := "apache-pekko-persistence-cassandra"
 sourceDistIncubating := false
 
 val mimaCompareVersion = "1.0.0"
-
-ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
 
 ThisBuild / reproducibleBuildsCheckResolver := Resolver.ApacheMavenStagingRepo
 
@@ -34,6 +33,18 @@ lazy val core = project
   .in(file("core"))
   .enablePlugins(Common, AutomateHeaderPlugin, MimaPlugin, MultiJvmPlugin, ReproducibleBuildsPlugin)
   .dependsOn(cassandraLauncher % Test)
+  .addPekkoModuleDependency("pekko-connectors-cassandra", "", PekkoConnectorsDependency.default)
+  .addPekkoModuleDependency("pekko-persistence", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-persistence-query", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-stream", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-cluster-tools", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-persistence-typed", "test", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-cluster-typed", "test", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-actor-testkit-typed", "test", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-persistence-tck", "test", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-stream-testkit", "test", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-multi-node-testkit", "test", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-cluster-sharding", "test", PekkoCoreDependency.default)
   .settings(
     name := "pekko-persistence-cassandra",
     libraryDependencies ++= Dependencies.pekkoPersistenceCassandraDependencies,
@@ -84,6 +95,14 @@ lazy val endToEndExample = project
   .in(file("example"))
   .dependsOn(core)
   .disablePlugins(MimaPlugin)
+  .addPekkoModuleDependency("pekko-persistence-typed", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-discovery", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-serialization-jackson", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-cluster-sharding-typed", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-management", "", PekkoManagementDependency.default)
+  .addPekkoModuleDependency("pekko-management-cluster-bootstrap", "", PekkoManagementDependency.default)
+  .addPekkoModuleDependency("pekko-management-cluster-http", "", PekkoManagementDependency.default)
+  .addPekkoModuleDependency("pekko-discovery-kubernetes-api", "", PekkoManagementDependency.default)
   .settings(
     libraryDependencies ++= Dependencies.exampleDependencies, publish / skip := true,
     // make version compatible with docker for publishing example project,
@@ -121,6 +140,9 @@ lazy val dseTest = project
   .in(file("dse-test"))
   .disablePlugins(MimaPlugin)
   .dependsOn(core % "test->test")
+  .addPekkoModuleDependency("pekko-persistence-tck", "test", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-actor-testkit-typed", "test", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-stream-testkit", "test", PekkoCoreDependency.default)
   .settings(libraryDependencies ++= Dependencies.dseTestDependencies)
 
 lazy val docs = project
