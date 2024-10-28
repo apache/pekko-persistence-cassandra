@@ -288,7 +288,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 
   def selectHighestSequenceNr =
     s"""
-     SELECT max(sequence_nr) FROM $tableName WHERE
+     SELECT MAX(sequence_nr) AS sequence_nr FROM $tableName WHERE
        persistence_id = ? AND
        partition_nr = ?
    """
