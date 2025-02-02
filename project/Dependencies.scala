@@ -36,7 +36,7 @@ object Dependencies {
     "org.apache.cassandra" % "java-driver-core" % driverVersion,
     "io.netty" % "netty-handler" % nettyVersion,
     logback % Test,
-    "org.scala-lang.modules" %% "scala-collection-compat" % "2.12.0" % Test,
+    "org.scala-lang.modules" %% "scala-collection-compat" % "2.13.0" % Test,
     "org.scalatest" %% "scalatest" % "3.2.19" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test,
     "org.osgi" % "org.osgi.core" % "6.0.0" % Provided)
