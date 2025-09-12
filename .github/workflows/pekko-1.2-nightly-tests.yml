@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-name: Run Tests with Pekko 1.0.x builds
+name: Run Tests with Pekko 1.2.x builds
 
 on:
   schedule:
