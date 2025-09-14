@@ -8,7 +8,7 @@
  */
 
 import com.lightbend.paradox.projectinfo.ParadoxProjectInfoPluginKeys._
-import de.heikoseeberger.sbtheader._
+import sbtheader._
 import org.mdedetrich.apache.sonatype.ApacheSonatypePlugin
 import sbt.Keys._
 import sbt._
