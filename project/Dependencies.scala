@@ -29,7 +29,7 @@ object Dependencies {
 
   val logbackVersion = "1.3.15"
 
-  val nettyVersion = "4.2.5.Final"
+  val nettyVersion = "4.2.6.Final"
   val logback = "ch.qos.logback" % "logback-classic" % logbackVersion
 
   val pekkoPersistenceCassandraDependencies = Seq(
