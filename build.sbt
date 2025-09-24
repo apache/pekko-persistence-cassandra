@@ -50,6 +50,7 @@ lazy val core = project
     libraryDependencies ++= Dependencies.pekkoPersistenceCassandraDependencies,
     Compile / packageBin / packageOptions += Package.ManifestAttributes(
       "Automatic-Module-Name" -> "pekko.persistence.cassandra"),
+    Test / javaOptions += "--add-opens=java.base/java.io=ALL-UNNAMED",  
     mimaReportSignatureProblems := true,
     mimaPreviousArtifacts := Set(
       organization.value %% name.value % mimaCompareVersion))
