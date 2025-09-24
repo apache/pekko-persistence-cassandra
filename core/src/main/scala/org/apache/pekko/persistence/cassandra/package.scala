@@ -25,9 +25,9 @@ import pekko.annotation.InternalApi
 import pekko.persistence.cassandra.journal.TimeBucket
 import pekko.persistence.cassandra.journal.CassandraJournal.{ Serialized, SerializedMeta }
 import pekko.serialization.{ AsyncSerializer, Serialization, Serializers }
-import pekko.util.ccompat.JavaConverters._
 
 import scala.concurrent._
+import scala.jdk.CollectionConverters._
 import scala.util.control.NonFatal
 import com.typesafe.config.{ Config, ConfigValueType }
 import com.datastax.oss.driver.api.core.uuid.Uuids

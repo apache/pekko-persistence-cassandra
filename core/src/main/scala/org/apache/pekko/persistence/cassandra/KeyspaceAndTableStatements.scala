@@ -58,7 +58,7 @@ class KeyspaceAndTableStatements(
    * Cassandra plugin actor.
    */
   def getCreateJournalTablesStatements: java.util.List[String] = {
-    import pekko.util.ccompat.JavaConverters._
+    import scala.jdk.CollectionConverters._
     createJournalTablesStatements.asJava
   }
 
@@ -87,7 +87,7 @@ class KeyspaceAndTableStatements(
    * Cassandra plugin actor.
    */
   def getCreateSnapshotTablesStatements: java.util.List[String] = {
-    import pekko.util.ccompat.JavaConverters._
+    import scala.jdk.CollectionConverters._
     createSnapshotTablesStatements.asJava
   }
 

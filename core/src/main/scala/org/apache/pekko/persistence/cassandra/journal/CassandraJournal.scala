@@ -22,7 +22,6 @@ import pekko.Done
 import pekko.actor.SupervisorStrategy.Stop
 import pekko.actor._
 import pekko.annotation.{ DoNotInherit, InternalApi, InternalStableApi }
-import pekko.dispatch.ExecutionContexts
 import pekko.event.{ Logging, LoggingAdapter }
 import pekko.pattern.{ ask, pipe }
 import pekko.persistence._
@@ -38,17 +37,17 @@ import pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtens
 import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
 import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.util.{ OptionVal, Timeout }
-import pekko.util.FutureConverters._
-import pekko.util.ccompat.JavaConverters._
 import com.datastax.oss.driver.api.core.cql._
-import com.typesafe.config.Config
 import com.datastax.oss.driver.api.core.uuid.Uuids
 import com.datastax.oss.protocol.internal.util.Bytes
+import com.typesafe.config.Config
 
 import scala.annotation.tailrec
 import scala.collection.immutable
 import scala.collection.immutable.Seq
 import scala.concurrent._
+import scala.jdk.CollectionConverters._
+import scala.jdk.FutureConverters._
 import scala.util.control.NonFatal
 import scala.util.{ Failure, Success, Try }
 
@@ -227,11 +226,11 @@ import scala.util.{ Failure, Success, Try }
           result
             .flatMap(_ => deleteDeletedToSeqNr(persistenceId))
             .flatMap(_ => deleteFromAllPersistenceIds(persistenceId))
-        else result.map(_ => Done)(ExecutionContexts.parasitic)
+        else result.map(_ => Done)(ExecutionContext.parasitic)
       result2.pipeTo(sender())
 
     case HealthCheckQuery =>
-      session.selectOne(healthCheckCql).map(_ => HealthCheckResponse)(ExecutionContexts.parasitic).pipeTo(sender())
+      session.selectOne(healthCheckCql).map(_ => HealthCheckResponse)(ExecutionContext.parasitic).pipeTo(sender())
   }
 
   override def asyncWriteMessages(messages: Seq[AtomicWrite]): Future[Seq[Try[Unit]]] = {
@@ -297,7 +296,7 @@ import scala.util.{ Failure, Success, Try }
           tagWrites match {
             case Some(t) =>
               implicit val timeout: Timeout = Timeout(settings.eventsByTagSettings.tagWriteTimeout)
-              t.ask(extractTagWrites(serialized)).map(_ => Nil)(ExecutionContexts.parasitic)
+              t.ask(extractTagWrites(serialized)).map(_ => Nil)(ExecutionContext.parasitic)
             case None => Future.successful(Nil)
           }
         }
@@ -558,7 +557,7 @@ import scala.util.{ Failure, Success, Try }
               e.getClass.getName,
               e.getMessage)
           }
-          deleteResult.map(_ => Done)(ExecutionContexts.parasitic)
+          deleteResult.map(_ => Done)(ExecutionContext.parasitic)
         }
       }
     }
@@ -599,7 +598,7 @@ import scala.util.{ Failure, Success, Try }
                 }
             })
           })))
-      deleteResult.map(_ => Done)(ExecutionContexts.parasitic)
+      deleteResult.map(_ => Done)(ExecutionContext.parasitic)
     }
 
     // Deletes the events by inserting into the metadata table deleted_to and physically deletes the rows.
@@ -928,7 +927,7 @@ import scala.util.{ Failure, Success, Try }
 
             if (async) Future(deserializedEvent)
             else Future.successful(deserializedEvent)
-        }).map(event => DeserializedEvent(event, meta))(ExecutionContexts.parasitic)
+        }).map(event => DeserializedEvent(event, meta))(ExecutionContext.parasitic)
 
       } catch {
         case NonFatal(e) => Future.failed(e)

@@ -20,7 +20,6 @@ import org.apache.pekko
 import pekko.{ Done, NotUsed }
 import pekko.actor._
 import pekko.annotation.InternalApi
-import pekko.dispatch.ExecutionContexts
 import pekko.event.Logging
 import pekko.pattern.pipe
 import pekko.persistence._
@@ -31,12 +30,12 @@ import pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtens
 import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
 import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.util.{ unused, OptionVal }
-import pekko.util.FutureConverters._
 
 import java.lang.{ Long => JLong }
 import java.nio.ByteBuffer
 import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Future }
+import scala.jdk.FutureConverters._
 import scala.util.control.NonFatal
 import scala.util.{ Failure, Success }
 
@@ -400,7 +399,7 @@ import scala.util.{ Failure, Success }
               // Serialization.deserialize adds transport info
               serialization.deserialize(bytes, serId, manifest).get
             }
-        }).map(payload => DeserializedSnapshot(payload, meta))(ExecutionContexts.parasitic)
+        }).map(payload => DeserializedSnapshot(payload, meta))(ExecutionContext.parasitic)
 
       } catch {
         case NonFatal(e) => Future.failed(e)

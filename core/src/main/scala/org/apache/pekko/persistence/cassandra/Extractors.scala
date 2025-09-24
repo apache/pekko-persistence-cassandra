@@ -17,6 +17,7 @@ import java.{ util => ju }
 import java.nio.ByteBuffer
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 import org.apache.pekko
 import pekko.actor.ActorSystem
@@ -27,7 +28,6 @@ import pekko.persistence.cassandra.journal.CassandraJournal._
 import pekko.persistence.query.TimeBasedUUID
 import pekko.serialization.Serialization
 import pekko.util.OptionVal
-import pekko.util.ccompat.JavaConverters._
 
 import com.datastax.oss.driver.api.core.cql.Row
 import com.datastax.oss.protocol.internal.util.Bytes

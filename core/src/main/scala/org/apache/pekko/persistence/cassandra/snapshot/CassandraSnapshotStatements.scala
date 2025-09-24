@@ -15,15 +15,15 @@ package org.apache.pekko.persistence.cassandra.snapshot
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
+import scala.jdk.FutureConverters._
 
 import org.apache.pekko
-import pekko.util.FutureConverters._
 import pekko.Done
 import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.persistence.cassandra.indent
-import com.datastax.oss.driver.api.core.CqlSession
 import pekko.persistence.cassandra.FutureDone
+import com.datastax.oss.driver.api.core.CqlSession
 
 /**
  * INTERNAL API

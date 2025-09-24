@@ -45,6 +45,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+          ref: 1.1.x
 
       - name: Checkout GitHub merge
         if: github.event.pull_request
