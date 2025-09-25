@@ -24,7 +24,8 @@ import pekko.persistence.query.TimeBasedUUID
 import pekko.persistence.query.javadsl._
 import pekko.stream.connectors.cassandra.javadsl.CassandraSession
 import pekko.stream.javadsl.Source
-import pekko.util.FutureConverters._
+
+import scala.jdk.FutureConverters._
 
 object CassandraReadJournal {
 

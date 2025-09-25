@@ -21,13 +21,13 @@ import pekko.annotation.InternalApi
 import pekko.persistence.cassandra.PluginSettings
 import pekko.stream.stage._
 import pekko.stream.{ Attributes, Outlet, SourceShape }
-import pekko.util.FutureConverters._
 
 import java.lang.{ Long => JLong }
 import java.util.concurrent.ThreadLocalRandom
 import scala.annotation.{ nowarn, tailrec }
 import scala.concurrent.duration.{ FiniteDuration, _ }
 import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.jdk.FutureConverters._
 import scala.util.{ Failure, Success, Try }
 
 /**

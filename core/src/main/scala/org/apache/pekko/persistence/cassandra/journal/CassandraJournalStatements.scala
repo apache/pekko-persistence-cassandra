@@ -20,9 +20,9 @@ import pekko.Done
 import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.persistence.cassandra.{ indent, FutureDone, PluginSettings }
-import pekko.util.FutureConverters._
 
 import scala.concurrent.{ ExecutionContext, Future }
+import scala.jdk.FutureConverters._
 
 /**
  * INTERNAL API

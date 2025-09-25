@@ -27,7 +27,6 @@ import pekko.persistence.cassandra.journal.TimeBucket
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.EventByTagStatements
 import pekko.stream.stage._
 import pekko.stream.{ Attributes, Outlet, SourceShape }
-import pekko.util.FutureConverters._
 import pekko.util.PrettyDuration._
 import pekko.util.UUIDComparator
 
@@ -37,6 +36,7 @@ import java.util.concurrent.ThreadLocalRandom
 import scala.annotation.tailrec
 import scala.concurrent.duration.{ Duration, _ }
 import scala.concurrent.{ ExecutionContext, Future }
+import scala.jdk.FutureConverters._
 import scala.util.{ Failure, Success, Try }
 
 /**

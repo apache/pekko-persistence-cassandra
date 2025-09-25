@@ -30,9 +30,8 @@ jobs:
         include:
           - { javaVersion: '8',  container: "cassandra-latest",  scalaVersion: "++2.13", test: "test" }
           - { javaVersion: '8',  container: "cassandra-latest",  scalaVersion: "++3.3", test: "test" }
-          - { javaVersion: '11', container: "cassandra-latest",  scalaVersion: "++2.12", test: "test" }
           - { javaVersion: '11', container: "cassandra-latest",  scalaVersion: "++2.13", test: "test" }
-          - { javaVersion: '8',  container: "cassandra-latest",  scalaVersion: "++3.3", test: "test" }
+          - { javaVersion: '11', container: "cassandra-latest",  scalaVersion: "++3.3", test: "test" }
           - { javaVersion: '11', container: "cassandra2",        scalaVersion: "++2.13", test: "'testOnly -- -l RequiresCassandraThree'"}
           - { javaVersion: '11', container: "cassandra3",        scalaVersion: "++2.13", test: "test" }
 
