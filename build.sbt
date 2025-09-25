@@ -50,6 +50,7 @@ lazy val core = project
     libraryDependencies ++= Dependencies.pekkoPersistenceCassandraDependencies,
     Compile / packageBin / packageOptions += Package.ManifestAttributes(
       "Automatic-Module-Name" -> "pekko.persistence.cassandra"),
+    Test / javaOptions += "--add-opens=java.base/java.io=ALL-UNNAMED",
     mimaReportSignatureProblems := true,
     mimaPreviousArtifacts := Set(
       organization.value %% name.value % mimaCompareVersion))
@@ -109,7 +110,7 @@ lazy val endToEndExample = project
     // see https://github.com/sbt/sbt-dynver#portable-version-strings
     inConfig(Docker)(DynVerPlugin.buildSettings ++ Seq(dynverSeparator := "-")))
   .settings(
-    dockerBaseImage := "openjdk:8-jre-alpine",
+    dockerBaseImage := "openjdk:17-jre-alpine",
     dockerCommands :=
       dockerCommands.value.flatMap {
         case ExecCmd("ENTRYPOINT", args @ _*) => Seq(Cmd("ENTRYPOINT", args.mkString(" ")))

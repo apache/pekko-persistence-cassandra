@@ -22,7 +22,7 @@ addSbtPlugin("net.bzzt" % "sbt-reproducible-builds" % "0.32")
 
 // Documentation
 addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.6.0")
-addSbtPlugin(("com.github.sbt" % "sbt-site-paradox" % "1.7.0").excludeAll(
-  "com.lightbend.paradox", "sbt-paradox"))
-
+addSbtPlugin("com.github.sbt" % "sbt-site-paradox" % "1.7.0")
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-theme" % "0.10.7")
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox" % "0.10.7")
 addSbtPlugin("org.apache.pekko" % "pekko-sbt-paradox" % "1.0.1")
