@@ -13,17 +13,17 @@ import org.apache.pekko
 import pekko.actor.typed.{ ActorRef, Behavior }
 import pekko.actor.typed.scaladsl.Behaviors
 import pekko.cluster.sharding.typed.ShardingEnvelope
-import pekko.util.JavaDurationConverters._
 import com.typesafe.config.Config
 
 import scala.concurrent.duration.FiniteDuration
+import scala.jdk.DurationConverters._
 import scala.util.Random
 
 object LoadGenerator {
 
   object Settings {
     def apply(config: Config): Settings = {
-      Settings(config.getInt("persistence-ids"), config.getDuration("load-tick-duration").asScala)
+      Settings(config.getInt("persistence-ids"), config.getDuration("load-tick-duration").toScala)
     }
   }
 

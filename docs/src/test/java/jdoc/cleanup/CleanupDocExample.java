@@ -15,7 +15,7 @@ import org.apache.pekko.actor.ActorSystem;
 import org.apache.pekko.persistence.cassandra.cleanup.Cleanup;
 import org.apache.pekko.persistence.cassandra.query.javadsl.CassandraReadJournal;
 import org.apache.pekko.persistence.query.PersistenceQuery;
-import scala.compat.java8.FutureConverters;
+import scala.jdk.javaapi.FutureConverters;
 
 public class CleanupDocExample {
 
