@@ -95,15 +95,6 @@ object CassandraLauncher {
     selectedPorts.get()._1
   }
 
-  @deprecated("Internal API, will be removed in future release", "0.104")
-  def freePort(): Int = {
-    val serverSocket = ServerSocketChannel.open().socket()
-    serverSocket.bind(new InetSocketAddress(DEFAULT_HOST, 0))
-    val port = serverSocket.getLocalPort
-    serverSocket.close()
-    port
-  }
-
   /**
    * Select two free ports.
    * Note that requestPort is always used even if user requested a fixed port. We want to make sure the port is not in use
