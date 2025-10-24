@@ -79,7 +79,7 @@ lazy val cassandraBundle = project
     assembly / assemblyJarName := "cassandra-bundle.jar",
     assembly / assemblyMergeStrategy := {
       case PathList("META-INF", "versions", _, "module-info.class") => MergeStrategy.discard
-      case _                                                        => MergeStrategy.deduplicate
+      case _                                                        => MergeStrategy.concat
     },
     Compile / packageBin := Def.taskDyn {
       val store = streams.value.cacheStoreFactory.make("shaded-output")
