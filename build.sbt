@@ -73,10 +73,14 @@ lazy val cassandraBundle = project
     name := "pekko-persistence-cassandra-bundle",
     crossPaths := false,
     autoScalaLibrary := false,
-    libraryDependencies += ("org.apache.cassandra" % "cassandra-all" % "3.11.3")
+    libraryDependencies += ("org.apache.cassandra" % "cassandra-all" % "3.11.19")
       .exclude("commons-logging", "commons-logging"),
     dependencyOverrides += "com.github.jbellis" % "jamm" % "0.3.3", // See jamm comment in https://issues.apache.org/jira/browse/CASSANDRA-9608
     assembly / assemblyJarName := "cassandra-bundle.jar",
+    assembly / assemblyMergeStrategy := {
+      case PathList("META-INF", "versions", _, "module-info.class") => MergeStrategy.discard
+      case _                                                        => MergeStrategy.concat
+    },
     Compile / packageBin := Def.taskDyn {
       val store = streams.value.cacheStoreFactory.make("shaded-output")
       val uberJarLocation = (assembly / assemblyOutputPath).value
