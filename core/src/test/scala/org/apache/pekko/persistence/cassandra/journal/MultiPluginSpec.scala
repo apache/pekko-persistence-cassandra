@@ -17,7 +17,6 @@ import com.typesafe.config.ConfigFactory
 import org.apache.pekko
 import pekko.actor.Props
 import pekko.persistence.cassandra.journal.MultiPluginSpec._
-import pekko.persistence.cassandra.testkit.CassandraLauncher
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, PluginSettings }
 import pekko.persistence.{ PersistentActor, SaveSnapshotSuccess }
 
@@ -25,7 +24,6 @@ object MultiPluginSpec {
   val now = System.currentTimeMillis()
   val journalKeyspace = s"multiplugin_spec_journal_$now"
   val snapshotKeyspace = s"multiplugin_spec_snapshot_$now"
-  val cassandraPort = CassandraLauncher.randomPort
   val config = ConfigFactory.parseString(s"""
        |pekko.test.single-expect-default = 20s
        |pekko.test.filter-leeway = 20s
