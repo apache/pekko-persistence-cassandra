@@ -349,7 +349,7 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
 
     def loop(remaining: List[String], n: Int): Future[Done] = {
       remaining match {
-        case Nil => Future.successful(Done)
+        case Nil         => Future.successful(Done)
         case pid :: tail =>
           pidOperation(pid).flatMap { _ =>
             if (n % logProgressEvery == 0)

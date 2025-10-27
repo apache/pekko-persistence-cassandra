@@ -279,7 +279,7 @@ import scala.util.{ Failure, Success, Try }
         case Success(rs) =>
           val queryState = stageState.state match {
             case qip: QueryInProgress => qip
-            case _ =>
+            case _                    =>
               throw new IllegalStateException(s"New ResultSet when in unexpected state ${stageState.state}")
           }
           if (queryState.abortForMissingSearch) {
@@ -546,7 +546,7 @@ import scala.util.{ Failure, Success, Try }
       private def getMissingLookup(): LookingForMissing = {
         stageState.missingLookup match {
           case Some(m) => m
-          case None =>
+          case None    =>
             throw new IllegalStateException(
               s"lookingForMissingCalled for tag ${session.tag} when there " +
               s"is no missing. Raise a bug with debug logging.")

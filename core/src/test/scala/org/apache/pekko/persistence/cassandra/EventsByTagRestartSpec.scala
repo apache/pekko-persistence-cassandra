@@ -121,7 +121,7 @@ class EventsByTagRestartSpec extends CassandraSpec(EventsByTagRestartSpec.config
       // this is racy though, so we could also see that fourth event, but with the right tagSeqNr
       val received = tagProbe.receiveWithin(waitTime)
       received.headOption match {
-        case None => // not received
+        case None                     => // not received
         case Some(evt: EventEnvelope) =>
           evt.event shouldEqual "e4"
         case Some(wat) =>

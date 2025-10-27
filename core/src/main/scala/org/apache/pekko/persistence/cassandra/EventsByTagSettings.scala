@@ -166,7 +166,7 @@ import com.typesafe.config.Config
       case (_, fb) if fb.length == 14    => fb
       case (Hour, fb) if fb.length == 11 => s"$fb:00"
       case (Day, fb) if fb.length == 8   => s"${fb}T00:00"
-      case _ =>
+      case _                             =>
         throw new IllegalArgumentException("Invalid first-time-bucket format. Use: " + query.firstBucketFormat)
     }
     val date: LocalDateTime =
