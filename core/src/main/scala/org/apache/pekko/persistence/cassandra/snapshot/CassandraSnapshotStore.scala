@@ -121,7 +121,7 @@ import scala.util.{ Failure, Success }
   }
 
   private def loadNAsync(metadata: immutable.Seq[SnapshotMetadata]): Future[Option[SelectedSnapshot]] = metadata match {
-    case Seq() => Future.successful(None) // no snapshots stored
+    case Seq()     => Future.successful(None) // no snapshots stored
     case md +: mds =>
       load1Async(md)
         .map {
@@ -314,7 +314,7 @@ import scala.util.{ Failure, Success }
 
     def hasMetaColumns(row: Row): Boolean = _hasMetaColumns match {
       case Some(b) => b
-      case None =>
+      case None    =>
         val b = row.getColumnDefinitions.contains("meta")
         _hasMetaColumns = Some(b)
         b
@@ -367,7 +367,7 @@ import scala.util.{ Failure, Success }
                 val metaSerId = row.getInt("meta_ser_id")
                 val metaSerManifest = row.getString("meta_ser_manifest")
                 serialization.deserialize(Bytes.getArray(metaBytes), metaSerId, metaSerManifest) match {
-                  case Success(m) => OptionVal.Some(m)
+                  case Success(m)  => OptionVal.Some(m)
                   case Failure(ex) =>
                     log.warning(
                       "Deserialization of snapshot metadata failed (pid: [{}], seq_nr: [{}], meta_ser_id: [{}], meta_ser_manifest: [{}], ignoring metadata content. Exception: {}",

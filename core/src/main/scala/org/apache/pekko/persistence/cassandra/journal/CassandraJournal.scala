@@ -317,7 +317,7 @@ import scala.util.{ Failure, Success, Try }
       reversed: List[SerializedAtomicWrite],
       currentGroup: List[SerializedAtomicWrite],
       grouped: List[List[SerializedAtomicWrite]]): List[List[SerializedAtomicWrite]] = reversed match {
-    case Nil => (currentGroup +: grouped).filterNot(_.isEmpty)
+    case Nil                                                                                 => (currentGroup +: grouped).filterNot(_.isEmpty)
     case x :: xs if currentGroup.size + x.payload.size < journalSettings.maxMessageBatchSize =>
       groupedWrites(xs, x +: currentGroup, grouped)
     case x :: xs => groupedWrites(xs, List(x), currentGroup +: grouped)
@@ -891,7 +891,7 @@ import scala.util.{ Failure, Success, Try }
                 val metaSerId = row.getInt("meta_ser_id")
                 val metaSerManifest = row.getString("meta_ser_manifest")
                 serialization.deserialize(Bytes.getArray(metaBytes), metaSerId, metaSerManifest) match {
-                  case Success(m) => OptionVal.Some(m)
+                  case Success(m)  => OptionVal.Some(m)
                   case Failure(ex) =>
                     log.warning(
                       "Deserialization of event metadata failed (pid: [{}], seq_nr: [{}], meta_ser_id: [{}], meta_ser_manifest: [{}], ignoring metadata content. Exception: {}",

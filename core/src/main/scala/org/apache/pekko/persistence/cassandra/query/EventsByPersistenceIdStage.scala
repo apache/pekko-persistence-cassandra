@@ -150,7 +150,7 @@ import scala.util.{ Failure, Success, Try }
         case Success(rs) =>
           val q = queryState match {
             case q: QueryInProgress => q
-            case _ =>
+            case _                  =>
               throw new IllegalStateException(s"New ResultSet when in unexpected state $queryState")
           }
           val empty = isExhausted(rs) && !q.fetchMore
@@ -172,7 +172,7 @@ import scala.util.{ Failure, Success, Try }
         if (knownSeqNr >= expectedNextSeqNr) {
           log.debug("EventsByPersistenceId [{}] External poll, known seqNr [{}]", persistenceId, knownSeqNr)
           queryState match {
-            case QueryIdle => query(switchPartition = false)
+            case QueryIdle                           => query(switchPartition = false)
             case _: QueryResult | _: QueryInProgress =>
               pendingPoll = Some(knownSeqNr)
           }
@@ -192,7 +192,7 @@ import scala.util.{ Failure, Success, Try }
         if (nextSeqNr > expectedNextSeqNr) {
           queryState match {
             case QueryIdle => internalFastForward(nextSeqNr)
-            case _ =>
+            case _         =>
               log.debug("Query in progress. Fast forward pending.")
               pendingFastForward = Some(nextSeqNr)
           }
@@ -316,7 +316,7 @@ import scala.util.{ Failure, Success, Try }
 
       def query(switchPartition: Boolean): Unit = {
         queryState match {
-          case QueryIdle => // good
+          case QueryIdle          => // good
           case _: QueryInProgress =>
             throw new IllegalStateException("Query already in progress")
           case QueryResult(rs, _, _) =>

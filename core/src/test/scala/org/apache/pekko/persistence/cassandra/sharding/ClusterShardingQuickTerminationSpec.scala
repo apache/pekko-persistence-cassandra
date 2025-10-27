@@ -57,7 +57,7 @@ object ClusterShardingQuickTerminationSpec {
       case Decrement      => persist(CounterChanged(-1))(updateState)
       case Get(_)         => sender() ! count
       case ReceiveTimeout => context.parent ! Passivate(stopMessage = Stop)
-      case Stop =>
+      case Stop           =>
         sender() ! Ack
         context.stop(self)
     }

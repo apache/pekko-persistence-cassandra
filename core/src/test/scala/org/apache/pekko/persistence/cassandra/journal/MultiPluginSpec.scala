@@ -59,7 +59,7 @@ object MultiPluginSpec {
     override def receiveCommand: Receive = {
       case _: SaveSnapshotSuccess =>
       case "snapshot"             => saveSnapshot("snapshot")
-      case payload =>
+      case payload                =>
         persist(payload) { payload =>
           sender() ! s"$payload-$lastSequenceNr"
         }

@@ -59,7 +59,7 @@ private[pekko] class CassandraStatements(val settings: PluginSettings) {
   private def hasColumn(column: String, row: Row, cached: Option[Boolean], updateCache: Boolean => Unit): Boolean = {
     cached match {
       case Some(b) => b
-      case None =>
+      case None    =>
         val b = row.getColumnDefinitions.contains(column)
         updateCache(b)
         b

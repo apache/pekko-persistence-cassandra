@@ -79,12 +79,12 @@ import java.lang.{ Long => JLong }
       .selectOne(ps.bind(pid, partitionNr: JLong, sequenceNr: JLong, sequenceNr: JLong))
       .flatMap {
         case Some(row) => Future.successful(Some(row))
-        case None =>
+        case None      =>
           session.selectOne(pid, partitionNr + 1: JLong, sequenceNr: JLong, sequenceNr: JLong)
       }
       .map {
         case Some(row) => row
-        case None =>
+        case None      =>
           throw new RuntimeException(
             s"Unable to find event: Pid: [$pid] SequenceNr: [$sequenceNr] partitionNr: [$partitionNr]")
       }
@@ -102,7 +102,7 @@ import java.lang.{ Long => JLong }
       }
       .map {
         case Some(r) => r.getLong("tag_pid_sequence_nr")
-        case None =>
+        case None    =>
           throw new RuntimeException(
             s"no tag pid sequence nr. Pid ${event.persistenceId}. Tag: $tag. SequenceNr: ${event.sequenceNr}")
       }

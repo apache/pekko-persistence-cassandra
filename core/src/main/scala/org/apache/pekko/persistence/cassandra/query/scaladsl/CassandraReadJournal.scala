@@ -685,7 +685,7 @@ class CassandraReadJournal protected (
     offset match {
       case TimeBasedUUID(uuid) => (uuid, true)
       case NoOffset            => (firstOffset, false)
-      case unsupported =>
+      case unsupported         =>
         throw new IllegalArgumentException("Cassandra does not support " + unsupported.getClass.getName + " offsets")
     }
 
