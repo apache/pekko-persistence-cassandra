@@ -20,5 +20,5 @@ import com.github.pjfanning.pekkobuild.PekkoDependency
 object PekkoManagementDependency extends PekkoDependency {
   override val checkProject: String = "pekko-discovery-aws-api-async"
   override val module: Option[String] = Some("management")
-  override val currentVersion: String = "1.1.0-M1"
+  override val currentVersion: String = "1.1.1"
 }
