@@ -63,7 +63,7 @@ class EventsByPersistenceIdWithControlSpec extends CassandraSpec(EventsByPersist
 
       val src = queries.eventsByPersistenceIdWithControl("a", 0L, Long.MaxValue)
 
-      val (futureControl, probe) = src.map(_.event).toMat(TestSink.probe[Any])(Keep.both).run()
+      val (futureControl, probe) = src.map(_.event).toMat(TestSink[Any]())(Keep.both).run()
       val control = futureControl.futureValue
       control.poll(3)
 
@@ -82,7 +82,7 @@ class EventsByPersistenceIdWithControlSpec extends CassandraSpec(EventsByPersist
       val ref = setup("b", 8)
 
       val src = queries.eventsByPersistenceIdWithControl("b", 0L, Long.MaxValue)
-      val (futureControl, probe) = src.map(_.event).toMat(TestSink.probe[Any])(Keep.both).run()
+      val (futureControl, probe) = src.map(_.event).toMat(TestSink[Any]())(Keep.both).run()
       val control = futureControl.futureValue
       control.poll(8)
 
@@ -103,7 +103,7 @@ class EventsByPersistenceIdWithControlSpec extends CassandraSpec(EventsByPersist
       val ref = setup("c", 2)
 
       val src = queries.eventsByPersistenceIdWithControl("c", 0L, Long.MaxValue)
-      val (futureControl, probe) = src.map(_.event).toMat(TestSink.probe[Any])(Keep.both).run()
+      val (futureControl, probe) = src.map(_.event).toMat(TestSink[Any]())(Keep.both).run()
       val control = futureControl.futureValue
       control.poll(2)
 
@@ -131,7 +131,7 @@ class EventsByPersistenceIdWithControlSpec extends CassandraSpec(EventsByPersist
       val ref = setup("d", 12)
 
       val src = queries.eventsByPersistenceIdWithControl("d", 0L, Long.MaxValue)
-      val (futureControl, probe) = src.map(_.event).toMat(TestSink.probe[Any])(Keep.both).run()
+      val (futureControl, probe) = src.map(_.event).toMat(TestSink[Any]())(Keep.both).run()
       val control = futureControl.futureValue
       control.poll(12)
 
@@ -156,7 +156,7 @@ class EventsByPersistenceIdWithControlSpec extends CassandraSpec(EventsByPersist
       setup("e", 35)
 
       val src = queries.eventsByPersistenceIdWithControl("e", 0L, Long.MaxValue)
-      val (futureControl, probe) = src.map(_.event).toMat(TestSink.probe[Any])(Keep.both).run()
+      val (futureControl, probe) = src.map(_.event).toMat(TestSink[Any]())(Keep.both).run()
       val control = futureControl.futureValue
       control.poll(35)
 
