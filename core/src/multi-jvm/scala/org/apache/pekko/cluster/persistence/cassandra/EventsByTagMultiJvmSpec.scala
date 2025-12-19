@@ -109,7 +109,7 @@ abstract class EventsByTagMultiJvmSpec
           queryJournal
             .eventsByTag("all", NoOffset)
             .map(e => (e.persistenceId, e.event.asInstanceOf[Int]))
-            .runWith(TestSink.probe)
+            .runWith(TestSink())
         }
       }
       enterBarrier("query-started")
