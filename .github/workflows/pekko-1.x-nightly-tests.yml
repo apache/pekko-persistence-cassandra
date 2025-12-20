@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-name: Run Tests with Pekko 1.2.x builds
+name: Run Tests with Pekko 1.x builds
 
 on:
   schedule:
@@ -64,4 +64,4 @@ jobs:
 
       - name: Test against ${{ matrix.container }}
         run: |-
-          docker compose up -d ${{ matrix.container }} && sbt -Dpekko.build.pekko.version=1.2.x -Dpekko.build.pekko.connectors.version=1.0.x ++${{ matrix.scalaVersion }} ${{matrix.test}}
+          docker compose up -d ${{ matrix.container }} && sbt -Dpekko.build.pekko.version=1.x -Dpekko.build.pekko.connectors.version=1.x ++${{ matrix.scalaVersion }} ${{matrix.test}}
