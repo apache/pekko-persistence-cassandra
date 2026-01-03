@@ -11,9 +11,9 @@ import sbt._
 
 object Dependencies {
   // keep in sync with .github/workflows/unit-tests.yml
-  val scala212Version = "2.12.20"
-  val scala213Version = "2.13.16"
-  val scala3Version = "3.3.6"
+  val scala212Version = "2.12.21"
+  val scala213Version = "2.13.18"
+  val scala3Version = "3.3.7"
   val scalaVersions = Seq(scala212Version, scala213Version, scala3Version)
 
   val pekkoVersion = PekkoCoreDependency.version
@@ -29,7 +29,7 @@ object Dependencies {
 
   val logbackVersion = "1.3.15"
 
-  val nettyVersion = "4.2.6.Final"
+  val nettyVersion = "4.2.9.Final"
   val logback = "ch.qos.logback" % "logback-classic" % logbackVersion
 
   val pekkoPersistenceCassandraDependencies = Seq(
