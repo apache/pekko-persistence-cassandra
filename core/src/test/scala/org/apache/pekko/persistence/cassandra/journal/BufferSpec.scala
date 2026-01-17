@@ -53,7 +53,8 @@ class BufferSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll {
         .add(AwaitingWrite(List((e2, 12)), OptionVal.None))
 
       buffer.shouldWrite() shouldEqual true
-      buffer.nextBatch shouldEqual (List(
+      buffer.nextBatch shouldEqual
+      (List(
         AwaitingWrite(List((e1, 1)), OptionVal.None),
         AwaitingWrite(List((e2, 12)), OptionVal.None)))
     }

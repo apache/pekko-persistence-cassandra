@@ -171,14 +171,18 @@ lazy val docs = project
       "extref.github.base_url" -> s"https://github.com/apache/pekko-persistence-jdbc/blob/${if (isSnapshot.value) "main"
         else "v" + version.value}/%s",
       // Connectors
-      "extref.pekko-connectors.base_url" -> s"https://pekko.apache.org/docs/pekko-connectors/${Dependencies.pekkoConnectorsVersionInDocs}/%s",
-      "scaladoc.org.apache.pekko.stream.connectors.base_url" -> s"https://pekko.apache.org/api/pekko-connectors/${Dependencies.pekkoConnectorsVersionInDocs}/",
+      "extref.pekko-connectors.base_url" ->
+      s"https://pekko.apache.org/docs/pekko-connectors/${Dependencies.pekkoConnectorsVersionInDocs}/%s",
+      "scaladoc.org.apache.pekko.stream.connectors.base_url" ->
+      s"https://pekko.apache.org/api/pekko-connectors/${Dependencies.pekkoConnectorsVersionInDocs}/",
       "javadoc.org.apache.pekko.stream.connectors.base_url" -> "",
       // Cassandra
       "extref.cassandra.base_url" -> s"https://cassandra.apache.org/doc/${Dependencies.cassandraVersionInDocs}/%s",
       // Datastax Java driver
-      "extref.java-driver.base_url" -> s"https://docs.datastax.com/en/developer/java-driver/${Dependencies.driverVersionInDocs}/%s",
-      "javadoc.com.datastax.oss.base_url" -> s"https://docs.datastax.com/en/drivers/java/${Dependencies.driverVersionInDocs}/",
+      "extref.java-driver.base_url" ->
+      s"https://docs.datastax.com/en/developer/java-driver/${Dependencies.driverVersionInDocs}/%s",
+      "javadoc.com.datastax.oss.base_url" ->
+      s"https://docs.datastax.com/en/drivers/java/${Dependencies.driverVersionInDocs}/",
       // Java
       "javadoc.base_url" -> "https://docs.oracle.com/javase/8/docs/api/",
       // Scala

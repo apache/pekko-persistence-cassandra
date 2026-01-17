@@ -359,7 +359,8 @@ import scala.util.{ Failure, Success, Try }
 
             acc + (event.persistenceId -> PidProgress(from, event.sequenceNr, tagPidSequenceNr, event.timeUuid))
           case None =>
-            acc + (event.persistenceId -> PidProgress(
+            acc +
+            (event.persistenceId -> PidProgress(
               event.sequenceNr,
               event.sequenceNr,
               tagPidSequenceNr,
