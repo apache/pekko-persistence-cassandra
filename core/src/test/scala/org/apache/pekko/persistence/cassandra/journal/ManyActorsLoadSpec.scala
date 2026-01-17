@@ -85,7 +85,9 @@ class ManyActorsLoadSpec extends CassandraSpec(ManyActorsLoadSpec.config) {
 
       val rounds = 1 // increase this to 10 when benchmarking
       val deadline =
-        Deadline.now + rounds * system.settings.config
+        Deadline.now +
+        rounds *
+        system.settings.config
           .getDuration("pekko.persistence.cassandra.events-by-tag.scanning-flush-interval", TimeUnit.MILLISECONDS)
           .millis + 2.seconds
 

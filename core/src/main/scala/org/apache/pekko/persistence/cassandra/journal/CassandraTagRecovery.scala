@@ -21,11 +21,7 @@ import pekko.event.LoggingAdapter
 import pekko.persistence.cassandra.journal.CassandraJournal.{ SequenceNr, Tag }
 import pekko.persistence.cassandra.journal.TagWriter.TagProgress
 import pekko.persistence.cassandra.journal.TagWriters.{
-  PersistentActorStarting,
-  PersistentActorStartingAck,
-  SetTagProgress,
-  TagProcessAck,
-  TagWrite
+  PersistentActorStarting, PersistentActorStartingAck, SetTagProgress, TagProcessAck, TagWrite
 }
 import pekko.persistence.cassandra.Extractors.RawEvent
 import pekko.stream.scaladsl.Sink
@@ -72,7 +68,8 @@ import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
       })
       .map(rs =>
         rs.foldLeft(Map.empty[String, TagProgress]) { (acc, row) =>
-          acc + (row.getString("tag") -> TagProgress(
+          acc +
+          (row.getString("tag") -> TagProgress(
             persistenceId,
             row.getLong("sequence_nr"),
             row.getLong("tag_pid_sequence_nr")))

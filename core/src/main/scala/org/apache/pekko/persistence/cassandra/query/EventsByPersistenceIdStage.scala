@@ -247,8 +247,7 @@ import scala.util.{ Failure, Success, Try }
           partition = nextPartition
       }
 
-      def partitionNr(sequenceNr: Long): Long =
-        (sequenceNr - 1L) / journalSettings.targetPartitionSize
+      def partitionNr(sequenceNr: Long): Long = (sequenceNr - 1L) / journalSettings.targetPartitionSize
 
       override def preStart(): Unit = {
         queryState = QueryInProgress(switchPartition = false, fetchMore = false, System.nanoTime())
@@ -413,11 +412,13 @@ import scala.util.{ Failure, Success, Try }
             } else {
               val row = rs.one()
               val sequenceNr = extractSeqNr(row)
-              if ((sequenceNr < expectedNextSeqNr && fastForwardEnabled) || pendingFastForward
+              if ((sequenceNr < expectedNextSeqNr && fastForwardEnabled) ||
+                pendingFastForward
                   .isDefined && pendingFastForward.get > sequenceNr) {
                 // skip event due to fast forward
                 tryPushOne()
-              } else if (pendingFastForward.isEmpty && querySettings
+              } else if (pendingFastForward.isEmpty &&
+                querySettings
                   .gapFreeSequenceNumbers && sequenceNr > expectedNextSeqNr) {
                 // we will probably now come in here which isn't what we want
                 lookingForMissingSeqNr match {

@@ -269,7 +269,8 @@ class CleanupSpec extends CassandraSpec(CleanupSpec.config) with DirectWriting {
         .futureValue shouldEqual List("evt-7", "evt-8", "evt-9")
     }
 
-    "clean up before snapshot including timestamp that results in all events kept for one persistence id" taggedAs RequiresCassandraThree in {
+    "clean up before snapshot including timestamp that results in all events kept for one persistence id" taggedAs
+    RequiresCassandraThree in {
       val pid = nextPid
       val p = system.actorOf(TestActor.props(pid))
       (1 to 3).foreach { i =>

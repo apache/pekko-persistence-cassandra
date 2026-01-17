@@ -662,7 +662,9 @@ import scala.util.{ Failure, Success, Try }
               .tagPidSequenceNumberUpdate(repr.persistenceId, (1, repr.offset, System.currentTimeMillis())))
           push(out, repr)
           false
-        } else if (usingOffset && (stageState.currentTimeBucket.inPast || eventsByTagSettings
+        } else if (usingOffset &&
+          (stageState.currentTimeBucket.inPast ||
+          eventsByTagSettings
             .newPersistenceIdScanTimeout == Duration.Zero)) {
           // If we're in the past and this is an offset query we assume this is
           // the first tagPidSequenceNr
@@ -680,7 +682,8 @@ import scala.util.{ Failure, Success, Try }
         } else {
           if (log.isDebugEnabled) {
             log.debug(
-              s"[${stageUuid}] " + " [{}]: Persistence Id not in metadata: [{}] does not start at tag pid sequence nr 1. " +
+              s"[${stageUuid}] " +
+              " [{}]: Persistence Id not in metadata: [{}] does not start at tag pid sequence nr 1. " +
               "This could either be that the events are before the offset, that the metadata has been dropped or that they are delayed. " +
               "Tag pid sequence nr found: [{}]. Looking for lower tag pid sequence nrs for [{}] in the current and previous buckets.",
               session.tag,
