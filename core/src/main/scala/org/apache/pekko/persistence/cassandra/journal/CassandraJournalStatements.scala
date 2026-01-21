@@ -288,11 +288,9 @@ import scala.jdk.FutureConverters._
 
   def selectHighestSequenceNr =
     s"""
-     SELECT sequence_nr FROM $tableName WHERE
+     SELECT MAX(sequence_nr) AS sequence_nr FROM $tableName WHERE
        persistence_id = ? AND
        partition_nr = ?
-       ORDER BY sequence_nr
-       DESC LIMIT 1
    """
 
   def selectDeletedTo =
