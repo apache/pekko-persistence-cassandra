@@ -21,7 +21,11 @@ import pekko.event.LoggingAdapter
 import pekko.persistence.cassandra.journal.CassandraJournal.{ SequenceNr, Tag }
 import pekko.persistence.cassandra.journal.TagWriter.TagProgress
 import pekko.persistence.cassandra.journal.TagWriters.{
-  PersistentActorStarting, PersistentActorStartingAck, SetTagProgress, TagProcessAck, TagWrite
+  PersistentActorStarting,
+  PersistentActorStartingAck,
+  SetTagProgress,
+  TagProcessAck,
+  TagWrite
 }
 import pekko.persistence.cassandra.Extractors.RawEvent
 import pekko.stream.scaladsl.Sink
