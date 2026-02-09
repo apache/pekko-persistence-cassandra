@@ -60,7 +60,7 @@ jobs:
           java-version: ${{ matrix.javaVersion }}
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@bebeeb0e6f48ebad66d3783946588ecf43114433 # v6.4.7
+        uses: coursier/cache-action@c5ca79321d170b8a18c288d9cadc2a6037166d0f # v6.4.8.0.0
 
       - name: Test against ${{ matrix.container }}
         run: |-
