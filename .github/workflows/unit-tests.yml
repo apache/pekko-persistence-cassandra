@@ -58,7 +58,7 @@ jobs:
           java-version: ${{ matrix.javaVersion }}
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@e47d7d35a0d3a2c7f649ca5c63dfc2bbfaa002e7 # v6.4.8.0.1
+        uses: coursier/cache-action@90c37294538be80a558fd665531fcdc2b467b475 # v6.4.8.1.0
 
       - name: Test against ${{ matrix.container }}
         run: |-
@@ -89,7 +89,7 @@ jobs:
           java-version: 8
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@e47d7d35a0d3a2c7f649ca5c63dfc2bbfaa002e7 # v6.4.8.0.1
+        uses: coursier/cache-action@90c37294538be80a558fd665531fcdc2b467b475 # v6.4.8.1.0
 
       - name: MiMa Check
         run: sbt +mimaReportBinaryIssues
@@ -121,7 +121,7 @@ jobs:
           java-version: 11
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@e47d7d35a0d3a2c7f649ca5c63dfc2bbfaa002e7 # v6.4.8.0.1
+        uses: coursier/cache-action@90c37294538be80a558fd665531fcdc2b467b475 # v6.4.8.1.0
 
       - name: Create all API docs for artifacts/website and all reference docs
         run: sbt "unidoc; docs/paradox"
