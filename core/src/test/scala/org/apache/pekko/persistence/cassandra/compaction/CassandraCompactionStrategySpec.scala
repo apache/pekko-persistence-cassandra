@@ -137,7 +137,7 @@ class CassandraCompactionStrategySpec
           | tombstone_threshold = 0.1
           | unchecked_tombstone_compaction = false
           | bucket_high = 5.0
-          | bucket_low = 2.5
+          | bucket_low = 0.75
           | max_threshold = 20
           | min_threshold = 10
           | min_sstable_size = 100
@@ -152,7 +152,7 @@ class CassandraCompactionStrategySpec
       compactionStrategy.tombstoneThreshold shouldEqual 0.1
       compactionStrategy.uncheckedTombstoneCompaction shouldEqual false
       compactionStrategy.bucketHigh shouldEqual 5.0
-      compactionStrategy.bucketLow shouldEqual 2.5
+      compactionStrategy.bucketLow shouldEqual 0.75
       compactionStrategy.maxThreshold shouldEqual 20
       compactionStrategy.minThreshold shouldEqual 10
       compactionStrategy.minSSTableSize shouldEqual 100
@@ -166,7 +166,7 @@ class CassandraCompactionStrategySpec
           | tombstone_threshold = 0.1
           | unchecked_tombstone_compaction = false
           | bucket_high = 5.0
-          | bucket_low = 2.5
+          | bucket_low = 0.75
           | max_threshold = 20
           | min_threshold = 10
           | min_sstable_size = 100
