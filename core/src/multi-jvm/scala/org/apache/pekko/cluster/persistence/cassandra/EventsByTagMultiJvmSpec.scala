@@ -80,7 +80,7 @@ abstract class EventsByTagMultiJvmSpec
 
   override def initialParticipants: Int = roles.size
 
-  private var cassandraContainer: CassandraContainer[_] = _
+  @volatile private var cassandraContainer: CassandraContainer[_] = _
 
   "EventsByTag" must {
 
@@ -162,6 +162,8 @@ abstract class EventsByTagMultiJvmSpec
   }
 
   def startCassandra(host: String, port: Int, systemName: String): Unit = {
+    // With testcontainers, Docker binds to all interfaces (0.0.0.0) by default,
+    // so the host parameter is not needed for binding.
     cassandraContainer = new CassandraContainer("cassandra:3.11")
     cassandraContainer.setPortBindings(java.util.Arrays.asList(s"$port:9042"))
     cassandraContainer.start()
