@@ -13,17 +13,16 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import java.io.File
 import org.apache.pekko
 import pekko.actor.{ ActorSystem, Props }
 import pekko.persistence.cassandra.CassandraLifecycle.AwaitPersistenceInit
 import pekko.testkit.{ ImplicitSender, SocketUtil, TestKit }
 import com.typesafe.config.ConfigFactory
-import pekko.persistence.cassandra.testkit.CassandraLauncher
 import org.scalatest.Suite
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
+import org.testcontainers.containers.CassandraContainer
 
 object ReconnectSpec {
   val freePort = SocketUtil.temporaryLocalPort()
@@ -52,17 +51,14 @@ class ReconnectSpec
       pa ! "hello"
       expectNoMessage()
 
-      CassandraLauncher.start(
-        new File("target/ReconnectSpec"),
-        configResource = CassandraLauncher.DefaultTestConfigResource,
-        clean = true,
-        port = ReconnectSpec.freePort,
-        CassandraLauncher.classpathForResources("logback-test.xml"))
+      val cassandraContainer = new CassandraContainer("cassandra:3.11")
+      cassandraContainer.setPortBindings(java.util.Arrays.asList(s"${ReconnectSpec.freePort}:9042"))
+      cassandraContainer.start()
 
       try {
         CassandraLifecycle.awaitPersistenceInit(system)
       } finally {
-        CassandraLauncher.stop()
+        cassandraContainer.stop()
       }
 
     }
