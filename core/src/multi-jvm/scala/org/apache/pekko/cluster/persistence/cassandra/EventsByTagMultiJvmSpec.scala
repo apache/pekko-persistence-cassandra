@@ -11,6 +11,8 @@ package org.apache.pekko.cluster.persistence.cassandra
 
 import com.typesafe.config.ConfigFactory
 import org.apache.pekko
+import pekko.persistence.cassandra.CassandraLifecycle
+import pekko.persistence.cassandra.query.TestActor
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
 import pekko.persistence.journal.Tagged
 import pekko.persistence.query.{ NoOffset, PersistenceQuery }
@@ -58,7 +60,7 @@ object EventsByTagMultiJvmSpec extends MultiNodeConfig {
           contact-points = ["127.0.0.1:$CassPort"]
         }
       }
-    """).withFallback(pekko.persistence.cassandra.CassandraLifecycle.config))
+    """).withFallback(CassandraLifecycle.config))
 
 }
 
@@ -89,12 +91,12 @@ abstract class EventsByTagMultiJvmSpec
 
       runOn(node1) {
         startCassandra(CassHost, CassPort, system.name)
-        pekko.persistence.cassandra.CassandraLifecycle.awaitPersistenceInit(system)
+        CassandraLifecycle.awaitPersistenceInit(system)
       }
       enterBarrier("cassandra-init")
 
       runOn(node2, node3) {
-        pekko.persistence.cassandra.CassandraLifecycle.awaitPersistenceInit(system)
+        CassandraLifecycle.awaitPersistenceInit(system)
       }
       enterBarrier("persistence-init")
       system.log.info("Cassandra started")
@@ -122,13 +124,13 @@ abstract class EventsByTagMultiJvmSpec
       enterBarrier("query-started")
 
       runOn(node1) {
-        val ta = system.actorOf(pekko.persistence.cassandra.query.TestActor.props("node1Pid"))
+        val ta = system.actorOf(TestActor.props("node1Pid"))
         (0 until nrMessages).foreach { i =>
           ta ! Tagged(i, Set("all"))
         }
       }
       runOn(node2) {
-        val ta = system.actorOf(pekko.persistence.cassandra.query.TestActor.props("node2Pid"))
+        val ta = system.actorOf(TestActor.props("node2Pid"))
         (0 until nrMessages).foreach { i =>
           ta ! Tagged(i, Set("all"))
         }

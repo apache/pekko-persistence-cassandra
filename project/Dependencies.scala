@@ -31,7 +31,7 @@ object Dependencies {
   val nettyVersion = "4.2.14.Final"
   val logback = "ch.qos.logback" % "logback-classic" % logbackVersion
 
-  val testcontainersVersion = "1.20.4"
+  val testcontainersVersion = "2.0.5"
 
   val pekkoPersistenceCassandraDependencies = Seq(
     "org.apache.cassandra" % "java-driver-core" % driverVersion,
@@ -39,7 +39,7 @@ object Dependencies {
     logback % Test,
     "org.scalatest" %% "scalatest" % "3.2.20" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test,
-    "org.testcontainers" % "cassandra" % testcontainersVersion % Test)
+    "org.testcontainers" % "testcontainers-cassandra" % testcontainersVersion % Test)
 
   val exampleDependencies = Seq(
     logback,
