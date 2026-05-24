@@ -23,7 +23,7 @@ lazy val root = project
   .in(file("."))
   .enablePlugins(Common, ScalaUnidocPlugin)
   .disablePlugins(SitePlugin, MimaPlugin)
-  .aggregate(core, cassandraLauncher)
+  .aggregate(core)
   .settings(name := "pekko-persistence-cassandra-root", publish / skip := true)
 
 lazy val dumpSchema = taskKey[Unit]("Dumps cassandra schema for docs")
@@ -32,7 +32,6 @@ dumpSchema := (core / Test / runMain).toTask(" org.apache.pekko.persistence.cass
 lazy val core = project
   .in(file("core"))
   .enablePlugins(Common, AutomateHeaderPlugin, MimaPlugin, MultiJvmPlugin, ReproducibleBuildsPlugin)
-  .dependsOn(cassandraLauncher % Test)
   .addPekkoModuleDependency("pekko-connectors-cassandra", "", PekkoConnectorsDependency.default)
   .addPekkoModuleDependency("pekko-persistence", "", PekkoCoreDependency.default)
   .addPekkoModuleDependency("pekko-persistence-query", "", PekkoCoreDependency.default)
@@ -54,41 +53,6 @@ lazy val core = project
     mimaPreviousArtifacts := Set(
       organization.value %% name.value % mimaCompareVersion))
   .configs(MultiJvm)
-
-lazy val cassandraLauncher = project
-  .in(file("cassandra-launcher"))
-  .enablePlugins(Common, ReproducibleBuildsPlugin)
-  .disablePlugins(MimaPlugin)
-  .settings(
-    name := "pekko-persistence-cassandra-launcher",
-    Compile / unmanagedResources += (cassandraBundle / Compile / packageBin).value)
-
-// This project doesn't get published directly, rather the assembled artifact is included as part of cassandraLaunchers
-// resources
-lazy val cassandraBundle = project
-  .in(file("cassandra-bundle"))
-  .enablePlugins(Common, AutomateHeaderPlugin)
-  .disablePlugins(MimaPlugin)
-  .settings(
-    name := "pekko-persistence-cassandra-bundle",
-    crossPaths := false,
-    autoScalaLibrary := false,
-    libraryDependencies += ("org.apache.cassandra" % "cassandra-all" % "3.11.3")
-      .exclude("commons-logging", "commons-logging"),
-    dependencyOverrides += "com.github.jbellis" % "jamm" % "0.3.3", // See jamm comment in https://issues.apache.org/jira/browse/CASSANDRA-9608
-    assembly / assemblyJarName := "cassandra-bundle.jar",
-    Compile / packageBin := Def.taskDyn {
-      val store = streams.value.cacheStoreFactory.make("shaded-output")
-      val uberJarLocation = (assembly / assemblyOutputPath).value
-      val tracker = Tracked.outputChanged(store) { (changed: Boolean, file: File) =>
-        if (changed) {
-          Def.task {
-            (Compile / assembly).value
-          }
-        } else Def.task { file }
-      }
-      tracker(() => uberJarLocation)
-    }.value)
 
 // Used for testing events by tag in various environments
 lazy val endToEndExample = project
