@@ -36,8 +36,7 @@ object Dependencies {
     "io.netty" % "netty-handler" % nettyVersion,
     logback % Test,
     "org.scalatest" %% "scalatest" % "3.2.20" % Test,
-    "org.pegdown" % "pegdown" % "1.6.0" % Test,
-    "org.osgi" % "org.osgi.core" % "6.0.0" % Provided)
+    "org.pegdown" % "pegdown" % "1.6.0" % Test)
 
   val exampleDependencies = Seq(
     logback,
@@ -46,7 +45,4 @@ object Dependencies {
   val dseTestDependencies = Seq(
     "com.datastax.dse" % "dse-java-driver-core" % "2.3.0" % Test,
     logback % Test)
-
-  val docsDependencies = Seq(
-    "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" % Test)
 }
