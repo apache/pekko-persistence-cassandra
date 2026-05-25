@@ -15,6 +15,7 @@ package org.apache.pekko.persistence.cassandra.snapshot
 
 import com.datastax.oss.driver.api.core.cql._
 import com.datastax.oss.protocol.internal.util.Bytes
+import com.typesafe.config.Config
 import org.apache.pekko
 import pekko.{ Done, NotUsed }
 import pekko.actor._
@@ -41,7 +42,7 @@ import scala.util.{ Failure, Success }
 /**
  * INTERNAL API
  */
-@InternalApi private[pekko] class CassandraSnapshotStore(cfgPath: String)
+@InternalApi private[pekko] class CassandraSnapshotStore(cfg: Config, cfgPath: String)
     extends SnapshotStore
     with ActorLogging {
 
