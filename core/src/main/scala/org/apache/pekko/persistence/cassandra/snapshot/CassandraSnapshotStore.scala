@@ -15,7 +15,6 @@ package org.apache.pekko.persistence.cassandra.snapshot
 
 import com.datastax.oss.driver.api.core.cql._
 import com.datastax.oss.protocol.internal.util.Bytes
-import com.typesafe.config.Config
 import org.apache.pekko
 import pekko.{ Done, NotUsed }
 import pekko.actor._
@@ -29,7 +28,7 @@ import pekko.persistence.snapshot.SnapshotStore
 import pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtension, Serializers }
 import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
 import pekko.stream.scaladsl.{ Sink, Source }
-import pekko.util.{ unused, OptionVal }
+import pekko.util.OptionVal
 
 import java.lang.{ Long => JLong }
 import java.nio.ByteBuffer
@@ -42,7 +41,7 @@ import scala.util.{ Failure, Success }
 /**
  * INTERNAL API
  */
-@InternalApi private[pekko] class CassandraSnapshotStore(@unused cfg: Config, cfgPath: String)
+@InternalApi private[pekko] class CassandraSnapshotStore(cfgPath: String)
     extends SnapshotStore
     with ActorLogging {
 
