@@ -28,13 +28,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { javaVersion: '8',  container: "cassandra-latest",  scalaVersion: "++2.13", test: "test" }
-          - { javaVersion: '8',  container: "cassandra-latest",  scalaVersion: "++3.3", test: "test" }
-          - { javaVersion: '11', container: "cassandra-latest",  scalaVersion: "++2.13", test: "test" }
-          - { javaVersion: '11', container: "cassandra-latest",  scalaVersion: "++3.3", test: "test" }
-          - { javaVersion: '11', container: "cassandra2",        scalaVersion: "++2.13", test: "'testOnly -- -l RequiresCassandraThree'"}
-          - { javaVersion: '11', container: "cassandra3",        scalaVersion: "++2.13", test: "test" }
-          - { javaVersion: '11', container: "scylladb-latest",   scalaVersion: "++2.13", test: "test" }
+          - { javaVersion: '17',  container: "cassandra-latest",  scalaVersion: "++2.13", test: "test" }
+          - { javaVersion: '17',  container: "cassandra-latest",  scalaVersion: "++3.3", test: "test" }
+          - { javaVersion: '21', container: "cassandra-latest",  scalaVersion: "++2.13", test: "test" }
+          - { javaVersion: '21', container: "cassandra-latest",  scalaVersion: "++3.3", test: "test" }
+          - { javaVersion: '17', container: "cassandra2",        scalaVersion: "++2.13", test: "'testOnly -- -l RequiresCassandraThree'"}
+          - { javaVersion: '17', container: "cassandra3",        scalaVersion: "++2.13", test: "test" }
+          - { javaVersion: '17', container: "scylladb-latest",   scalaVersion: "++2.13", test: "test" }
 
     env:
       JAVA_OPTS: -Xms2G -Xmx2G -Xss2M -XX:ReservedCodeCacheSize=256M -Dfile.encoding=UTF-8
@@ -59,7 +59,7 @@ jobs:
           java-version: ${{ matrix.javaVersion }}
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@95e5b1029b6b86e7bac033ee44a0697d8a527d2d # v6.4.8.1.1
+        uses: coursier/cache-action@95e5b1029b6b86e7bac033ee44a0697d8a527d2d # v8.1.1
 
       - name: Test against ${{ matrix.container }}
         run: |-
@@ -83,14 +83,14 @@ jobs:
           git fetch origin pull/${{ github.event.pull_request.number }}/merge:scratch
           git checkout scratch
 
-      - name: Setup Java 8
+      - name: Setup Java 17
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: temurin
-          java-version: 8
+          java-version: 17
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@95e5b1029b6b86e7bac033ee44a0697d8a527d2d # v6.4.8.1.1
+        uses: coursier/cache-action@95e5b1029b6b86e7bac033ee44a0697d8a527d2d # v8.1.1
 
       - name: MiMa Check
         run: sbt +mimaReportBinaryIssues
@@ -115,14 +115,14 @@ jobs:
           git fetch origin pull/${{ github.event.pull_request.number }}/merge:scratch
           git checkout scratch
 
-      - name: Setup Java 11
+      - name: Setup Java 17
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@95e5b1029b6b86e7bac033ee44a0697d8a527d2d # v6.4.8.1.1
+        uses: coursier/cache-action@95e5b1029b6b86e7bac033ee44a0697d8a527d2d # v8.1.1
 
       - name: Create all API docs for artifacts/website and all reference docs
         run: sbt "unidoc; docs/paradox"
