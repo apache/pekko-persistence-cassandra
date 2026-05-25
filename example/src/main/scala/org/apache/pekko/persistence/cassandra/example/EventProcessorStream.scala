@@ -12,15 +12,15 @@ package org.apache.pekko.persistence.cassandra.example
 import org.apache.pekko
 import pekko.{ Done, NotUsed }
 import pekko.actor.typed.ActorSystem
+import pekko.actor.typed.scaladsl.LoggerOps
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
 import pekko.persistence.query.{ Offset, PersistenceQuery, TimeBasedUUID }
 import pekko.persistence.typed.PersistenceId
-import pekko.stream.SharedKillSwitch
+import pekko.stream.{ RestartSettings, SharedKillSwitch }
 import pekko.stream.connectors.cassandra.scaladsl.CassandraSessionRegistry
 import pekko.stream.scaladsl.{ RestartSource, Sink, Source }
 import com.datastax.oss.driver.api.core.cql.{ PreparedStatement, Row }
 import org.slf4j.{ Logger, LoggerFactory }
-import pekko.actor.typed.scaladsl.LoggerOps
 import org.HdrHistogram.Histogram
 
 import scala.concurrent.{ ExecutionContext, Future }
@@ -34,16 +34,17 @@ class EventProcessorStream[Event: ClassTag](
     tag: String) {
 
   protected val log: Logger = LoggerFactory.getLogger(getClass)
-  implicit val sys: ActorSystem[_] = system
-  implicit val ec: ExecutionContext = executionContext
+  private implicit val sys: ActorSystem[_] = system
+  private implicit val ec: ExecutionContext = executionContext
 
   private val session = CassandraSessionRegistry(system).sessionFor("pekko.persistence.cassandra")
 
   private val query = PersistenceQuery(system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
 
   def runQueryStream(killSwitch: SharedKillSwitch, histogram: Histogram): Unit = {
+    val restartSettings = RestartSettings(minBackoff = 500.millis, maxBackoff = 20.seconds, randomFactor = 0.1)
     RestartSource
-      .withBackoff(minBackoff = 500.millis, maxBackoff = 20.seconds, randomFactor = 0.1) { () =>
+      .withBackoff(restartSettings) { () =>
         Source.futureSource {
           readOffset().map { offset =>
             log.infoN("Starting stream for tag [{}] from offset [{}]", tag, offset)

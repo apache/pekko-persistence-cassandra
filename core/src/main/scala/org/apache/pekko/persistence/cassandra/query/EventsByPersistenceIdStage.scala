@@ -24,7 +24,7 @@ import pekko.stream.{ Attributes, Outlet, SourceShape }
 
 import java.lang.{ Long => JLong }
 import java.util.concurrent.ThreadLocalRandom
-import scala.annotation.{ nowarn, tailrec }
+import scala.annotation.tailrec
 import scala.concurrent.duration.{ FiniteDuration, _ }
 import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.jdk.FutureConverters._
@@ -265,9 +265,8 @@ import scala.util.{ Failure, Success, Try }
         }
       }
 
-      @nowarn("msg=deprecated")
       private def scheduleContinue(initial: FiniteDuration, interval: FiniteDuration): Unit = {
-        schedulePeriodicallyWithInitialDelay(Continue, initial, interval)
+        scheduleWithFixedDelay(Continue, initial, interval)
       }
 
       override def postStop(): Unit = {

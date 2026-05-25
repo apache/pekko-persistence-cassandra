@@ -29,7 +29,7 @@ import pekko.persistence.snapshot.SnapshotStore
 import pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtension, Serializers }
 import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
 import pekko.stream.scaladsl.{ Sink, Source }
-import pekko.util.{ unused, OptionVal }
+import pekko.util.OptionVal
 
 import java.lang.{ Long => JLong }
 import java.nio.ByteBuffer
@@ -42,7 +42,7 @@ import scala.util.{ Failure, Success }
 /**
  * INTERNAL API
  */
-@InternalApi private[pekko] class CassandraSnapshotStore(@unused cfg: Config, cfgPath: String)
+@InternalApi private[pekko] class CassandraSnapshotStore(cfg: Config, cfgPath: String)
     extends SnapshotStore
     with ActorLogging {
 

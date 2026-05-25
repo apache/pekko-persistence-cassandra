@@ -18,6 +18,7 @@ sourceDistIncubating := false
 val mimaCompareVersion = "1.0.0"
 
 ThisBuild / reproducibleBuildsCheckResolver := Resolver.ApacheMavenStagingRepo
+ThisBuild / evictionErrorLevel := Level.Info
 
 lazy val root = project
   .in(file("."))
@@ -51,7 +52,11 @@ lazy val core = project
       "Automatic-Module-Name" -> "pekko.persistence.cassandra"),
     mimaReportSignatureProblems := true,
     mimaPreviousArtifacts := Set(
-      organization.value %% name.value % mimaCompareVersion))
+      organization.value %% name.value % mimaCompareVersion),
+    // following is needed by Agrona lib
+    // https://github.com/aeron-io/agrona/wiki/Change-Log#200-2024-12-17
+    Test / fork := true,
+    Test / javaOptions += "--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED")
   .configs(MultiJvm)
 
 // Used for testing events by tag in various environments

@@ -16,7 +16,7 @@ package org.apache.pekko.persistence.cassandra
 import org.apache.pekko
 import pekko.actor.Scheduler
 import pekko.annotation.InternalApi
-import pekko.pattern.{ after, BackoffSupervisor }
+import pekko.pattern.{ after, RetrySupport }
 
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration.FiniteDuration
@@ -58,7 +58,7 @@ private[cassandra] object Retries {
     if (maxAttempts == -1 || maxAttempts - attempted != 1) {
       tryAttempt().recoverWith {
         case NonFatal(exc) =>
-          val nextDelay = BackoffSupervisor.calculateDelay(attempted, minBackoff, maxBackoff, randomFactor)
+          val nextDelay = RetrySupport.calculateDelay(attempted, minBackoff, maxBackoff, randomFactor)
           onFailure(attempted + 1, exc, nextDelay)
           after(nextDelay, scheduler) {
             retry(attempt, maxAttempts, onFailure, minBackoff, maxBackoff, randomFactor, attempted + 1)
