@@ -11,8 +11,9 @@ package org.apache.pekko.cluster.persistence.cassandra
 
 import com.typesafe.config.ConfigFactory
 import org.apache.pekko
+import pekko.persistence.cassandra.CassandraLifecycle
+import pekko.persistence.cassandra.query.TestActor
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import pekko.persistence.cassandra.testkit.CassandraLauncher
 import pekko.persistence.journal.Tagged
 import pekko.persistence.query.{ NoOffset, PersistenceQuery }
 import pekko.remote.testkit.{ MultiNodeConfig, MultiNodeSpec }
@@ -20,8 +21,7 @@ import pekko.stream.testkit.TestSubscriber
 import pekko.stream.testkit.scaladsl.TestSink
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
-
-import java.io.File
+import org.testcontainers.cassandra.CassandraContainer
 
 object EventsByTagMultiJvmSpec extends MultiNodeConfig {
   // No way to start and distribute the port so hard coding
@@ -53,6 +53,13 @@ object EventsByTagMultiJvmSpec extends MultiNodeConfig {
           keyspace = $name
         }
       }
+
+      datastax-java-driver {
+        basic {
+          load-balancing-policy.local-datacenter = "datacenter1"
+          contact-points = ["127.0.0.1:$CassPort"]
+        }
+      }
     """).withFallback(CassandraLifecycle.config))
 
 }
@@ -74,6 +81,8 @@ abstract class EventsByTagMultiJvmSpec
   val nrWriterNodes = 2
 
   override def initialParticipants: Int = roles.size
+
+  @volatile private var cassandraContainer: CassandraContainer[_] = _
 
   "EventsByTag" must {
 
@@ -147,26 +156,26 @@ abstract class EventsByTagMultiJvmSpec
       }
 
       enterBarrier("all-done")
+
+      runOn(node1) {
+        stopCassandra()
+      }
     }
   }
 
-  def startCassandra(
-      host: String,
-      port: Int,
-      systemName: String,
-      cassandraConfigResource: String = CassandraLauncher.DefaultTestConfigResource): Unit = {
-    val cassandraDirectory = new File(s"target/$systemName-$port")
-    CassandraLauncher.start(
-      cassandraDirectory,
-      configResource = cassandraConfigResource,
-      clean = true,
-      port = port,
-      CassandraLauncher.classpathForResources("logback-test.xml"),
-      Some(host))
+  def startCassandra(host: String, port: Int, systemName: String): Unit = {
+    // With testcontainers, Docker binds to all interfaces (0.0.0.0) by default,
+    // so the host parameter is not needed for binding.
+    cassandraContainer = new CassandraContainer("cassandra:3.11")
+    cassandraContainer.setPortBindings(java.util.Arrays.asList(s"$port:9042"))
+    cassandraContainer.start()
   }
 
   def stopCassandra(): Unit = {
-    CassandraLauncher.stop()
+    if (cassandraContainer != null) {
+      cassandraContainer.stop()
+      cassandraContainer = null
+    }
   }
 
 }

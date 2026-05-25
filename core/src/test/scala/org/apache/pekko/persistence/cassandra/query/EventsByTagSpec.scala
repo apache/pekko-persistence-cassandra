@@ -16,12 +16,15 @@ package org.apache.pekko.persistence.cassandra.query
 import java.time.temporal.ChronoUnit
 import java.time.{ LocalDate, LocalDateTime, ZoneOffset }
 import java.util.Optional
+
+import scala.concurrent.duration._
+
 import java.util.UUID
 import org.apache.pekko
 import pekko.actor.{ PoisonPill, Props }
 import pekko.event.Logging.Warning
 import pekko.persistence.cassandra.journal.CassandraJournalStatements
-import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, Day }
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, Day, PluginSettings }
 import pekko.persistence.journal.{ Tagged, WriteEventAdapter }
 import pekko.persistence.query.scaladsl.{ CurrentEventsByTagQuery, EventsByTagQuery }
 import pekko.persistence.query.{ EventEnvelope, NoOffset, Offset, TimeBasedUUID }
@@ -37,9 +40,6 @@ import com.datastax.oss.driver.api.core.uuid.Uuids
 import com.typesafe.config.{ Config, ConfigFactory }
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.Eventually.eventually
-
-import scala.concurrent.duration._
-import pekko.persistence.cassandra.PluginSettings
 
 object EventsByTagSpec {
   def withProbe[T](probe: TestSubscriber.Probe[Any], f: TestSubscriber.Probe[Any] => T): T = {
