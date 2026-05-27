@@ -1382,7 +1382,7 @@ class EventsByTagPersistenceIdCleanupSpec extends AbstractEventsByTagSpec(Events
         val query =
           queries.eventsByTag("cleanup-tag",
             TimeBasedUUID(Uuids.startOf(t1.toInstant(ZoneOffset.UTC).toEpochMilli - 1L)))
-        withProbe(query.runWith(TestSink[Any]())) { probe =>
+        withProbe(query.runWith(TestSink[Any]()), { probe =>
           probe.request(10)
           probe.expectNextPF { case e @ EventEnvelope(_, `pid`, 1L, "cleanup-1") => e }
           probe.expectNoMessage(cleanupPeriod + 250.millis)
@@ -1394,7 +1394,7 @@ class EventsByTagPersistenceIdCleanupSpec extends AbstractEventsByTagSpec(Events
           // we don't know exactly when the next persistence id scan will be, so avoid
           // asserting on the delay itself; just verify that event2 is eventually delivered
           probe.expectNextPF { case e @ EventEnvelope(_, `pid`, 2L, "cleanup-2") => e }
-        }
+        })
       }
     }
   }
