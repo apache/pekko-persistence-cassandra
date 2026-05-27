@@ -1382,19 +1382,20 @@ class EventsByTagPersistenceIdCleanupSpec extends AbstractEventsByTagSpec(Events
         val query =
           queries.eventsByTag("cleanup-tag",
             TimeBasedUUID(Uuids.startOf(t1.toInstant(ZoneOffset.UTC).toEpochMilli - 1L)))
-        withProbe(query.runWith(TestSink[Any]()), { probe =>
-          probe.request(10)
-          probe.expectNextPF { case e @ EventEnvelope(_, `pid`, 1L, "cleanup-1") => e }
-          probe.expectNoMessage(cleanupPeriod + 250.millis)
+        withProbe(query.runWith(TestSink[Any]()),
+          { probe =>
+            probe.request(10)
+            probe.expectNextPF { case e @ EventEnvelope(_, `pid`, 1L, "cleanup-1") => e }
+            probe.expectNoMessage(cleanupPeriod + 250.millis)
 
-          // the metadata for pid should have been removed meaning the next event will be delayed
-          val event2 = PersistentRepr(s"cleanup-2", 2, pid)
-          writeTaggedEvent(event2, Set("cleanup-tag"), 2, bucketSize)
+            // the metadata for pid should have been removed meaning the next event will be delayed
+            val event2 = PersistentRepr(s"cleanup-2", 2, pid)
+            writeTaggedEvent(event2, Set("cleanup-tag"), 2, bucketSize)
 
-          // we don't know exactly when the next persistence id scan will be, so avoid
-          // asserting on the delay itself; just verify that event2 is eventually delivered
-          probe.expectNextPF { case e @ EventEnvelope(_, `pid`, 2L, "cleanup-2") => e }
-        })
+            // we don't know exactly when the next persistence id scan will be, so avoid
+            // asserting on the delay itself; just verify that event2 is eventually delivered
+            probe.expectNextPF { case e @ EventEnvelope(_, `pid`, 2L, "cleanup-2") => e }
+          })
       }
     }
   }
