@@ -1,6 +1,6 @@
 # Overview
 
-The Pekko Persistence Cassandra plugin allows for using [Apache Cassandra](https://cassandra.apache.org) as a backend for @extref:[Pekko Persistence](pekko:typed/persistence.html) and @extref:[Pekko Persistence Query](pekko:persistence-query.html). It uses @extref:[Pekko Connectors Cassandra](pekko-connectors:cassandra.html) for Cassandra access which is based on the @extref:[Datastax Java Driver](java-driver:).
+The Pekko Persistence Cassandra plugin allows for using [Apache Cassandra](https://cassandra.apache.org) as a backend for @extref:[Pekko Persistence](pekko:typed/persistence.html) and @extref:[Pekko Persistence Query](pekko:persistence-query.html). It uses @extref:[Pekko Connectors Cassandra](pekko-connectors:cassandra.html) for Cassandra access which is based on the @extref:[Datastax Java Driver](java-driver:index.html).
 
 ## Project Info
 
