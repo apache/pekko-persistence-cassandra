@@ -18,6 +18,7 @@ sourceDistIncubating := false
 val mimaCompareVersion = "1.0.0"
 
 ThisBuild / reproducibleBuildsCheckResolver := Resolver.ApacheMavenStagingRepo
+ThisBuild / javafmtFormatterCompatibleJavaVersion := 17
 ThisBuild / evictionErrorLevel := Level.Info
 
 lazy val root = project
