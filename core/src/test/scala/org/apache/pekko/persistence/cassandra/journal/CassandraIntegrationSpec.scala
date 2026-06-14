@@ -78,7 +78,7 @@ object CassandraIntegrationSpec {
   }
 
   class ProcessorC(val persistenceId: String, probe: ActorRef) extends PersistentActor {
-    var last: String = _
+    var last: String = null
 
     def receiveRecover: Receive = {
       case SnapshotOffer(_, snapshot: String) =>

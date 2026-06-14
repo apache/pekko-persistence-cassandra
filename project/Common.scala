@@ -43,10 +43,22 @@ object Common extends AutoPlugin {
     crossVersion := CrossVersion.binary,
     crossScalaVersions := Dependencies.scalaVersions,
     scalaVersion := Dependencies.scala213Version,
-    scalacOptions ++= Seq("-encoding", "UTF-8", "-feature", "-unchecked", "-Xlint", "-Ywarn-dead-code", "-deprecation"),
+    scalacOptions ++= Seq("-encoding", "UTF-8", "-feature", "-unchecked", "-deprecation"),
     scalacOptions ++= {
-      if (scalaBinaryVersion.value == "3") Seq("-Yfuture-lazy-vals", "-release:17")
-      else Seq.empty
+      if (scalaBinaryVersion.value == "3")
+        Seq(
+          "-Yfuture-lazy-vals",
+          "-release:17",
+          "-Wconf:msg=Implicit parameters should be provided with a `using` clause:s",
+          "-Wconf:msg=is deprecated for wildcard arguments of types:s",
+          "-Wconf:msg=The trailing ` _` for eta-expansion is unnecessary:s",
+          "-Wconf:msg=with as a type operator has been deprecated:s",
+          "-Wconf:msg=Unreachable case except for null:s",
+          "-Wconf:msg=is no longer supported for vararg splices:s",
+          "-Wconf:msg=bad option.*-Yfuture-lazy-vals:s",
+          "-Wconf:msg=bad option.*-Xlint:s",
+          "-Wconf:msg=bad option.*-Ywarn-dead-code:s")
+      else Seq("-Xlint", "-Ywarn-dead-code")
     },
     Compile / console / scalacOptions --= Seq("-deprecation", "-Xfatal-warnings", "-Xlint", "-Ywarn-unused:imports"),
     Compile / doc / scalacOptions := scalacOptions.value ++ Seq(

@@ -31,7 +31,7 @@ object TestActor {
 
 class TestActor(override val persistenceId: String, override val journalPluginId: String) extends PersistentActor {
 
-  var lastDelete: ActorRef = _
+  var lastDelete: ActorRef = null
 
   val receiveRecover: Receive = {
     case evt: String =>
