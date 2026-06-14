@@ -86,7 +86,7 @@ import scala.util.{ Failure, Success, Try }
       executeStatement(selectDeletedToQuery.bind(persistenceId).setExecutionProfileName(profile)).map(r =>
         Option(r.one()).map(_.getLong("deleted_to")).getOrElse(0))
 
-    private def executeStatement(statement: Statement[_]): Future[AsyncResultSet] =
+    private def executeStatement(statement: Statement[?]): Future[AsyncResultSet] =
       session.executeAsync(statement).asScala
 
   }
@@ -129,7 +129,7 @@ import scala.util.{ Failure, Success, Try }
   override def createLogicAndMaterializedValue(inheritedAttributes: Attributes): (GraphStageLogic, Control) = {
     val logic = new TimerGraphStageLogic(shape) with OutHandler with StageLogging with Control {
 
-      override protected def logSource: Class[_] =
+      override protected def logSource: Class[?] =
         classOf[EventsByPersistenceIdStage]
 
       implicit def ec: ExecutionContext = materializer.executionContext

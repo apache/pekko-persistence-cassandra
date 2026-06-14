@@ -36,7 +36,7 @@ object ReadSide {
   }
 
   def apply(
-      system: ActorSystem[_],
+      system: ActorSystem[?],
       topic: ActorRef[Topic.Command[ReadSideTopic.ReadSideMetrics]],
       settings: Settings): Unit = {
     system.log.info("Running {} processors", settings.nrProcessors)

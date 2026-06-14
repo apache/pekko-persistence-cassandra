@@ -128,7 +128,7 @@ import java.lang.{ Long => JLong }
       session.executeWrite(bound)
     }
 
-  private def prepareUpdate(ps: PreparedStatement, s: Serialized, partitionNr: Long): Statement[_] = {
+  private def prepareUpdate(ps: PreparedStatement, s: Serialized, partitionNr: Long): Statement[?] = {
     // primary key
     ps.bind()
       .setString("persistence_id", s.persistenceId)

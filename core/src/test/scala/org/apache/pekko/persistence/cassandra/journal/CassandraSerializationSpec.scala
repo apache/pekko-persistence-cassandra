@@ -49,7 +49,7 @@ class BrokenDeSerialization(override val system: ExtendedActorSystem) extends Ba
   override def toBinary(o: AnyRef): Array[Byte] =
     // I was serious with the class name
     Array.emptyByteArray
-  override def fromBinary(bytes: Array[Byte], manifest: Option[Class[_]]): AnyRef =
+  override def fromBinary(bytes: Array[Byte], manifest: Option[Class[?]]): AnyRef =
     throw new RuntimeException("I can't deserialize a single thing")
 }
 
