@@ -21,6 +21,9 @@ ThisBuild / reproducibleBuildsCheckResolver := Resolver.ApacheMavenStagingRepo
 ThisBuild / javafmtFormatterCompatibleJavaVersion := 17
 ThisBuild / evictionErrorLevel := Level.Info
 
+addCommandAlias("checkCodeStyle", "scalafmtCheckAll; scalafmtSbtCheck; javafmtCheckAll; +headerCheckAll")
+addCommandAlias("applyCodeStyle", "+headerCreateAll; scalafmtAll; scalafmtSbt; javafmtAll")
+
 lazy val root = project
   .in(file("."))
   .enablePlugins(Common, ScalaUnidocPlugin)
