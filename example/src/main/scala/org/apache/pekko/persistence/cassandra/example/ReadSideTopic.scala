@@ -18,7 +18,7 @@ object ReadSideTopic {
 
   final case class ReadSideMetrics(count: Long, maxValue: Long, p99: Long, p50: Long)
 
-  def init(context: ActorContext[_]): ActorRef[Topic.Command[ReadSideMetrics]] = {
+  def init(context: ActorContext[?]): ActorRef[Topic.Command[ReadSideMetrics]] = {
     context.spawn(Topic[ReadSideMetrics]("read-side-metrics"), "read-side-metrics")
   }
 

@@ -82,7 +82,7 @@ abstract class EventsByTagMultiJvmSpec
 
   override def initialParticipants: Int = roles.size
 
-  @volatile private var cassandraContainer: CassandraContainer[_] = _
+  @volatile private var cassandraContainer: CassandraContainer[?] = _
 
   "EventsByTag" must {
 

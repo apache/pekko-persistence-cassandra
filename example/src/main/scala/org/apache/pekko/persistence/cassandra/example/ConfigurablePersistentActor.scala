@@ -23,7 +23,7 @@ object ConfigurablePersistentActor {
 
   val Key: EntityTypeKey[Event] = EntityTypeKey[Event]("configurable")
 
-  def init(settings: Settings, system: ActorSystem[_]): ActorRef[ShardingEnvelope[Event]] = {
+  def init(settings: Settings, system: ActorSystem[?]): ActorRef[ShardingEnvelope[Event]] = {
     ClusterSharding(system).init(Entity(Key)(ctx => apply(settings, ctx.entityId)).withRole("write"))
   }
 

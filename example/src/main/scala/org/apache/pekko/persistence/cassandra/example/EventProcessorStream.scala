@@ -28,13 +28,13 @@ import scala.concurrent.duration._
 import scala.reflect.ClassTag
 
 class EventProcessorStream[Event: ClassTag](
-    system: ActorSystem[_],
+    system: ActorSystem[?],
     executionContext: ExecutionContext,
     eventProcessorId: String,
     tag: String) {
 
   protected val log: Logger = LoggerFactory.getLogger(getClass)
-  private implicit val sys: ActorSystem[_] = system
+  private implicit val sys: ActorSystem[?] = system
   private implicit val ec: ExecutionContext = executionContext
 
   private val session = CassandraSessionRegistry(system).sessionFor("pekko.persistence.cassandra")

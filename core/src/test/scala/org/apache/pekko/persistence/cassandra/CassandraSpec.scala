@@ -42,7 +42,7 @@ import scala.concurrent.duration._
 import scala.util.control.NonFatal
 
 object CassandraSpec {
-  def getCallerName(clazz: Class[_]): String = {
+  def getCallerName(clazz: Class[?]): String = {
     val s = Thread.currentThread.getStackTrace
       .map(_.getClassName)
       .dropWhile(
