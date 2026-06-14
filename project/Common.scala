@@ -45,7 +45,7 @@ object Common extends AutoPlugin {
     scalaVersion := Dependencies.scala213Version,
     scalacOptions ++= Seq("-encoding", "UTF-8", "-feature", "-unchecked", "-Xlint", "-Ywarn-dead-code", "-deprecation"),
     scalacOptions ++= {
-      if (scalaBinaryVersion.value == "3") Seq("-Yfuture-lazy-vals")
+      if (scalaBinaryVersion.value == "3") Seq("-Yfuture-lazy-vals", "-release:17")
       else Seq.empty
     },
     Compile / console / scalacOptions --= Seq("-deprecation", "-Xfatal-warnings", "-Xlint", "-Ywarn-unused:imports"),
