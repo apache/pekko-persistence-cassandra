@@ -239,7 +239,7 @@ import scala.util.{ Failure, Success, Try }
     new TimerGraphStageLogic(shape) with StageLogging with OutHandler {
       override protected def logSource = classOf[EventsByTagStage]
 
-      var stageState: StageState = _
+      var stageState: StageState = null
       val toOffsetMillis =
         toOffset.map(Uuids.unixTimestamp).getOrElse(Long.MaxValue)
 
