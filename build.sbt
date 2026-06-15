@@ -52,15 +52,12 @@ lazy val core = project
   .settings(
     name := "pekko-persistence-cassandra",
     libraryDependencies ++= Dependencies.pekkoPersistenceCassandraDependencies,
-    Compile / packageBin / packageOptions += Package.ManifestAttributes(
-      "Automatic-Module-Name" -> "pekko.persistence.cassandra"),
     mimaReportSignatureProblems := true,
     mimaPreviousArtifacts := Set(
       organization.value %% name.value % mimaCompareVersion),
     // following is needed by Agrona lib
     // https://github.com/aeron-io/agrona/wiki/Change-Log#200-2024-12-17
-    Test / fork := true,
-    Test / javaOptions += "--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED")
+    Test / fork := true)
   .configs(MultiJvm)
 
 // Used for testing events by tag in various environments
