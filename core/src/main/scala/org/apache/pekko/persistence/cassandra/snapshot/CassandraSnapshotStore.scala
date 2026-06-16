@@ -16,6 +16,7 @@ package org.apache.pekko.persistence.cassandra.snapshot
 import com.datastax.oss.driver.api.core.cql._
 import com.datastax.oss.protocol.internal.util.Bytes
 import com.typesafe.config.Config
+import scala.annotation.nowarn
 import org.apache.pekko
 import pekko.{ Done, NotUsed }
 import pekko.actor._
@@ -120,6 +121,7 @@ import scala.util.{ Failure, Success }
     } yield res
   }
 
+  @nowarn("msg=match may not be exhaustive")
   private def loadNAsync(metadata: immutable.Seq[SnapshotMetadata]): Future[Option[SelectedSnapshot]] = metadata match {
     case Seq()     => Future.successful(None) // no snapshots stored
     case md +: mds =>
@@ -371,10 +373,10 @@ import scala.util.{ Failure, Success }
                   case Failure(ex) =>
                     log.warning(
                       "Deserialization of snapshot metadata failed (pid: [{}], seq_nr: [{}], meta_ser_id: [{}], meta_ser_manifest: [{}], ignoring metadata content. Exception: {}",
-                      Array(
+                      Array[AnyRef](
                         row.getString("persistence_id"),
-                        row.getLong("sequence_nr"),
-                        metaSerId,
+                        Long.box(row.getLong("sequence_nr")),
+                        Int.box(metaSerId),
                         metaSerManifest,
                         ex.toString))
                     OptionVal.None
