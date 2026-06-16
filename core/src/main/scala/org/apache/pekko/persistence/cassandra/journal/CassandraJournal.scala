@@ -895,10 +895,10 @@ import scala.util.{ Failure, Success, Try }
                   case Failure(ex) =>
                     log.warning(
                       "Deserialization of event metadata failed (pid: [{}], seq_nr: [{}], meta_ser_id: [{}], meta_ser_manifest: [{}], ignoring metadata content. Exception: {}",
-                      Array(
+                      Array[AnyRef](
                         row.getString("persistence_id"),
-                        row.getLong("sequence_nr"),
-                        metaSerId,
+                        Long.box(row.getLong("sequence_nr")),
+                        Int.box(metaSerId),
                         metaSerManifest,
                         ex.toString))
                     OptionVal.None

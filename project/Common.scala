@@ -36,7 +36,8 @@ object Common extends AutoPlugin {
         "Contributors",
         "dev@pekko.apache.org",
         url("https://github.com/apache/pekko-persistence-cassandra/graphs/contributors")),
-      description := "A Cassandra plugin for Apache Pekko Persistence.")
+      description := "A Cassandra plugin for Apache Pekko Persistence.",
+      excludeLintKeys += projectInfoVersion)
 
   override lazy val projectSettings = Seq(
     projectInfoVersion := (if (isSnapshot.value) "snapshot" else version.value),
