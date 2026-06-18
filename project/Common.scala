@@ -57,7 +57,9 @@ object Common extends AutoPlugin {
           "-Wconf:msg=is no longer supported for vararg splices:s",
           "-Wconf:msg=bad option.*-Xlint:s",
           "-Wconf:msg=bad option.*-Ywarn-dead-code:s") ++
-        (if (CrossVersion.partialVersion(scalaVersion.value).exists(_._2 < 9)) Seq("-Yfuture-lazy-vals", "-Wconf:msg=bad option.*-Yfuture-lazy-vals:s") else Seq.empty)
+        (if (CrossVersion.partialVersion(scalaVersion.value).exists(_._2 < 9))
+           Seq("-Yfuture-lazy-vals", "-Wconf:msg=bad option.*-Yfuture-lazy-vals:s")
+         else Seq.empty)
       else Seq("-Xlint", "-Ywarn-dead-code")
     },
     Compile / console / scalacOptions --= Seq("-deprecation", "-Xfatal-warnings", "-Xlint", "-Ywarn-unused:imports"),
