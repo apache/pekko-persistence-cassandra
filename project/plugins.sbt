@@ -28,4 +28,4 @@ addSbtPlugin("com.lightbend.paradox" % "sbt-paradox" % "0.10.7")
 addSbtPlugin("org.apache.pekko" % "pekko-sbt-paradox" % "1.0.1")
 
 // https://eed3si9n.com/reducing-scaladoc-file-size-with-sbt-salad-days/
-addSbtPlugin("com.eed3si9n" % "sbt-salad-days" % "0.1.0")
+addSbtPlugin("com.eed3si9n" % "sbt-salad-days" % "0.2.0")
