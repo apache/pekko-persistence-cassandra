@@ -128,12 +128,7 @@ trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec with FlightRecordi
 
       muteDeadLetters(
         classOf[pekko.actor.PoisonPill],
-        classOf[pekko.dispatch.sysmsg.DeathWatchNotification],
-        classOf[pekko.remote.transport.AssociationHandle.Disassociated],
-        //        pekko.remote.transport.AssociationHandle.Disassociated.getClass,
-        classOf[pekko.remote.transport.ActorTransportAdapter.DisassociateUnderlying],
-        //        pekko.remote.transport.ActorTransportAdapter.DisassociateUnderlying.getClass,
-        classOf[pekko.remote.transport.AssociationHandle.InboundPayload])(sys)
+        classOf[pekko.dispatch.sysmsg.DeathWatchNotification])(sys)
 
     }
   }
