@@ -42,7 +42,7 @@ object Common extends AutoPlugin {
   override lazy val projectSettings = Seq(
     projectInfoVersion := (if (isSnapshot.value) "snapshot" else version.value),
     crossVersion := CrossVersion.binary,
-    crossScalaVersions := Dependencies.scalaVersions,
+    crossScalaVersions := Dependencies.publishedScalaVersions,
     scalaVersion := Dependencies.scala213Version,
     scalacOptions ++= Seq("-encoding", "UTF-8", "-feature", "-unchecked", "-deprecation"),
     scalacOptions ++= {
@@ -57,7 +57,7 @@ object Common extends AutoPlugin {
           "-Wconf:msg=is no longer supported for vararg splices:s",
           "-Wconf:msg=bad option.*-Xlint:s",
           "-Wconf:msg=bad option.*-Ywarn-dead-code:s") ++
-        (if (CrossVersion.partialVersion(scalaVersion.value).exists(_._2 < 9))
+        (if (scalaVersion.value.startsWith("3.3."))
            Seq("-Yfuture-lazy-vals", "-Wconf:msg=bad option.*-Yfuture-lazy-vals:s")
          else Seq.empty)
       else Seq("-Xlint", "-Ywarn-dead-code")
