@@ -520,7 +520,7 @@ class EventsByTagSpec extends AbstractEventsByTagSpec(EventsByTagSpec.config) {
           probe.request(200)
           for (n <- 1 to 100) {
             val Expected = s"yellow-$n"
-            probe.expectNextPF { case e @ EventEnvelope(_, "e", _, Expected) => e }
+            probe.expectNextPF { case env @ EventEnvelope(_, "e", _, Expected) => env }
           }
           probe.expectNoMessage(waitTime)
 
@@ -530,7 +530,7 @@ class EventsByTagSpec extends AbstractEventsByTagSpec(EventsByTagSpec.config) {
           for (n <- 101 to 200) {
             val Expected = s"yellow-$n"
             withClue(s"Expected: $Expected") {
-              probe.expectNextPF { case e @ EventEnvelope(_, "e", _, Expected) => e }
+              probe.expectNextPF { case env @ EventEnvelope(_, "e", _, Expected) => env }
             }
           }
           probe.expectNoMessage(waitTime)
@@ -1358,7 +1358,6 @@ object EventsByTagDisabledSpec {
 
 class EventsByTagPersistenceIdCleanupSpec extends AbstractEventsByTagSpec(EventsByTagSpec.persistenceIdCleanupConfig) {
 
-  private val newPersistenceIdScan: FiniteDuration = 500.millis
   private val cleanupPeriod: FiniteDuration = 1.second
 
   private val logFilters = Set("cleanup-old-persistence-ids has been set")

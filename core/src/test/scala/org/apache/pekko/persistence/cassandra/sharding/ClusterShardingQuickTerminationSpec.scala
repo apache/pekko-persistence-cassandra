@@ -72,6 +72,7 @@ object ClusterShardingQuickTerminationSpec {
   val extractShardId: ShardRegion.ExtractShardId = {
     case EntityEnvelope(id, _) => (id % numberOfShards).toString
     case Get(id)               => (id % numberOfShards).toString
+    case msg                   => throw new IllegalArgumentException(s"Unexpected message: $msg")
   }
 }
 
