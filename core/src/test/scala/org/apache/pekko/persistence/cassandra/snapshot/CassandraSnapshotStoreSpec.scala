@@ -16,6 +16,7 @@ package org.apache.pekko.persistence.cassandra.snapshot
 import java.lang.{ Long => JLong }
 import java.lang.{ Integer => JInteger }
 import java.nio.ByteBuffer
+import java.nio.charset.StandardCharsets
 
 import org.apache.pekko
 import pekko.persistence.SnapshotProtocol._
@@ -91,7 +92,7 @@ class CassandraSnapshotStoreSpec
           123L: JLong,
           serId,
           "",
-          ByteBuffer.wrap("fail-1".getBytes("UTF-8"))))
+          ByteBuffer.wrap("fail-1".getBytes(StandardCharsets.UTF_8))))
 
       cluster.execute(
         SimpleStatement.newInstance(
@@ -101,7 +102,7 @@ class CassandraSnapshotStoreSpec
           124L: JLong,
           serId,
           "",
-          ByteBuffer.wrap("fail-2".getBytes("UTF-8"))))
+          ByteBuffer.wrap("fail-2".getBytes(StandardCharsets.UTF_8))))
 
       // load most recent snapshot, first two attempts will fail ...
       snapshotStore.tell(LoadSnapshot(pid, SnapshotSelectionCriteria.Latest, Long.MaxValue), probe.ref)
@@ -127,7 +128,7 @@ class CassandraSnapshotStoreSpec
           123L: JLong,
           serId,
           "",
-          ByteBuffer.wrap("fail-1".getBytes("UTF-8"))))
+          ByteBuffer.wrap("fail-1".getBytes(StandardCharsets.UTF_8))))
       cluster.execute(
         SimpleStatement.newInstance(
           writeSnapshot(withMeta = false),
@@ -136,7 +137,7 @@ class CassandraSnapshotStoreSpec
           124L: JLong,
           serId,
           "",
-          ByteBuffer.wrap("fail-2".getBytes("UTF-8"))))
+          ByteBuffer.wrap("fail-2".getBytes(StandardCharsets.UTF_8))))
       cluster.execute(
         SimpleStatement.newInstance(
           writeSnapshot(withMeta = false),
@@ -145,7 +146,7 @@ class CassandraSnapshotStoreSpec
           125L: JLong,
           serId,
           "",
-          ByteBuffer.wrap("fail-3".getBytes("UTF-8"))))
+          ByteBuffer.wrap("fail-3".getBytes(StandardCharsets.UTF_8))))
 
       // load most recent snapshot, first three attempts will fail ...
       snapshotStore.tell(LoadSnapshot(pid, SnapshotSelectionCriteria.Latest, Long.MaxValue), probe.ref)
