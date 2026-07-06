@@ -381,7 +381,7 @@ class CassandraIntegrationSpec extends CassandraSpec(config) with ImplicitSender
       val r = system.actorOf(Props(new ProcessorA(persistenceId, self)))
 
       r ! "b"
-      expectMsgAllOf("b", 2L, false) // no longer re-using sequence numbers
+      expectMsgAllOf[Any]("b", 2L, false) // no longer re-using sequence numbers
     }
   }
 }

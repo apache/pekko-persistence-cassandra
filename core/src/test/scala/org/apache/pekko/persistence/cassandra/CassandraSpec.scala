@@ -40,6 +40,7 @@ import org.scalatest.matchers.should.Matchers
 import scala.collection.immutable
 import scala.concurrent.duration._
 import scala.util.control.NonFatal
+import scala.annotation.nowarn
 
 object CassandraSpec {
   def getCallerName(clazz: Class[?]): String = {
@@ -98,6 +99,7 @@ object CassandraSpec {
 /**
  * Picks a free port for Cassandra before starting the ActorSystem
  */
+@nowarn("msg=getClass not selected from this instance")
 abstract class CassandraSpec(
     config: Config = CassandraLifecycle.config,
     val journalName: String = getCallerName(getClass),

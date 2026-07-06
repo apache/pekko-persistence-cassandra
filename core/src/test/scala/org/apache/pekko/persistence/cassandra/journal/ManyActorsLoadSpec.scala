@@ -38,7 +38,6 @@ object ManyActorsLoadSpec {
 
   final case class Init(numberOfEvents: Int)
   case object InitDone
-  private final case class Next(remaining: Int)
   final case class Delete(seqNr: Long)
   case object GetMetrics
   final case class Metrics(
