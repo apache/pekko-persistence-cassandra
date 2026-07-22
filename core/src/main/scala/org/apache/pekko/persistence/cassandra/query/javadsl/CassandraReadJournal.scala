@@ -118,7 +118,7 @@ class CassandraReadJournal(
    * The tags must be defined in the `tags` section of the `pekko.persistence.cassandra` configuration.
    *
    * You can use [[pekko.persistence.query.NoOffset]] to retrieve all events with a given tag or
-   * retrieve a subset of all events by specifying a [[TimeBasedUUID]] `offset`.
+   * retrieve a subset of all events by specifying a [[org.apache.pekko.persistence.query.TimeBasedUUID TimeBasedUUID]] `offset`.
    *
    * The offset of each event is provided in the streamed envelopes returned,
    * which makes it possible to resume the stream at a later point from a given offset.
