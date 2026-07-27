@@ -64,7 +64,19 @@ jobs:
         uses: coursier/cache-action@95e5b1029b6b86e7bac033ee44a0697d8a527d2d # v8.1.1
 
       - name: Start ${{ matrix.container }}
-        run: docker compose up -d ${{ matrix.container }}
+        run: |
+          # Retry docker compose up to handle transient Docker Hub timeouts/rate limits
+          for attempt in 1 2 3; do
+            echo "Attempt $attempt: docker compose up -d ${{ matrix.container }}"
+            if docker compose up -d ${{ matrix.container }}; then
+              exit 0
+            fi
+            echo "Attempt $attempt failed, retrying in 15s..."
+            docker compose down --timeout 5 2>/dev/null || true
+            sleep 15
+          done
+          echo "All attempts failed"
+          exit 1
 
       - name: Wait for ${{ matrix.container }} to be ready
         run: |
