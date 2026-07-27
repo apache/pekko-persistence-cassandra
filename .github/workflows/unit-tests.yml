@@ -110,7 +110,32 @@ jobs:
               sleep 5
             done
           '
-          echo "${{ matrix.container }} is ready."
+          echo "${{ matrix.container }} is healthy."
+
+          # Docker healthcheck only confirms cqlsh can connect; the database may
+          # still be initialising internally (compaction, schema, etc.). Verify
+          # it can actually execute a DDL statement before handing off to sbt.
+          # The matrix container (e.g. scylladb-latest) is an alpine wrapper with
+          # no cqlsh; exec into the real database service container instead.
+          case "${{ matrix.container }}" in
+            scylladb-latest) db_svc=scylladb-service ;;
+            cassandra-latest) db_svc=cassandra-service ;;
+            cassandra3) db_svc=cassandra3-service ;;
+            cassandra2) db_svc=cassandra2-service ;;
+            *) db_svc=${{ matrix.container }} ;;
+          esac
+          echo "Verifying database ($db_svc) is ready for writes..."
+          timeout 120 bash -c '
+            until docker compose exec -T "$db_svc" cqlsh -e "
+              CREATE KEYSPACE IF EXISTS ci_readiness_test
+                WITH replication = { '\''class'\'' : '\''SimpleStrategy'\'' , '\''replication_factor'\'' : 1 };
+              DROP KEYSPACE ci_readiness_test;
+            " 2>/dev/null; do
+              echo "  write probe failed, retrying in 5s..."
+              sleep 5
+            done
+          ' db_svc="$db_svc"
+          echo "${{ matrix.container }} is ready for writes."
 
       - name: Test against ${{ matrix.container }}
         run: |-
