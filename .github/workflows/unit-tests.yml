@@ -63,10 +63,84 @@ jobs:
       - name: Cache Coursier cache
         uses: coursier/cache-action@95e5b1029b6b86e7bac033ee44a0697d8a527d2d # v8.1.1
 
+      - name: Start ${{ matrix.container }}
+        run: |
+          # Retry docker compose up to handle transient Docker Hub timeouts/rate limits
+          for attempt in 1 2 3; do
+            echo "Attempt $attempt: docker compose up -d ${{ matrix.container }}"
+            if docker compose up -d ${{ matrix.container }}; then
+              exit 0
+            fi
+            echo "Attempt $attempt failed, retrying in 15s..."
+            docker compose down --timeout 5 2>/dev/null || true
+            sleep 15
+          done
+          echo "All attempts failed"
+          exit 1
+
+      - name: Wait for ${{ matrix.container }} to be ready
+        run: |
+          echo "Waiting for ${{ matrix.container }} to become healthy..."
+          # The matrix container (e.g. scylladb-latest) is an alpine wrapper with no healthcheck.
+          # The actual database container (e.g. scylladb-service) is the dependency with the healthcheck.
+          # Find it by looking for any compose container that has a health status.
+          timeout 300 bash -c '
+            while true; do
+              healthy=false
+              for cid in $(docker compose ps -q 2>/dev/null); do
+                status=$(docker inspect --format="{{if .State.Health}}{{.State.Health.Status}}{{end}}" "$cid" 2>/dev/null)
+                if [ -z "$status" ]; then
+                  continue
+                fi
+                name=$(docker inspect --format="{{.Name}}" "$cid" 2>/dev/null | sed "s/^\///")
+                echo "  $name: $status"
+                if [ "$status" = "healthy" ]; then
+                  healthy=true
+                  break
+                fi
+                if [ "$status" = "unhealthy" ]; then
+                  echo "Container $name is unhealthy! Logs:"
+                  docker compose logs --tail 50
+                  exit 1
+                fi
+              done
+              if [ "$healthy" = "true" ]; then
+                break
+              fi
+              sleep 5
+            done
+          '
+          echo "${{ matrix.container }} is healthy."
+
+          # Docker healthcheck only confirms cqlsh can connect; the database may
+          # still be initialising internally (compaction, schema, etc.). Verify
+          # it can actually execute a DDL statement before handing off to sbt.
+          # The matrix container (e.g. scylladb-latest) is an alpine wrapper with
+          # no cqlsh; exec into the real database service container instead.
+          case "${{ matrix.container }}" in
+            scylladb-latest) db_svc=scylladb-service ;;
+            cassandra-latest) db_svc=cassandra-service ;;
+            cassandra3) db_svc=cassandra3-service ;;
+            cassandra2) db_svc=cassandra2-service ;;
+            *) db_svc=${{ matrix.container }} ;;
+          esac
+          echo "Verifying database ($db_svc) is ready for writes..."
+          timeout 120 bash -c '
+            until docker compose exec -T "$db_svc" cqlsh -e "
+              CREATE KEYSPACE IF EXISTS ci_readiness_test
+                WITH replication = { '\''class'\'' : '\''SimpleStrategy'\'' , '\''replication_factor'\'' : 1 };
+              DROP KEYSPACE ci_readiness_test;
+            " 2>/dev/null; do
+              echo "  write probe failed, retrying in 5s..."
+              sleep 5
+            done
+          ' db_svc="$db_svc"
+          echo "${{ matrix.container }} is ready for writes."
+
       - name: Test against ${{ matrix.container }}
         run: |-
           scala_version="$(bash .github/scripts/resolve-scala-version.sh "${{ matrix.scalaVersion }}")"
-          docker compose up -d ${{ matrix.container }} && sbt "++${scala_version}!" ${{matrix.test}}
+          sbt "++${scala_version}!" ${{matrix.test}}
 
   mima:
     name: MiMa check
