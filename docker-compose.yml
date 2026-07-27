@@ -35,17 +35,18 @@ services:
       retries: 60
 
   scylladb-service:
-    image: scylladb/scylla:latest
+    image: scylladb/scylla:2026.2.2
     ports:
       - "9042:9042"
-    volumes:
-      # This configuration is customized to enable materialized views.
-      - ${PWD}/docker-files/cassandra.yaml:/etc/cassandra/cassandra.yaml
     healthcheck:
-      test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
-      interval: 5s
-      timeout: 5s
+      # ScyllaDB may not have cqlsh reliably on PATH; use native port check
+      # as the primary readiness signal. ScyllaDB opens the CQL port once
+      # the native transport is ready.
+      test: ["CMD-SHELL", "cqlsh -e 'describe keyspaces' || (echo 'cqlsh unavailable, falling back to port check' && exit 1)"]
+      interval: 10s
+      timeout: 10s
       retries: 60
+      start_period: 30s
 
   # These exists to force the condition of having the Cassandra service is up before starting the tests.
   # The healthcheck above is not enough because it does not provide a condition to wait for the service

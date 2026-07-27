@@ -63,10 +63,47 @@ jobs:
       - name: Cache Coursier cache
         uses: coursier/cache-action@95e5b1029b6b86e7bac033ee44a0697d8a527d2d # v8.1.1
 
+      - name: Start ${{ matrix.container }}
+        run: docker compose up -d ${{ matrix.container }}
+
+      - name: Wait for ${{ matrix.container }} to be ready
+        run: |
+          echo "Waiting for ${{ matrix.container }} to become healthy..."
+          # The matrix container (e.g. scylladb-latest) is an alpine wrapper with no healthcheck.
+          # The actual database container (e.g. scylladb-service) is the dependency with the healthcheck.
+          # Find it by looking for any compose container that has a health status.
+          timeout 300 bash -c '
+            while true; do
+              healthy=false
+              for cid in $(docker compose ps -q 2>/dev/null); do
+                status=$(docker inspect --format="{{if .State.Health}}{{.State.Health.Status}}{{end}}" "$cid" 2>/dev/null)
+                if [ -z "$status" ]; then
+                  continue
+                fi
+                name=$(docker inspect --format="{{.Name}}" "$cid" 2>/dev/null | sed "s/^\///")
+                echo "  $name: $status"
+                if [ "$status" = "healthy" ]; then
+                  healthy=true
+                  break
+                fi
+                if [ "$status" = "unhealthy" ]; then
+                  echo "Container $name is unhealthy! Logs:"
+                  docker compose logs --tail 50
+                  exit 1
+                fi
+              done
+              if [ "$healthy" = "true" ]; then
+                break
+              fi
+              sleep 5
+            done
+          '
+          echo "${{ matrix.container }} is ready."
+
       - name: Test against ${{ matrix.container }}
         run: |-
           scala_version="$(bash .github/scripts/resolve-scala-version.sh "${{ matrix.scalaVersion }}")"
-          docker compose up -d ${{ matrix.container }} && sbt "++${scala_version}!" ${{matrix.test}}
+          sbt "++${scala_version}!" ${{matrix.test}}
 
   mima:
     name: MiMa check
