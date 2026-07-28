@@ -35,7 +35,7 @@ services:
       retries: 60
 
   scylladb-service:
-    image: scylladb/scylla:latest
+    image: scylladb/scylla:2026.1.6
     ports:
       - "9042:9042"
     volumes:
