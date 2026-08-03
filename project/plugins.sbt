@@ -11,7 +11,7 @@ addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.11.7")
 
 addSbtPlugin("com.github.sbt" % "sbt-header" % "5.11.0")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.6.2")
-addSbtPlugin("com.github.sbt" % "sbt-java-formatter" % "0.12.0")
+addSbtPlugin("com.github.sbt" % "sbt-java-formatter" % "0.13.1")
 addSbtPlugin("com.github.sbt" % "sbt-multi-jvm" % "0.7.0")
 addSbtPlugin("com.github.sbt" % "sbt-dynver" % "5.1.1")
 addSbtPlugin("com.github.pjfanning" % "sbt-pekko-build" % "0.4.7")
