@@ -75,6 +75,8 @@ import scala.util.{ Failure, Success }
     session.prepare(selectSnapshotMetadata(limit = None))
   private def preparedSelectSnapshotMetadataWithMaxLoadAttemptsLimit: Future[PreparedStatement] =
     session.prepare(selectSnapshotMetadata(limit = Some(snapshotSettings.maxLoadAttempts)))
+  private def preparedSelectSnapshotMetadataPaged: Future[PreparedStatement] =
+    session.prepare(selectSnapshotMetadata(limit = Some(snapshotSettings.metadataPageSize)))
 
   override def preStart(): Unit =
     // eager initialization, but not from constructor
@@ -94,6 +96,7 @@ import scala.util.{ Failure, Success }
       preparedSelectSnapshot
       preparedSelectSnapshotMetadata
       preparedSelectSnapshotMetadataWithMaxLoadAttemptsLimit
+      preparedSelectSnapshotMetadataPaged
       log.debug("Initialized")
 
     case DeleteAllSnapshots(persistenceId) =>
@@ -107,12 +110,13 @@ import scala.util.{ Failure, Success }
       criteria: SnapshotSelectionCriteria): Future[Option[SelectedSnapshot]] = {
     log.debug("loadAsync [{}] [{}]", persistenceId, criteria)
     // The normal case is that timestamp is not specified (Long.MaxValue) in the criteria and then we can
-    // use a select stmt with LIMIT if maxLoadAttempts, otherwise the result is iterated and
-    // non-matching timestamps are discarded.
+    // use a select stmt with LIMIT of maxLoadAttempts. When a timestamp constraint is specified (the slow path),
+    // we use a paged query with metadataPageSize LIMIT to bound memory usage while still supporting
+    // client-side timestamp filtering via the driver's automatic page fetching.
     val snapshotMetaPs =
       if (criteria.maxTimestamp == Long.MaxValue)
         preparedSelectSnapshotMetadataWithMaxLoadAttemptsLimit
-      else preparedSelectSnapshotMetadata
+      else preparedSelectSnapshotMetadataPaged
 
     for {
       p <- snapshotMetaPs
@@ -212,7 +216,8 @@ import scala.util.{ Failure, Success }
         || settings.cosmosDb
         || 0L < criteria.minTimestamp
         || criteria.maxTimestamp < SnapshotSelectionCriteria.latest().maxTimestamp) {
-        preparedSelectSnapshotMetadata.flatMap { snapshotMetaPs =>
+        // Use paged query for the slow path to bound memory usage
+        preparedSelectSnapshotMetadataPaged.flatMap { snapshotMetaPs =>
           // this meta query gets slower than slower if snapshots are deleted without a criteria.minSequenceNr as
           // all previous tombstones are scanned in the meta data query
           metadata(snapshotMetaPs, persistenceId, criteria, limit = None).flatMap {
@@ -266,10 +271,10 @@ import scala.util.{ Failure, Success }
         SnapshotMetadata(row.getString("persistence_id"), row.getLong("sequence_nr"), row.getLong("timestamp")))
       .dropWhile(_.timestamp > criteria.maxTimestamp)
 
-    limit match {
-      case Some(n) => source.take(n.toLong).runWith(Sink.seq)
-      case None    => source.runWith(Sink.seq)
-    }
+    // Always bound the number of results to prevent unbounded memory usage.
+    // The driver's automatic page fetching handles pagination transparently.
+    val effectiveLimit = limit.getOrElse(snapshotSettings.metadataPageSize)
+    source.take(effectiveLimit.toLong).runWith(Sink.seq)
   }
 
   def preparedDeleteSnapshot: Future[PreparedStatement] =

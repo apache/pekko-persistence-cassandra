@@ -24,6 +24,7 @@ import org.scalatest.prop.TableDrivenPropertyChecks._
 import scala.util.Random
 
 import pekko.persistence.cassandra.journal.JournalSettings
+import pekko.persistence.cassandra.snapshot.SnapshotSettings
 
 class CassandraPluginSettingsSpec
     extends TestKit(ActorSystem("CassandraPluginConfigSpec"))
@@ -146,6 +147,30 @@ class CassandraPluginSettingsSpec
 
       val config = new JournalSettings(system, configWithFalseTablesAutocreate)
       config.tablesAutoCreate must be(false)
+    }
+  }
+
+  "A CassandraSnapshotSettings" must {
+
+    "set the metadata page size from config" in {
+      val config = new SnapshotSettings(system, defaultConfig)
+      config.metadataPageSize must be(100)
+    }
+
+    "set the max load attempts from config" in {
+      val config = new SnapshotSettings(system, defaultConfig)
+      config.maxLoadAttempts must be(3)
+    }
+
+    "allow overriding metadata page size" in {
+      lazy val customConfig =
+        ConfigFactory
+          .parseString("""
+          |snapshot.metadata-page-size = 250
+        """.stripMargin)
+          .withFallback(defaultConfig)
+      val config = new SnapshotSettings(system, customConfig)
+      config.metadataPageSize must be(250)
     }
   }
 
