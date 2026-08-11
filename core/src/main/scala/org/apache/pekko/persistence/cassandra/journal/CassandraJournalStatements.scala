@@ -320,6 +320,9 @@ import scala.jdk.FutureConverters._
       WHERE persistence_id = ?
     """
 
+  def addHighestSequenceNrColumn =
+    s"ALTER TABLE $metadataTableName ADD highest_sequence_nr bigint"
+
   def deleteDeletedTo =
     s"""
       DELETE FROM $metadataTableName where persistence_id = ?
@@ -374,6 +377,7 @@ import scala.jdk.FutureConverters._
         _ <- keyspace
         _ <- session.executeAsync(createTable).asScala
         _ <- session.executeAsync(createMetadataTable).asScala
+        _ <- migrateMetadataSchema(session, log)
         _ <- {
           if (settings.journalSettings.supportAllPersistenceIds)
             session.executeAsync(createAllPersistenceIdsTable).asScala
@@ -400,5 +404,28 @@ import scala.jdk.FutureConverters._
     }
 
     done
+  }
+
+  /**
+   * Migrate the metadata table schema by adding new columns if they don't already exist.
+   * If auto-migrate-schema is disabled, this is a no-op.
+   * Errors are logged but don't fail the initialization.
+   */
+  private def migrateMetadataSchema(session: CqlSession, log: LoggingAdapter)(
+      implicit ec: ExecutionContext): Future[Done] = {
+    if (journalSettings.autoMigrateSchema) {
+      session
+        .executeAsync(addHighestSequenceNrColumn)
+        .asScala
+        .map(_ => Done)
+        .recover {
+          case _: com.datastax.oss.driver.api.core.servererrors.InvalidQueryException =>
+            // Column already exists - this is expected on subsequent startups
+            Done
+          case e =>
+            log.warning("Failed to add highest_sequence_nr column to metadata table: {}", e)
+            Done
+        }
+    } else FutureDone
   }
 }

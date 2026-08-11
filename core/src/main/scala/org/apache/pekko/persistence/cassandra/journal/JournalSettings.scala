@@ -35,6 +35,7 @@ import com.typesafe.config.Config
 
   val keyspaceAutoCreate: Boolean = journalConfig.getBoolean("keyspace-autocreate")
   val tablesAutoCreate: Boolean = journalConfig.getBoolean("tables-autocreate")
+  val autoMigrateSchema: Boolean = journalConfig.getBoolean("auto-migrate-schema")
 
   val keyspace: String = journalConfig.getString("keyspace")
 
