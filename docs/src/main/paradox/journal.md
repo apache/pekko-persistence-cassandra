@@ -209,6 +209,29 @@ datastax-java-driver.profiles {
 }
 ```
 
+### Circuit breaker
+
+When Cassandra becomes unavailable, each write attempt will wait for the full timeout before failing.
+This can cause cascading failures — thread pool exhaustion, growing queues, and delayed failure detection.
+
+The circuit breaker prevents this by failing fast when Cassandra is known to be unavailable:
+
+```hocon
+pekko.persistence.cassandra.journal.circuit-breaker {
+  max-failures = 10
+  reset-timeout = 30s
+  call-timeout = 20s
+}
+```
+
+- `max-failures`: Number of consecutive write failures before the circuit opens. Set to 0 to disable (the default).
+- `reset-timeout`: How long to wait after the circuit opens before allowing a test write.
+- `call-timeout`: Timeout for individual write calls through the circuit breaker.
+
+When the circuit is open, writes fail immediately with `CircuitBreakerOpenException` without attempting to contact Cassandra.
+After `reset-timeout`, the circuit enters a half-open state and allows a single test write. If it succeeds, the circuit closes
+and normal writes resume. If it fails, the circuit opens again.
+
 ## Event deletion and retention
 
 In applications with an Event Sourcing model of persistence, an idealized journal is _append-only_: events are never deleted.

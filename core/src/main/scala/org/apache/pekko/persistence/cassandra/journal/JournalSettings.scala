@@ -23,6 +23,8 @@ import pekko.persistence.cassandra.compaction.CassandraCompactionStrategy
 import pekko.persistence.cassandra.getListFromConfig
 import com.typesafe.config.Config
 
+import scala.concurrent.duration._
+
 /** INTERNAL API */
 @InternalStableApi
 @InternalApi private[pekko] class JournalSettings(system: ActorSystem, config: Config)
@@ -63,4 +65,20 @@ import com.typesafe.config.Config
 
   val coordinatedShutdownOnError: Boolean = config.getBoolean("coordinated-shutdown-on-error")
 
+  val circuitBreakerSettings: CircuitBreakerSettings = {
+    val cbConfig = journalConfig.getConfig("circuit-breaker")
+    CircuitBreakerSettings(
+      maxFailures = cbConfig.getInt("max-failures"),
+      resetTimeout = cbConfig.getDuration("reset-timeout").toMillis.millis,
+      callTimeout = cbConfig.getDuration("call-timeout").toMillis.millis)
+  }
+
+}
+
+/** INTERNAL API */
+@InternalApi private[pekko] final case class CircuitBreakerSettings(
+    maxFailures: Int,
+    resetTimeout: FiniteDuration,
+    callTimeout: FiniteDuration) {
+  val enabled: Boolean = maxFailures > 0
 }

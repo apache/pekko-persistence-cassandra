@@ -147,6 +147,38 @@ class CassandraPluginSettingsSpec
       val config = new JournalSettings(system, configWithFalseTablesAutocreate)
       config.tablesAutoCreate must be(false)
     }
+
+    "have circuit breaker disabled by default" in {
+      val config = new JournalSettings(system, defaultConfig)
+      val cb = config.circuitBreakerSettings
+      cb.enabled must be(false)
+      cb.maxFailures must be(0)
+    }
+
+    "parse circuit breaker settings when enabled" in {
+      val configWithCircuitBreaker = ConfigFactory.parseString("""
+          |journal.circuit-breaker.max-failures = 5
+          |journal.circuit-breaker.reset-timeout = 60s
+          |journal.circuit-breaker.call-timeout = 15s
+        """.stripMargin).withFallback(defaultConfig)
+      val config = new JournalSettings(system, configWithCircuitBreaker)
+      val cb = config.circuitBreakerSettings
+      cb.enabled must be(true)
+      cb.maxFailures must be(5)
+      cb.resetTimeout must be(scala.concurrent.duration.DurationInt(60).seconds)
+      cb.callTimeout must be(scala.concurrent.duration.DurationInt(15).seconds)
+    }
+
+    "allow overriding circuit breaker max-failures" in {
+      val configWithCircuitBreaker = ConfigFactory.parseString("""
+          |journal.circuit-breaker.max-failures = 3
+        """.stripMargin).withFallback(defaultConfig)
+      val config = new JournalSettings(system, configWithCircuitBreaker)
+      val cb = config.circuitBreakerSettings
+      cb.enabled must be(true)
+      cb.maxFailures must be(3)
+      cb.resetTimeout must be(scala.concurrent.duration.DurationInt(30).seconds)
+    }
   }
 
 }

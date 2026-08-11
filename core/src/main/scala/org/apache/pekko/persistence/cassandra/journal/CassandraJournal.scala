@@ -23,7 +23,7 @@ import pekko.actor.SupervisorStrategy.Stop
 import pekko.actor._
 import pekko.annotation.{ DoNotInherit, InternalApi, InternalStableApi }
 import pekko.event.{ Logging, LoggingAdapter }
-import pekko.pattern.{ ask, pipe }
+import pekko.pattern.{ ask, pipe, CircuitBreaker }
 import pekko.persistence._
 import pekko.persistence.cassandra._
 import pekko.persistence.cassandra.Extractors
@@ -113,6 +113,21 @@ import scala.util.{ Failure, Success, Try }
 
   private val tagRecovery: Option[CassandraTagRecovery] =
     tagWrites.map(ref => new CassandraTagRecovery(context.system, session, settings, taggedPreparedStatements, ref))
+
+  private val writeCircuitBreaker: Option[CircuitBreaker] = {
+    val cbSettings = settings.journalSettings.circuitBreakerSettings
+    if (cbSettings.enabled) {
+      val cb = new CircuitBreaker(
+        context.system.scheduler,
+        maxFailures = cbSettings.maxFailures,
+        callTimeout = cbSettings.callTimeout,
+        resetTimeout = cbSettings.resetTimeout)(context.dispatcher)
+      cb.onOpen(log.warning("Cassandra write circuit breaker opened after {} failures", cbSettings.maxFailures))
+      cb.onHalfOpen(log.info("Cassandra write circuit breaker half-open, testing Cassandra availability"))
+      cb.onClose(log.info("Cassandra write circuit breaker closed, Cassandra writes resumed"))
+      Some(cb)
+    } else None
+  }
 
   private val preparedWriteMessage: RetryableFutureEval[PreparedStatement] =
     RetryableFutureEval(() => session.prepare(statements.journalStatements.writeMessage(withMeta = false)))
@@ -701,10 +716,13 @@ import scala.util.{ Failure, Success, Try }
   }
 
   private def executeBatch(body: BatchStatement => BatchStatement): Future[Unit] = {
-    var batch =
-      new BatchStatementBuilder(BatchType.UNLOGGED).build().setExecutionProfileName(journalSettings.writeProfile)
-    batch = body(batch)
-    session.underlying().flatMap(_.executeAsync(batch).asScala).map(_ => ())
+    val doExecute: Future[Unit] = {
+      var batch =
+        new BatchStatementBuilder(BatchType.UNLOGGED).build().setExecutionProfileName(journalSettings.writeProfile)
+      batch = body(batch)
+      session.underlying().flatMap(_.executeAsync(batch).asScala).map(_ => ())
+    }
+    writeCircuitBreaker.fold(doExecute)(_.withCircuitBreaker(doExecute))
   }
 
   private def selectOne[T <: Statement[T]](stmt: Statement[T]): Future[Option[Row]] = {
@@ -715,7 +733,9 @@ import scala.util.{ Failure, Success, Try }
     partitionNr * journalSettings.targetPartitionSize + 1
 
   private def execute[T <: Statement[T]](stmt: Statement[T]): Future[Unit] = {
-    session.executeWrite(stmt.setExecutionProfileName(journalSettings.writeProfile)).map(_ => ())
+    val doExecute: Future[Unit] =
+      session.executeWrite(stmt.setExecutionProfileName(journalSettings.writeProfile)).map(_ => ())
+    writeCircuitBreaker.fold(doExecute)(_.withCircuitBreaker(doExecute))
   }
 
   // TODO this serialises and re-serialises the messages for fixing tag_views
