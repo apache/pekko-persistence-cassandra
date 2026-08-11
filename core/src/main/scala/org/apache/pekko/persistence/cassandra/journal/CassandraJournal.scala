@@ -125,6 +125,13 @@ import scala.util.{ Failure, Success, Try }
   private val preparedSelectHighestSequenceNr: RetryableFutureEval[PreparedStatement] =
     RetryableFutureEval(() => session.prepare(statements.journalStatements.selectHighestSequenceNr))
 
+  private val preparedSelectHighestSequenceNrFromMetadata: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() =>
+      session.prepare(statements.journalStatements.selectHighestSequenceNrFromMetadata))
+
+  private val preparedUpdateHighestSequenceNr: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.updateHighestSequenceNr))
+
   private val deletesNotSupportedException: RetryableFutureEval[PreparedStatement] =
     RetryableFutureEval(() =>
       Future.failed(new IllegalArgumentException(s"Deletes not supported because config support-deletes=off")))
@@ -366,10 +373,12 @@ import scala.util.{ Failure, Success, Try }
     // insert into the all_persistence_ids table for the first event, used by persistenceIds query
     require(atomicWrites.nonEmpty)
     require(atomicWrites.head.payload.nonEmpty)
+    val persistenceId: String = atomicWrites.head.persistenceId
+    val highestSequenceNr: Long = atomicWrites.flatMap(_.payload).map(_.sequenceNr).max
+
     val allPersistenceId =
       if (settings.journalSettings.supportAllPersistenceIds && atomicWrites.head.payload.head.sequenceNr == 1L)
-        preparedInsertIntoAllPersistenceIds.futureResult().map(_.bind(atomicWrites.head.persistenceId)).flatMap(
-          execute(_))
+        preparedInsertIntoAllPersistenceIds.futureResult().map(_.bind(persistenceId)).flatMap(execute(_))
       else
         FutureUnit
 
@@ -385,6 +394,17 @@ import scala.util.{ Failure, Success, Try }
             executeBatch(batch => stmts.foldLeft(batch) { case (acc, next) => acc.add(next) })
           }
       }
+    }.flatMap { _ =>
+      updateHighestSequenceNrInMetadata(persistenceId, highestSequenceNr)
+    }
+  }
+
+  private def updateHighestSequenceNrInMetadata(persistenceId: String, sequenceNr: Long): Future[Unit] = {
+    preparedUpdateHighestSequenceNr.futureResult().flatMap { ps =>
+      val bound = ps.bind(sequenceNr: JLong, persistenceId)
+      session.underlying().flatMap(_.executeAsync(bound).asScala).map(_ => ())
+    }.recover {
+      case _: Exception => ()
     }
   }
 
@@ -492,10 +512,34 @@ import scala.util.{ Failure, Success, Try }
 
   private def asyncReadHighestSequenceNrInternal(persistenceId: String, fromSequenceNr: Long): Future[Long] = {
     asyncHighestDeletedSequenceNumber(persistenceId).flatMap { h =>
-      asyncFindHighestSequenceNr(
-        persistenceId,
-        math.max(fromSequenceNr, h),
-        settings.journalSettings.targetPartitionSize)
+      val effectiveFrom = math.max(fromSequenceNr, h)
+      // Try reading from metadata first (fast path for new data)
+      asyncHighestSequenceNrFromMetadata(persistenceId).flatMap {
+        case Some(metaHighest) if metaHighest >= effectiveFrom =>
+          Future.successful(metaHighest)
+        case _ =>
+          // Fall back to DESC scan (migration path for existing data without highest_sequence_nr)
+          asyncFindHighestSequenceNr(
+            persistenceId,
+            effectiveFrom,
+            settings.journalSettings.targetPartitionSize)
+      }
+    }
+  }
+
+  private def asyncHighestSequenceNrFromMetadata(persistenceId: String): Future[Option[Long]] = {
+    preparedSelectHighestSequenceNrFromMetadata.futureResult().flatMap { ps =>
+      val bound = ps.bind(persistenceId)
+      session.underlying().flatMap(_.executeAsync(bound).asScala).map { rs =>
+        val row = rs.one()
+        if (row != null && !row.isNull("highest_sequence_nr"))
+          Some(row.getLong("highest_sequence_nr"))
+        else
+          None
+      }
+    }.recover {
+      // Column may not exist yet in older schemas
+      case _: Exception => None
     }
   }
 

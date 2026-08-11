@@ -112,6 +112,7 @@ import scala.jdk.FutureConverters._
      |CREATE TABLE IF NOT EXISTS $metadataTableName(
      |  persistence_id text PRIMARY KEY,
      |  deleted_to bigint,
+     |  highest_sequence_nr bigint,
      |  properties map<text,text>)
     """.stripMargin.trim
 
@@ -305,6 +306,18 @@ import scala.jdk.FutureConverters._
     s"""
       INSERT INTO $metadataTableName (persistence_id, deleted_to)
       VALUES ( ?, ? )
+    """
+
+  def selectHighestSequenceNrFromMetadata =
+    s"""
+      SELECT highest_sequence_nr FROM $metadataTableName WHERE
+        persistence_id = ?
+    """
+
+  def updateHighestSequenceNr =
+    s"""
+      UPDATE $metadataTableName SET highest_sequence_nr = ?
+      WHERE persistence_id = ?
     """
 
   def deleteDeletedTo =
