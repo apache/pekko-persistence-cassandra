@@ -94,8 +94,20 @@ To activate the snapshot-store plugin, add the following line to your Pekko `app
     pekko.persistence.snapshot-store.plugin = "pekko.persistence.cassandra.snapshot"
 
 This will run the snapshot store with its default settings. The default settings can be changed with the configuration
-properties defined in @ref:[reference.conf](configuration.md#default-configuration). Journal configuration is under 
+properties defined in @ref:[reference.conf](configuration.md#default-configuration). Snapshot configuration is under 
 `pekko.persistence.cassandra.snapshot`.
+
+### Metadata page size
+
+When loading or deleting snapshots, the plugin queries the snapshot metadata table. For persistence IDs with many
+snapshots, this query can return a large number of rows. The `metadata-page-size` setting controls how many rows
+are fetched per CQL page, bounding memory usage.
+
+The default is 100 rows per page. The DataStax driver automatically fetches subsequent pages as needed.
+
+```hocon
+pekko.persistence.cassandra.snapshot.metadata-page-size = 200
+```
 
 ## Limitations
 

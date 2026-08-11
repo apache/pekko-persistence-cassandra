@@ -56,3 +56,33 @@ Alternatively, Pekko Discovery can be used for finding the Cassandra server cont
 in the @extref:[Pekko Connectors Cassandra documentation](pekko-connectors:cassandra.html#using-pekko-discovery).
 
 Without any configuration it will use `localhost:9042` as default.
+
+## Page size (fetch size)
+
+The DataStax driver's page size controls how many rows are fetched per CQL round-trip. This affects memory usage
+and network round-trips for queries that return multiple rows. The default is 5000 rows per page.
+
+These settings can be added directly to your application's `application.conf` file alongside your Pekko configuration.
+
+To configure the page size globally:
+
+```hocon
+datastax-java-driver.basic.request.page-size = 1000
+```
+
+Or per execution profile (the plugin uses `pekko-persistence-cassandra-profile` by default for all journal and snapshot queries):
+
+```hocon
+datastax-java-driver {
+  profiles {
+    pekko-persistence-cassandra-profile {
+      basic.request.page-size = 1000
+    }
+  }
+}
+```
+
+Lower values reduce memory usage per query; higher values reduce round-trips for large result sets.
+The driver automatically fetches subsequent pages as needed when consuming a `Source[Row, NotUsed]`.
+
+See the @extref:[DataStax driver documentation](java-driver:manual/core/configuration/) for more details.
