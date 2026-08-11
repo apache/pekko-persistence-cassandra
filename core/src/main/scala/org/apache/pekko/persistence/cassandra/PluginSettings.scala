@@ -56,7 +56,7 @@ import com.typesafe.config.Config
     new PluginSettings(system, config)
 
   val keyspaceNameRegex =
-    """^("[a-zA-Z]{1}[\w]{0,47}"|[a-zA-Z]{1}[\w]{0,47})$"""
+    """^([a-zA-Z_][a-zA-Z0-9_]{0,47}|"[^"]{1,48}")$"""
 
   /**
    * Builds replication strategy command to create a keyspace.
@@ -107,7 +107,7 @@ import com.typesafe.config.Config
       keyspaceName
     } else {
       throw new IllegalArgumentException(
-        s"Invalid keyspace name. A keyspace may have 32 or fewer alpha-numeric characters and underscores. Value was: $keyspaceName")
+        s"Invalid keyspace name. A keyspace may have 48 or fewer alpha-numeric characters and underscores, or be double-quoted. Value was: $keyspaceName")
     }
 
   /**
@@ -122,6 +122,6 @@ import com.typesafe.config.Config
       tableName
     } else {
       throw new IllegalArgumentException(
-        s"Invalid table name. A table name may have 32 or fewer alpha-numeric characters and underscores. Value was: $tableName")
+        s"Invalid table name. A table name may have 48 or fewer alpha-numeric characters and underscores, or be double-quoted. Value was: $tableName")
     }
 }
