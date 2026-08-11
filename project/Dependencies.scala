@@ -27,7 +27,7 @@ object Dependencies {
   val pekkoConnectorsVersion = PekkoConnectorsDependency.version
   val pekkoConnectorsVersionInDocs = PekkoConnectorsDependency.default.link
 
-  val logbackVersion = "1.6.1"
+  val logbackVersion = "1.6.2"
 
   val nettyVersion = "4.2.17.Final"
   val logback = "ch.qos.logback" % "logback-classic" % logbackVersion
