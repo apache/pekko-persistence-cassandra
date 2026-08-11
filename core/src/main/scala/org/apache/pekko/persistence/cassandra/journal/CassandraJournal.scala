@@ -401,7 +401,7 @@ import scala.util.{ Failure, Success, Try }
 
   private def updateHighestSequenceNrInMetadata(persistenceId: String, sequenceNr: Long): Future[Unit] = {
     preparedUpdateHighestSequenceNr.futureResult().flatMap { ps =>
-      val bound = ps.bind(sequenceNr: JLong, persistenceId)
+      val bound = ps.bind(sequenceNr: JLong, journalSettings.table, persistenceId)
       session.underlying().flatMap(_.executeAsync(bound).asScala).map(_ => ())
     }.recover {
       case _: Exception => ()
@@ -532,9 +532,14 @@ import scala.util.{ Failure, Success, Try }
       val bound = ps.bind(persistenceId)
       session.underlying().flatMap(_.executeAsync(bound).asScala).map { rs =>
         val row = rs.one()
-        if (row != null && !row.isNull("highest_sequence_nr"))
-          Some(row.getLong("highest_sequence_nr"))
-        else
+        if (row != null && !row.isNull("highest_sequence_nr") && !row.isNull("highest_sequence_nr_table")) {
+          val tableName = row.getString("highest_sequence_nr_table")
+          // Only use the cached value if it was written by this plugin's table
+          if (tableName == journalSettings.table)
+            Some(row.getLong("highest_sequence_nr"))
+          else
+            None
+        } else
           None
       }
     }.recover {

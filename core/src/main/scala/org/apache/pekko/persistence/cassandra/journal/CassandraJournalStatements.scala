@@ -113,6 +113,7 @@ import scala.jdk.FutureConverters._
      |  persistence_id text PRIMARY KEY,
      |  deleted_to bigint,
      |  highest_sequence_nr bigint,
+     |  highest_sequence_nr_table text,
      |  properties map<text,text>)
     """.stripMargin.trim
 
@@ -310,18 +311,21 @@ import scala.jdk.FutureConverters._
 
   def selectHighestSequenceNrFromMetadata =
     s"""
-      SELECT highest_sequence_nr FROM $metadataTableName WHERE
+      SELECT highest_sequence_nr, highest_sequence_nr_table FROM $metadataTableName WHERE
         persistence_id = ?
     """
 
   def updateHighestSequenceNr =
     s"""
-      UPDATE $metadataTableName SET highest_sequence_nr = ?
+      UPDATE $metadataTableName SET highest_sequence_nr = ?, highest_sequence_nr_table = ?
       WHERE persistence_id = ?
     """
 
-  def addHighestSequenceNrColumn =
+  def addHighestSequenceNrColumns =
     s"ALTER TABLE $metadataTableName ADD highest_sequence_nr bigint"
+
+  def addHighestSequenceNrTableColumn =
+    s"ALTER TABLE $metadataTableName ADD highest_sequence_nr_table text"
 
   def deleteDeletedTo =
     s"""
@@ -414,18 +418,24 @@ import scala.jdk.FutureConverters._
   private def migrateMetadataSchema(session: CqlSession, log: LoggingAdapter)(
       implicit ec: ExecutionContext): Future[Done] = {
     if (journalSettings.autoMigrateSchema) {
-      session
-        .executeAsync(addHighestSequenceNrColumn)
-        .asScala
-        .map(_ => Done)
-        .recover {
-          case _: com.datastax.oss.driver.api.core.servererrors.InvalidQueryException =>
-            // Column already exists - this is expected on subsequent startups
-            Done
-          case e =>
-            log.warning("Failed to add highest_sequence_nr column to metadata table: {}", e)
-            Done
-        }
+      def addColumn(stmt: String, column: String): Future[Done] =
+        session
+          .executeAsync(stmt)
+          .asScala
+          .map(_ => Done)
+          .recover {
+            case _: com.datastax.oss.driver.api.core.servererrors.InvalidQueryException =>
+              // Column already exists - this is expected on subsequent startups
+              Done
+            case e =>
+              log.warning("Failed to add {} column to metadata table: {}", column, e)
+              Done
+          }
+
+      for {
+        _ <- addColumn(addHighestSequenceNrColumns, "highest_sequence_nr")
+        _ <- addColumn(addHighestSequenceNrTableColumn, "highest_sequence_nr_table")
+      } yield Done
     } else FutureDone
   }
 }
