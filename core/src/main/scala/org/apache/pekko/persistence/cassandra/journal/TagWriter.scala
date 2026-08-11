@@ -224,13 +224,14 @@ import scala.util.{ Failure, Success, Try }
       val (updatedTagPidSequenceNrs, events) =
         assignTagPidSequenceNumbers(payload.toVector, tagPidSequenceNrs)
       val now = System.nanoTime()
-      // Check hard upper bound first
-      if (settings.maxBufferSize > 0 && buffer.size >= settings.maxBufferSize) {
+      // Check hard upper bound - only count pending events, not the batch being written
+      val currentPendingSize = buffer.pendingSize
+      if (settings.maxBufferSize > 0 && currentPendingSize >= settings.maxBufferSize) {
         log.error(
           "Tag writer buffer full ({} >= {}). Rejecting write for tag [{}]. " +
           "This indicates Cassandra is not keeping up with writes. " +
           "The journal will retry after the tag-write-timeout.",
-          buffer.size,
+          currentPendingSize,
           settings.maxBufferSize,
           tag)
         // Don't buffer - the sender's ask will timeout and the journal will retry

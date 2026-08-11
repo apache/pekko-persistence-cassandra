@@ -42,6 +42,9 @@ private[pekko] case class Buffer(
 
   def nonEmpty: Boolean = nextBatch.nonEmpty
 
+  /** Number of events waiting in the pending queue (not including the current batch being written) */
+  def pendingSize: Int = pending.foldLeft(0)((acc, w) => acc + w.events.size)
+
   def remove(pid: String): Buffer = {
     val (toFilter, without) = nextBatch.partition(_.events.head._1.persistenceId == pid)
     val filteredPending = pending.filterNot(_.events.head._1.persistenceId == pid)
