@@ -23,6 +23,7 @@ import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.annotation.InternalApi
 import pekko.event.Logging
+import pekko.persistence.cassandra.PluginSettings.validateTableName
 import pekko.persistence.cassandra.compaction.CassandraCompactionStrategy
 import pekko.persistence.cassandra.journal.TagWriter.TagWriterSettings
 import pekko.persistence.cassandra.journal.TimeBucket
@@ -137,7 +138,7 @@ import com.typesafe.config.Config
   }
 
   val tagTable = TableSettings(
-    eventsByTagConfig.getString("table"),
+    validateTableName(eventsByTagConfig.getString("table")),
     CassandraCompactionStrategy(eventsByTagConfig.getConfig("compaction-strategy")),
     eventsByTagConfig.getLong("gc-grace-seconds"),
     if (eventsByTagConfig.hasPath("time-to-live"))

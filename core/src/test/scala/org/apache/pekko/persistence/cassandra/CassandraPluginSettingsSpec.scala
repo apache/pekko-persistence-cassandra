@@ -24,6 +24,8 @@ import org.scalatest.prop.TableDrivenPropertyChecks._
 import scala.util.Random
 
 import pekko.persistence.cassandra.journal.JournalSettings
+import pekko.persistence.cassandra.snapshot.SnapshotSettings
+import pekko.persistence.cassandra.EventsByTagSettings
 
 class CassandraPluginSettingsSpec
     extends TestKit(ActorSystem("CassandraPluginConfigSpec"))
@@ -130,6 +132,62 @@ class CassandraPluginSettingsSpec
             PluginSettings.validateKeyspaceName(tableName)
           }
       }
+    }
+
+    "reject invalid keyspace name in JournalSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""journal.keyspace = "invalid;name"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new JournalSettings(system, badConfig)
+      }.getMessage must include("Invalid keyspace name")
+    }
+
+    "reject invalid table name in JournalSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""journal.table = "invalid;table"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new JournalSettings(system, badConfig)
+      }.getMessage must include("Invalid table name")
+    }
+
+    "reject invalid metadata table name in JournalSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""journal.metadata-table = "bad-name"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new JournalSettings(system, badConfig)
+      }.getMessage must include("Invalid table name")
+    }
+
+    "reject invalid all-persistence-ids table name in JournalSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""journal.all-persistence-ids-table = "bad-name"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new JournalSettings(system, badConfig)
+      }.getMessage must include("Invalid table name")
+    }
+
+    "reject invalid keyspace name in SnapshotSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""snapshot.keyspace = "invalid;name"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new SnapshotSettings(system, badConfig)
+      }.getMessage must include("Invalid keyspace name")
+    }
+
+    "reject invalid table name in SnapshotSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""snapshot.table = "invalid;table"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new SnapshotSettings(system, badConfig)
+      }.getMessage must include("Invalid table name")
+    }
+
+    "reject invalid tag table name in EventsByTagSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""events-by-tag.table = "bad-name"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new EventsByTagSettings(system, badConfig)
+      }.getMessage must include("Invalid table name")
     }
 
     "parse keyspace-autocreate parameter" in {

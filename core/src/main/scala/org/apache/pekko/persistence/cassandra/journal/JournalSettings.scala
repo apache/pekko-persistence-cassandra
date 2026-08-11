@@ -19,6 +19,8 @@ import pekko.actor.NoSerializationVerificationNeeded
 import pekko.annotation.InternalApi
 import pekko.annotation.InternalStableApi
 import pekko.persistence.cassandra.PluginSettings.getReplicationStrategy
+import pekko.persistence.cassandra.PluginSettings.validateKeyspaceName
+import pekko.persistence.cassandra.PluginSettings.validateTableName
 import pekko.persistence.cassandra.compaction.CassandraCompactionStrategy
 import pekko.persistence.cassandra.getListFromConfig
 import com.typesafe.config.Config
@@ -36,11 +38,11 @@ import com.typesafe.config.Config
   val keyspaceAutoCreate: Boolean = journalConfig.getBoolean("keyspace-autocreate")
   val tablesAutoCreate: Boolean = journalConfig.getBoolean("tables-autocreate")
 
-  val keyspace: String = journalConfig.getString("keyspace")
+  val keyspace: String = validateKeyspaceName(journalConfig.getString("keyspace"))
 
-  val table: String = journalConfig.getString("table")
-  val metadataTable: String = journalConfig.getString("metadata-table")
-  val allPersistenceIdsTable: String = journalConfig.getString("all-persistence-ids-table")
+  val table: String = validateTableName(journalConfig.getString("table"))
+  val metadataTable: String = validateTableName(journalConfig.getString("metadata-table"))
+  val allPersistenceIdsTable: String = validateTableName(journalConfig.getString("all-persistence-ids-table"))
 
   val tableCompactionStrategy: CassandraCompactionStrategy =
     CassandraCompactionStrategy(journalConfig.getConfig("table-compaction-strategy"))
