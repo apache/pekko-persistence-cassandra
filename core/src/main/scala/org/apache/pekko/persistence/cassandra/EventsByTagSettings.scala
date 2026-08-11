@@ -155,6 +155,7 @@ import com.typesafe.config.Config
 
   val tagWriterSettings = TagWriterSettings(
     eventsByTagConfig.getInt("max-message-batch-size"),
+    eventsByTagConfig.getInt("max-buffer-size"),
     eventsByTagConfig.getDuration("flush-interval", TimeUnit.MILLISECONDS).millis,
     eventsByTagConfig.getDuration("scanning-flush-interval", TimeUnit.MILLISECONDS).millis,
     eventsByTagConfig.getDuration("stop-tag-writer-when-idle", TimeUnit.MILLISECONDS).millis,

@@ -53,6 +53,7 @@ import scala.util.{ Failure, Success, Try }
 
   private[pekko] case class TagWriterSettings(
       maxBatchSize: Int,
+      maxBufferSize: Int,
       flushInterval: FiniteDuration,
       scanningFlushInterval: FiniteDuration,
       stopTagWriterWhenIdle: FiniteDuration,
@@ -174,9 +175,21 @@ import scala.util.{ Failure, Success, Try }
       val (newTagPidSequenceNrs, events: Seq[(Serialized, TagPidSequenceNr)]) = {
         assignTagPidSequenceNumbers(payload.toVector, tagPidSequenceNrs)
       }
-      val newWrite = AwaitingWrite(events, OptionVal(sender()))
-      val newBuffer = buffer.add(newWrite)
-      flushIfRequired(newBuffer, newTagPidSequenceNrs)
+      // Check hard upper bound first
+      if (settings.maxBufferSize > 0 && buffer.size >= settings.maxBufferSize) {
+        log.error(
+          "Tag writer buffer full ({} >= {}). Rejecting write for tag [{}]. " +
+          "This indicates Cassandra is not keeping up with writes. " +
+          "The journal will retry after the tag-write-timeout.",
+          buffer.size,
+          settings.maxBufferSize,
+          tag)
+        // Don't buffer - the sender's ask will timeout and the journal will retry
+      } else {
+        val newWrite = AwaitingWrite(events, OptionVal(sender()))
+        val newBuffer = buffer.add(newWrite)
+        flushIfRequired(newBuffer, newTagPidSequenceNrs)
+      }
     case twd: TagWriteDone =>
       log.error("Received Done when in idle state. This is a bug. Please report with DEBUG logs: {}", twd)
     case ResetPersistenceId(_, tp @ TagProgress(pid, _, tagPidSequenceNr)) =>
@@ -210,20 +223,33 @@ import scala.util.{ Failure, Success, Try }
     case TagWrite(_, payload, _) =>
       val (updatedTagPidSequenceNrs, events) =
         assignTagPidSequenceNumbers(payload.toVector, tagPidSequenceNrs)
-      val awaitingWrite = AwaitingWrite(events, OptionVal(sender()))
       val now = System.nanoTime()
-      if (buffer.size > (4 * settings.maxBatchSize) && now > (lastLoggedBufferNs + bufferWarningMinDurationNs)) {
-        lastLoggedBufferNs = now
-        log.warning(
-          "Buffer for tagged events is getting too large ({}), is Cassandra responsive? Are writes failing? " +
-          "If events are buffered for longer than the eventual-consistency-delay they won't be picked up by live queries. The oldest event in the buffer is offset: {}",
+      // Check hard upper bound first
+      if (settings.maxBufferSize > 0 && buffer.size >= settings.maxBufferSize) {
+        log.error(
+          "Tag writer buffer full ({} >= {}). Rejecting write for tag [{}]. " +
+          "This indicates Cassandra is not keeping up with writes. " +
+          "The journal will retry after the tag-write-timeout.",
           buffer.size,
-          formatOffset(buffer.nextBatch.head.events.head._1.timeUuid))
+          settings.maxBufferSize,
+          tag)
+        // Don't buffer - the sender's ask will timeout and the journal will retry
+        // This creates backpressure on the journal
+      } else {
+        val awaitingWrite = AwaitingWrite(events, OptionVal(sender()))
+        if (buffer.size > (4 * settings.maxBatchSize) && now > (lastLoggedBufferNs + bufferWarningMinDurationNs)) {
+          lastLoggedBufferNs = now
+          log.warning(
+            "Buffer for tagged events is getting too large ({}), is Cassandra responsive? Are writes failing? " +
+            "If events are buffered for longer than the eventual-consistency-delay they won't be picked up by live queries. The oldest event in the buffer is offset: {}",
+            buffer.size,
+            formatOffset(buffer.nextBatch.head.events.head._1.timeUuid))
+        }
+        // buffer until current query is finished
+        // Don't sort until the write has finished
+        val newBuffer = buffer.addPending(awaitingWrite)
+        become(writeInProgress(newBuffer, updatedTagPidSequenceNrs, awaitingFlush))
       }
-      // buffer until current query is finished
-      // Don't sort until the write has finished
-      val newBuffer = buffer.addPending(awaitingWrite)
-      become(writeInProgress(newBuffer, updatedTagPidSequenceNrs, awaitingFlush))
     case TagWriteDone(summary, doneNotify) =>
       log.debug("Tag write done: {}", summary)
       val nextBuffer = buffer.writeComplete()

@@ -78,6 +78,7 @@ class TagWriterSpec
   val successfulWrite: Statement[?] => Future[Done] = _ => Future.successful(Done)
   val defaultSettings = TagWriterSettings(
     maxBatchSize = 10,
+    maxBufferSize = 50000,
     flushInterval = 10.seconds,
     scanningFlushInterval = 20.seconds,
     stopTagWriterWhenIdle = 5.seconds,
