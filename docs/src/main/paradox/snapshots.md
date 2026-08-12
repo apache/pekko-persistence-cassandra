@@ -65,7 +65,7 @@ To activate the snapshot-store plugin, add the following line to your Pekko `app
     pekko.persistence.snapshot-store.plugin = "pekko.persistence.cassandra.snapshot"
 
 This will run the snapshot store with its default settings. The default settings can be changed with the configuration
-properties defined in @ref:[reference.conf](configuration.md#default-configuration). Journal configuration is under 
+properties defined in @ref:[reference.conf](configuration.md#default-configuration). Snapshot configuration is under 
 `pekko.persistence.cassandra.snapshot`.
 
 ## Limitations
