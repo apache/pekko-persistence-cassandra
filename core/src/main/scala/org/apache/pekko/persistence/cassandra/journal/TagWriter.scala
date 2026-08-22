@@ -184,7 +184,7 @@ import scala.util.{ Failure, Success, Try }
       become(idle(buffer.remove(pid), tagPidSequenceNrs + (pid -> tagPidSequenceNr)))
       sender() ! ResetPersistenceIdComplete
 
-    case ReceiveTimeout =>
+    case _: ReceiveTimeout =>
       if (buffer.isEmpty && tagPidSequenceNrs.isEmpty)
         parent ! PassivateTagWriter(tag)
 
@@ -281,7 +281,7 @@ import scala.util.{ Failure, Success, Try }
       become(writeInProgress(buffer.remove(pid), tagPidSequenceNrs + (pid -> tp.pidTagSequenceNr), awaitingFlush))
       sender() ! ResetPersistenceIdComplete
 
-    case ReceiveTimeout =>
+    case _: ReceiveTimeout =>
     // not idle
 
     case StopTagWriter =>
