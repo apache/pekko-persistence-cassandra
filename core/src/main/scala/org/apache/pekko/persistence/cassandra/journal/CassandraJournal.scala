@@ -122,8 +122,13 @@ import com.typesafe.config.Config
     else
       None
   }
+  // unbounded, used by the delete path which needs the highest sequence nr of a specific partition
   private val preparedSelectHighestSequenceNr: RetryableFutureEval[PreparedStatement] =
     RetryableFutureEval(() => session.prepare(statements.journalStatements.selectHighestSequenceNr))
+
+  // bounded, used when scanning partitions for the highest sequence nr of a persistenceId
+  private val preparedSelectHighestSequenceNrGreaterThan: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.selectHighestSequenceNrGreaterThan))
 
   private val deletesNotSupportedException: RetryableFutureEval[PreparedStatement] =
     RetryableFutureEval(() =>
@@ -206,6 +211,7 @@ import com.typesafe.config.Config
       preparedWriteMessageWithMeta.futureResult()
       preparedSelectMessages.futureResult()
       preparedSelectHighestSequenceNr.futureResult()
+      preparedSelectHighestSequenceNrGreaterThan.futureResult()
       if (settings.journalSettings.supportAllPersistenceIds)
         preparedInsertIntoAllPersistenceIds.futureResult()
       if (settings.journalSettings.supportDeletes) {
@@ -673,10 +679,29 @@ import com.typesafe.config.Config
       persistenceId: String,
       fromSequenceNr: Long,
       partitionSize: Long): Future[Long] = {
-    def find(currentPnr: Long, currentSnr: Long, foundEmptyPartition: Boolean): Future[Long] = {
+    // writeMessages stores every row of a batch (which may hold several AtomicWrites) in the partition of
+    // the batch's *last* sequence number, and a batch may span at most two partitions. Partition numbers
+    // therefore increase monotonically with sequence number: every row of a later partition is above
+    // every row of an earlier one. That makes `sequence_nr > currentSnr` a filter that can never hide the
+    // answer, only rows already known to be below it.
+    //
+    // The restriction pays off when the floor partition holds nothing live above the floor, e.g. a tail
+    // of tombstones left by deleting up to the snapshot: the reverse read stops at the floor instead of
+    // walking through them. When live rows sit above the floor, LIMIT 1 stops at the last one either way.
+    //
+    // The trade-off is that a partition holding nothing above `currentSnr` is indistinguishable from an
+    // empty one, so the scan cannot stop at the first such partition. Before the first row above the
+    // floor is found, two misses can precede it: the floor partition itself, plus one that a batch
+    // skipped over, so three misses are needed to give up. After a hit at partition `p`, every row of
+    // `p + 1` is above `currentSnr` and only a skipped partition can intervene, so two misses suffice,
+    // which keeps the query count of a scan that finds events the same as an unbounded scan.
+    val missesBeforeFirstHit = 3
+    val missesAfterHit = 2
+
+    def find(currentPnr: Long, currentSnr: Long, remainingMisses: Int): Future[Long] = {
       // if every message has been deleted and thus no sequence_nr the driver gives us back 0 for "null" :(
-      val boundSelectHighestSequenceNr = preparedSelectHighestSequenceNr.futureResult().map(ps => {
-        val bound = ps.bind(persistenceId, currentPnr: JLong)
+      val boundSelectHighestSequenceNr = preparedSelectHighestSequenceNrGreaterThan.futureResult().map(ps => {
+        val bound = ps.bind(persistenceId, currentPnr: JLong, currentSnr: JLong)
         bound
 
       })
@@ -687,17 +712,16 @@ import com.typesafe.config.Config
         }
         .flatMap {
           case None | Some(0) =>
-            // never been to this partition, query one more partition because AtomicWrite can span (skip)
-            // one entire partition
+            // nothing above currentSnr here, but a later partition may still hold events
             // Some(0) when old schema with static used column, everything deleted in this partition
-            if (foundEmptyPartition) Future.successful(currentSnr)
-            else find(currentPnr + 1, currentSnr, foundEmptyPartition = true)
+            if (remainingMisses <= 1) Future.successful(currentSnr)
+            else find(currentPnr + 1, currentSnr, remainingMisses - 1)
           case Some(nextHighest) =>
-            find(currentPnr + 1, nextHighest, foundEmptyPartition = false)
+            find(currentPnr + 1, nextHighest, missesAfterHit)
         }
     }
 
-    find(partitionNr(fromSequenceNr, partitionSize), fromSequenceNr, foundEmptyPartition = false)
+    find(partitionNr(fromSequenceNr, partitionSize), fromSequenceNr, missesBeforeFirstHit)
   }
 
   private def executeBatch(body: BatchStatement => BatchStatement): Future[Unit] = {
