@@ -37,6 +37,38 @@ If the ip addresses of your cassandra nodes might change (e.g. if you use k8s) t
 should also be set (resolves a dns address again when new connections are created). This also implies disabling java's dns cache with `-Dnetworkaddress.cache.ttl=0`. 
 
 
+### Page size
+
+The page size controls how many rows the driver retrieves per network round-trip. Queries that can return many
+rows are fetched a page at a time, and the driver requests the next page automatically as the results are
+consumed, so this is a matter of how the reads are chunked rather than how many rows an operation returns.
+
+The driver default is 5000 rows. To change it for every query:
+
+```
+datastax-java-driver.basic.request.page-size = 1000
+```
+
+The plugin issues its queries under two execution profiles, so the page size can also be set for one of them on
+its own. The journal and query parts use `pekko-persistence-cassandra-profile`, the snapshot store uses
+`pekko-persistence-cassandra-snapshot-profile`:
+
+```
+datastax-java-driver.profiles {
+  pekko-persistence-cassandra-profile {
+    basic.request.page-size = 1000
+  }
+  pekko-persistence-cassandra-snapshot-profile {
+    basic.request.page-size = 100
+  }
+}
+```
+
+A smaller page size lowers the number of rows held per round-trip and the amount of work in a single Cassandra
+read; a larger one reduces the number of round-trips needed to read a large result set. It bounds the rows in
+flight, not the total an operation retains, so it does not by itself cap the memory used by a query whose whole
+result is collected before it is acted on.
+
 ### Cassandra driver overrides
 
 @@snip [reference.conf](/core/src/main/resources/reference.conf) { #profile }
