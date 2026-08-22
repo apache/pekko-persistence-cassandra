@@ -41,9 +41,9 @@ class CassandraPluginSettingsSpec
 
     Table(
       ("Keyspace", "isValid"),
-      // unquoted: letter or underscore start, alphanumeric/underscore, max 48
+      // unquoted: must start with a letter, then alphanumeric/underscore, max 48 chars
       ("test", true),
-      ("_test_123", true),
+      ("_test_123", false),
       ("", false),
       ("test-space", false),
       ("'test'", false),
@@ -51,11 +51,11 @@ class CassandraPluginSettingsSpec
       ("a_", true),
       ("1", false),
       ("a1", true),
-      ("_", true),
+      ("_", false),
       ("asdf!", false),
       (maxKey, true),
       (maxKey + "_", false),
-      // quoted: any content inside double quotes, max 48 chars
+      // quoted: any content except a double quote, 1 to 48 chars
       ("\"_asdf\"", true),
       ("\"_\"", true),
       ("\"a\"", true),
@@ -147,11 +147,11 @@ class CassandraPluginSettingsSpec
 
     "validate table name parameter" in {
       forAll(keyspaceNames) { (tableName, isValid) =>
-        if (isValid) PluginSettings.validateKeyspaceName(tableName) must be(tableName)
+        if (isValid) PluginSettings.validateTableName(tableName) must be(tableName)
         else
           intercept[IllegalArgumentException] {
-            PluginSettings.validateKeyspaceName(tableName)
-          }
+            PluginSettings.validateTableName(tableName)
+          }.getMessage must include("Invalid table name")
       }
     }
 
@@ -209,6 +209,34 @@ class CassandraPluginSettingsSpec
       intercept[IllegalArgumentException] {
         new EventsByTagSettings(system, badConfig)
       }.getMessage must include("Invalid table name")
+    }
+
+    // Quoted identifiers are case sensitive in CQL and may contain characters that are not
+    // allowed unquoted, so they must survive validation now that it is applied at startup.
+    "accept quoted keyspace and table names in JournalSettings" in {
+      val quotedConfig = ConfigFactory.parseString("""
+          |journal.keyspace = "\"My Keyspace\""
+          |journal.table = "\"my-messages\""
+        """.stripMargin).withFallback(defaultConfig)
+      val config = new JournalSettings(system, quotedConfig)
+      config.keyspace must be("\"My Keyspace\"")
+      config.table must be("\"my-messages\"")
+    }
+
+    "accept a quoted table name in SnapshotSettings" in {
+      val quotedConfig = ConfigFactory.parseString("""
+          |snapshot.table = "\"my-snapshots\""
+        """.stripMargin).withFallback(defaultConfig)
+      val config = new SnapshotSettings(system, quotedConfig)
+      config.table must be("\"my-snapshots\"")
+    }
+
+    "accept a quoted tag table name in EventsByTagSettings" in {
+      val quotedConfig = ConfigFactory.parseString("""
+          |events-by-tag.table = "\"my-tag-views\""
+        """.stripMargin).withFallback(defaultConfig)
+      val config = new EventsByTagSettings(system, quotedConfig)
+      config.tagTable.name must be("\"my-tag-views\"")
     }
 
     "parse keyspace-autocreate parameter" in {

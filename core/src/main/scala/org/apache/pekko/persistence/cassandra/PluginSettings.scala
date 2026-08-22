@@ -55,8 +55,11 @@ import com.typesafe.config.Config
   def apply(system: ActorSystem, config: Config): PluginSettings =
     new PluginSettings(system, config)
 
+  // An unquoted CQL identifier must start with a letter and may contain letters, digits and
+  // underscores. A quoted identifier is case sensitive and may contain any character except the
+  // double quote itself. Either form is limited to 48 characters.
   val keyspaceNameRegex =
-    """^([a-zA-Z_][a-zA-Z0-9_]{0,47}|"[^"]{1,48}")$"""
+    """^([a-zA-Z][a-zA-Z0-9_]{0,47}|"[^"]{1,48}")$"""
 
   /**
    * Builds replication strategy command to create a keyspace.
@@ -107,7 +110,9 @@ import com.typesafe.config.Config
       keyspaceName
     } else {
       throw new IllegalArgumentException(
-        s"Invalid keyspace name. A keyspace may have 48 or fewer alpha-numeric characters and underscores, or be double-quoted. Value was: $keyspaceName")
+        s"Invalid keyspace name. An unquoted keyspace name must start with a letter and may have 48 or fewer " +
+        s"alpha-numeric characters and underscores. Alternatively it may be a double-quoted identifier of 1 to 48 " +
+        s"characters. Value was: $keyspaceName")
     }
 
   /**
@@ -122,6 +127,8 @@ import com.typesafe.config.Config
       tableName
     } else {
       throw new IllegalArgumentException(
-        s"Invalid table name. A table name may have 48 or fewer alpha-numeric characters and underscores, or be double-quoted. Value was: $tableName")
+        s"Invalid table name. An unquoted table name must start with a letter and may have 48 or fewer " +
+        s"alpha-numeric characters and underscores. Alternatively it may be a double-quoted identifier of 1 to 48 " +
+        s"characters. Value was: $tableName")
     }
 }
