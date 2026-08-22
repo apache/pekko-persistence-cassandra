@@ -183,6 +183,38 @@ class BufferSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll {
       }
       writes shouldEqual totalWrites / 2
     }
+
+    // size is what the tag writer reports and limits on, so it has to stay equal to the number of
+    // events actually held in nextBatch plus pending
+    "keep size accurate when a write completes with events still pending" in {
+      val bucket = nowBucket()
+      var buffer = Buffer.empty(2)
+      for (i <- 1 to 5) {
+        buffer = buffer.add(awNoSender((event("p1", seqNr = i, payload = "cats", bucket), i)))
+      }
+      buffer.size shouldEqual 5
+
+      // two events are written, leaving three, of which one does not fit in the rebuilt batch
+      val afterWrite = buffer.writeComplete()
+      afterWrite.size shouldEqual 3
+      afterWrite.nextBatch.map(_.events.size).sum + afterWrite.pending.map(_.events.size).sum shouldEqual 3
+    }
+
+    "keep size accurate when a persistence id with pending events is removed" in {
+      val bucket = nowBucket()
+      val buffer = Buffer
+        .empty(2)
+        .add(awNoSender((event("p1", seqNr = 1, payload = "cats", bucket), 1)))
+        .add(awNoSender((event("p1", seqNr = 2, payload = "cats", bucket), 2)))
+        .add(awNoSender((event("p2", seqNr = 1, payload = "dogs", bucket), 1)))
+        .add(awNoSender((event("p1", seqNr = 3, payload = "cats", bucket), 3)))
+      buffer.size shouldEqual 4
+
+      // removes two from nextBatch and one from pending, leaving only p2
+      val afterRemove = buffer.remove("p1")
+      afterRemove.size shouldEqual 1
+      afterRemove.nextBatch.map(_.events.size).sum + afterRemove.pending.map(_.events.size).sum shouldEqual 1
+    }
   }
 
   override protected def afterAll(): Unit = {

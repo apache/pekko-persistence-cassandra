@@ -17,7 +17,16 @@ import java.util.UUID
 
 import org.apache.pekko
 import pekko.Done
-import pekko.actor.{ Actor, ActorLogging, ActorRef, NoSerializationVerificationNeeded, Props, ReceiveTimeout, Timers }
+import pekko.actor.{
+  Actor,
+  ActorLogging,
+  ActorRef,
+  NoSerializationVerificationNeeded,
+  Props,
+  ReceiveTimeout,
+  Status,
+  Timers
+}
 import pekko.annotation.InternalApi
 import pekko.cluster.pubsub.{ DistributedPubSub, DistributedPubSubMediator }
 import pekko.event.LoggingAdapter
@@ -29,6 +38,7 @@ import pekko.persistence.cassandra.journal.TagWriters.TagWritersSession
 import pekko.util.{ OptionVal, UUIDComparator }
 
 import scala.concurrent.duration.{ Duration, FiniteDuration, _ }
+import scala.util.control.NoStackTrace
 import scala.util.control.NonFatal
 import scala.util.{ Failure, Success, Try }
 
@@ -43,13 +53,23 @@ import scala.util.{ Failure, Success, Try }
  * Prevents any concurrent writes.
  *
  * Possible improvements:
- * - Max buffer size
  * - Optimize sorting given they are nearly sorted
  */
 @InternalApi private[pekko] object TagWriter {
 
   private[pekko] def props(settings: TagWriterSettings, session: TagWritersSession, tag: Tag, parent: ActorRef): Props =
     Props(new TagWriter(settings, session, tag, parent))
+
+  /**
+   * Returned to the sender when a tag write can not be buffered because `max-buffer-size` has been
+   * reached. The write is not buffered and no tag pid sequence nrs are consumed by it, so the events
+   * are picked up again by tag scanning when the persistent actor next recovers.
+   */
+  private[pekko] final class TagWriterBufferFullException(val tag: Tag, val bufferSize: Int, val maxBufferSize: Int)
+      extends RuntimeException(
+        s"Tag write for tag [$tag] rejected, buffer is full [$bufferSize >= $maxBufferSize]. " +
+        "Cassandra is not keeping up with tagged writes.")
+      with NoStackTrace
 
   private[pekko] case class TagWriterSettings(
       maxBatchSize: Int,
@@ -144,6 +164,30 @@ import scala.util.{ Failure, Success, Try }
 
   var lastLoggedBufferNs: Long = -1
   val bufferWarningMinDurationNs: Long = 5.seconds.toNanos
+  var lastLoggedBufferFullNs: Long = -1
+
+  private def bufferFull(buffer: Buffer): Boolean =
+    settings.maxBufferSize > 0 && buffer.size >= settings.maxBufferSize
+
+  /**
+   * Fails the sender's ask rather than dropping the write silently, so that the journal sees the
+   * rejection straight away instead of waiting out `tag-write-timeout`. Nothing is buffered and no tag
+   * pid sequence nrs are consumed, so the events are not lost: tag scanning picks them up when the
+   * persistent actor next recovers.
+   */
+  private def rejectWrite(buffer: Buffer, replyTo: ActorRef): Unit = {
+    val now = System.nanoTime()
+    if (now > (lastLoggedBufferFullNs + bufferWarningMinDurationNs)) {
+      lastLoggedBufferFullNs = now
+      log.error(
+        "Buffer for tagged events is full ({} >= {}) for tag [{}], rejecting writes. Is Cassandra responsive? " +
+        "Are writes failing? Rejected events will be written by tag scanning when the persistent actor recovers.",
+        buffer.size,
+        settings.maxBufferSize,
+        tag)
+    }
+    replyTo ! Status.Failure(new TagWriter.TagWriterBufferFullException(tag, buffer.size, settings.maxBufferSize))
+  }
 
   override def preStart(): Unit = {
     log.debug("Running TagWriter for [{}] with settings {}", tag, settings)
@@ -172,20 +216,13 @@ import scala.util.{ Failure, Success, Try }
         sender() ! FlushComplete
       }
     case TagWrite(_, payload, _) =>
-      val (newTagPidSequenceNrs, events: Seq[(Serialized, TagPidSequenceNr)]) = {
-        assignTagPidSequenceNumbers(payload.toVector, tagPidSequenceNrs)
-      }
-      // Check hard upper bound first
-      if (settings.maxBufferSize > 0 && buffer.size >= settings.maxBufferSize) {
-        log.error(
-          "Tag writer buffer full ({} >= {}). Rejecting write for tag [{}]. " +
-          "This indicates Cassandra is not keeping up with writes. " +
-          "The journal will retry after the tag-write-timeout.",
-          buffer.size,
-          settings.maxBufferSize,
-          tag)
-        // Don't buffer - the sender's ask will timeout and the journal will retry
+      // checked before any tag pid sequence nrs are assigned so that a rejected write consumes none
+      if (bufferFull(buffer)) {
+        rejectWrite(buffer, sender())
       } else {
+        val (newTagPidSequenceNrs, events: Seq[(Serialized, TagPidSequenceNr)]) = {
+          assignTagPidSequenceNumbers(payload.toVector, tagPidSequenceNrs)
+        }
         val newWrite = AwaitingWrite(events, OptionVal(sender()))
         val newBuffer = buffer.add(newWrite)
         flushIfRequired(newBuffer, newTagPidSequenceNrs)
@@ -221,22 +258,13 @@ import scala.util.{ Failure, Success, Try }
       log.debug("External flush while write in progress. Will flush after write complete")
       become(writeInProgress(buffer, tagPidSequenceNrs, Some(sender())))
     case TagWrite(_, payload, _) =>
-      val (updatedTagPidSequenceNrs, events) =
-        assignTagPidSequenceNumbers(payload.toVector, tagPidSequenceNrs)
-      val now = System.nanoTime()
-      // Check hard upper bound - only count pending events, not the batch being written
-      val currentPendingSize = buffer.pendingSize
-      if (settings.maxBufferSize > 0 && currentPendingSize >= settings.maxBufferSize) {
-        log.error(
-          "Tag writer buffer full ({} >= {}). Rejecting write for tag [{}]. " +
-          "This indicates Cassandra is not keeping up with writes. " +
-          "The journal will retry after the tag-write-timeout.",
-          currentPendingSize,
-          settings.maxBufferSize,
-          tag)
-        // Don't buffer - the sender's ask will timeout and the journal will retry
-        // This creates backpressure on the journal
+      // checked before any tag pid sequence nrs are assigned so that a rejected write consumes none
+      if (bufferFull(buffer)) {
+        rejectWrite(buffer, sender())
       } else {
+        val (updatedTagPidSequenceNrs, events) =
+          assignTagPidSequenceNumbers(payload.toVector, tagPidSequenceNrs)
+        val now = System.nanoTime()
         val awaitingWrite = AwaitingWrite(events, OptionVal(sender()))
         if (buffer.size > (4 * settings.maxBatchSize) && now > (lastLoggedBufferNs + bufferWarningMinDurationNs)) {
           lastLoggedBufferNs = now

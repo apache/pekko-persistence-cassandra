@@ -17,7 +17,7 @@ import java.nio.ByteBuffer
 import java.util.UUID
 import org.apache.pekko
 import pekko.Done
-import pekko.actor.{ ActorRef, ActorSystem }
+import pekko.actor.{ ActorRef, ActorSystem, Status }
 import pekko.event.Logging
 import pekko.event.Logging.Warning
 import pekko.persistence.cassandra.Day
@@ -79,7 +79,7 @@ class TagWriterSpec
   val successfulWrite: Statement[?] => Future[Done] = _ => Future.successful(Done)
   val defaultSettings = TagWriterSettings(
     maxBatchSize = 10,
-    maxBufferSize = 50000,
+    maxBufferSize = 0,
     flushInterval = 10.seconds,
     scanningFlushInterval = 20.seconds,
     stopTagWriterWhenIdle = 5.seconds,
@@ -103,6 +103,11 @@ class TagWriterSpec
     val sender = TestProbe()
     implicit val senderRef: ActorRef = sender.ref
   }
+
+  private def expectBufferFullLogged(): Unit =
+    logProbe.expectMsgPF(waitDuration) {
+      case Logging.Error(_, _, _, msg) if msg.toString.contains("Buffer for tagged events is full") => ()
+    }
 
   "Tag writer batching" must {
 
@@ -676,143 +681,124 @@ class TagWriterSpec
 
   "Tag writer buffer limit" must {
 
-    "reject writes when buffer is full in idle state" in new Setup {
-      // Use large maxBatchSize to prevent auto-flushing; small maxBufferSize to trigger rejection
+    "reject a write and fail the sender when the buffer is full" in new Setup {
       val (probe, ref) =
-        setup(settings = defaultSettings.copy(maxBatchSize = 100, maxBufferSize = 2, flushInterval = 1.hour))
+        setup(settings = defaultSettings.copy(maxBatchSize = 100, maxBufferSize = 1, flushInterval = 1.hour))
       val bucket = nowBucket()
-
       val e1 = event("p1", 1L, "e-1", bucket)
       val e2 = event("p2", 1L, "e-2", bucket)
-      val e3 = event("p3", 1L, "e-3", bucket)
 
-      // First two writes should be accepted (buffer.size 0->1->2)
+      // fills the buffer, nothing is written yet as the batch is not full
       ref ! TagWrite(tagName, Vector(e1))
+      probe.expectNoMessage(waitDuration)
+
       ref ! TagWrite(tagName, Vector(e2))
+      val failure = sender.expectMsgType[Status.Failure]
+      assert(failure.cause.isInstanceOf[TagWriter.TagWriterBufferFullException])
       probe.expectNoMessage(waitDuration)
-
-      // Third write should be rejected (buffer.size 2 >= maxBufferSize 2)
-      ref ! TagWrite(tagName, Vector(e3))
-
-      // Should see error log about buffer being full
-      logProbe.expectMsgPF(waitDuration) {
-        case Logging.Error(_, _, _, msg) if msg.toString.contains("Tag writer buffer full") =>
-      }
-
-      // The rejected write should not be processed
-      probe.expectNoMessage(waitDuration)
-      logProbe.expectNoMessage(waitDuration)
+      expectBufferFullLogged()
     }
 
-    "reject writes when buffer is full in writeInProgress state" in new Setup {
+    "reject a write and fail the sender when the buffer is full during a write" in new Setup {
       val writePromise = Promise[Done]()
-      // Use maxBatchSize=1 so first event triggers an immediate write
       val (probe, ref) = setup(
-        settings = defaultSettings.copy(maxBatchSize = 1, maxBufferSize = 1, flushInterval = 1.hour),
+        settings = defaultSettings.copy(maxBatchSize = 1, maxBufferSize = 2, flushInterval = 1.hour),
         writeResponse = LazyList(writePromise.future) ++ LazyList.continually(Future.successful(Done)))
       val bucket = nowBucket()
-
       val e1 = event("p1", 1L, "e-1", bucket)
       val e2 = event("p2", 1L, "e-2", bucket)
       val e3 = event("p3", 1L, "e-3", bucket)
 
-      // First write triggers immediate batch write (maxBatchSize=1)
+      // maxBatchSize is 1 so this write starts immediately and stays in the buffer while in flight
       ref ! TagWrite(tagName, Vector(e1))
       probe.expectMsg(Vector(toEw(e1, 1)))
 
-      // Second write is buffered in writeInProgress (buffer.size 0->1, below maxBufferSize=1)
+      // buffer holds the in flight batch, one more still fits
       ref ! TagWrite(tagName, Vector(e2))
       probe.expectNoMessage(waitDuration)
 
-      // Third write should be rejected (buffer.size 1 >= maxBufferSize 1)
       ref ! TagWrite(tagName, Vector(e3))
+      val failure = sender.expectMsgType[Status.Failure]
+      assert(failure.cause.isInstanceOf[TagWriter.TagWriterBufferFullException])
+      expectBufferFullLogged()
 
-      // Should see error log about buffer being full
-      logProbe.expectMsgPF(waitDuration) {
-        case Logging.Error(_, _, _, msg) if msg.toString.contains("Tag writer buffer full") =>
-      }
-
-      // Complete the first write; the buffered e2 should be written next
+      // the accepted write is unaffected by the rejection
       writePromise.success(Done)
+      sender.expectMsg(Done)
       probe.expectMsg(ProgressWrite("p1", 1, 1, e1.timeUuid))
       probe.expectMsg(Vector(toEw(e2, 1)))
       probe.expectMsg(ProgressWrite("p2", 1, 1, e2.timeUuid))
-      logProbe.expectNoMessage(waitDuration)
+      sender.expectMsg(Done)
     }
 
-    "accept writes when buffer is below limit" in new Setup {
-      // Use large maxBatchSize to prevent auto-flushing
+    "not consume a tag pid sequence nr for a rejected write" in new Setup {
       val (probe, ref) =
-        setup(settings = defaultSettings.copy(maxBatchSize = 100, maxBufferSize = 5, flushInterval = 1.hour))
+        setup(settings = defaultSettings.copy(maxBatchSize = 100, maxBufferSize = 1, flushInterval = 1.hour))
       val bucket = nowBucket()
-
       val e1 = event("p1", 1L, "e-1", bucket)
-      val e2 = event("p2", 1L, "e-2", bucket)
-      val e3 = event("p3", 1L, "e-3", bucket)
+      val e2 = event("p1", 2L, "e-2", bucket)
 
-      // All writes should be accepted (buffer.size goes 0->1->2->3, all below maxBufferSize=5)
       ref ! TagWrite(tagName, Vector(e1))
-      ref ! TagWrite(tagName, Vector(e2))
-      ref ! TagWrite(tagName, Vector(e3))
       probe.expectNoMessage(waitDuration)
 
-      // No error logs should appear
-      logProbe.expectNoMessage(waitDuration)
-    }
+      // rejected, so it must not take tag pid sequence nr 2
+      ref ! TagWrite(tagName, Vector(e2))
+      sender.expectMsgType[Status.Failure]
+      expectBufferFullLogged()
 
-    "allow writes after buffer drains below limit" in new Setup {
-      val writePromise = Promise[Done]()
-      val (probe, ref) = setup(
-        settings = defaultSettings.copy(maxBatchSize = 1, maxBufferSize = 1, flushInterval = 1.hour),
-        writeResponse = LazyList(writePromise.future) ++ LazyList.continually(Future.successful(Done)))
-      val bucket = nowBucket()
-
-      val e1 = event("p1", 1L, "e-1", bucket)
-      val e2 = event("p2", 1L, "e-2", bucket)
-      val e3 = event("p3", 1L, "e-3", bucket)
-
-      // First write triggers immediate batch write
-      ref ! TagWrite(tagName, Vector(e1))
+      ref ! Flush
       probe.expectMsg(Vector(toEw(e1, 1)))
-
-      // Second write buffered (buffer.size 0->1)
-      ref ! TagWrite(tagName, Vector(e2))
-      probe.expectNoMessage(waitDuration)
-
-      // Third write rejected (buffer.size 1 >= maxBufferSize 1)
-      ref ! TagWrite(tagName, Vector(e3))
-      logProbe.expectMsgPF(waitDuration) {
-        case Logging.Error(_, _, _, msg) if msg.toString.contains("Tag writer buffer full") =>
-      }
-
-      // Complete first write - e2 gets written, buffer drains
-      writePromise.success(Done)
       probe.expectMsg(ProgressWrite("p1", 1, 1, e1.timeUuid))
-      probe.expectMsg(Vector(toEw(e2, 1)))
-      probe.expectMsg(ProgressWrite("p2", 1, 1, e2.timeUuid))
+      sender.expectMsg(Done)
+      sender.expectMsg(FlushComplete)
 
-      // Now buffer is empty - a new write should be accepted
-      val e4 = event("p4", 1L, "e-4", bucket)
-      ref ! TagWrite(tagName, Vector(e4))
-      probe.expectMsg(Vector(toEw(e4, 1)))
-      probe.expectMsg(ProgressWrite("p4", 1, 1, e4.timeUuid))
-      logProbe.expectNoMessage(waitDuration)
+      // buffer has drained, the retry gets the sequence nr the rejected write did not take.
+      // a gap here would stall eventsByTag until tag_views was repaired
+      ref ! TagWrite(tagName, Vector(e2))
+      ref ! Flush
+      probe.expectMsg(Vector(toEw(e2, 2)))
+      probe.expectMsg(ProgressWrite("p1", 2, 2, e2.timeUuid))
+      sender.expectMsg(Done)
+      sender.expectMsg(FlushComplete)
     }
 
-    "not reject writes when maxBufferSize is 0 (disabled)" in new Setup {
-      // Use large maxBatchSize to prevent the "buffer too large" warning
+    "accept writes again once the buffer has drained" in new Setup {
+      val (probe, ref) =
+        setup(settings = defaultSettings.copy(maxBatchSize = 100, maxBufferSize = 1, flushInterval = 1.hour))
+      val bucket = nowBucket()
+      val e1 = event("p1", 1L, "e-1", bucket)
+      val e2 = event("p2", 1L, "e-2", bucket)
+      val e3 = event("p3", 1L, "e-3", bucket)
+
+      ref ! TagWrite(tagName, Vector(e1))
+      ref ! TagWrite(tagName, Vector(e2))
+      sender.expectMsgType[Status.Failure]
+      expectBufferFullLogged()
+
+      ref ! Flush
+      probe.expectMsg(Vector(toEw(e1, 1)))
+      probe.expectMsg(ProgressWrite("p1", 1, 1, e1.timeUuid))
+      sender.expectMsg(Done)
+      sender.expectMsg(FlushComplete)
+
+      ref ! TagWrite(tagName, Vector(e3))
+      ref ! Flush
+      probe.expectMsg(Vector(toEw(e3, 1)))
+      probe.expectMsg(ProgressWrite("p3", 1, 1, e3.timeUuid))
+      sender.expectMsg(Done)
+      sender.expectMsg(FlushComplete)
+    }
+
+    "not reject anything when max-buffer-size is 0" in new Setup {
       val (probe, ref) =
         setup(settings = defaultSettings.copy(maxBatchSize = 100, maxBufferSize = 0, flushInterval = 1.hour))
       val bucket = nowBucket()
 
-      // Send many writes - none should be rejected since maxBufferSize=0 disables the check
-      for (i <- 1 to 10) {
-        val e = event(s"p$i", 1L, s"e-$i", bucket)
-        ref ! TagWrite(tagName, Vector(e))
+      (1 to 10).foreach { i =>
+        ref ! TagWrite(tagName, Vector(event(s"p$i", 1L, s"e-$i", bucket)))
       }
 
-      // No error logs should appear
-      logProbe.expectNoMessage(waitDuration)
+      sender.expectNoMessage(waitDuration)
       probe.expectNoMessage(waitDuration)
     }
   }

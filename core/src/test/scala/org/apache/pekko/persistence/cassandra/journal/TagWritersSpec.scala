@@ -54,7 +54,7 @@ class TagWritersSpec
 
   private val defaultSettings = TagWriterSettings(
     maxBatchSize = 10,
-    maxBufferSize = 50000,
+    maxBufferSize = 0,
     flushInterval = 10.seconds,
     scanningFlushInterval = 20.seconds,
     stopTagWriterWhenIdle = 5.seconds,
