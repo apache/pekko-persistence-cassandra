@@ -295,6 +295,24 @@ import scala.jdk.FutureConverters._
        DESC LIMIT 1
    """
 
+  /**
+   * Same as `selectHighestSequenceNr` but restricted to sequence numbers above a known floor.
+   *
+   * `messages` is clustered by `sequence_nr` ascending, so a `DESC` query is a reverse read. Bounding
+   * the clustering slice keeps the reverse read off the part of the partition that is already known to
+   * be below the answer, which matters because Cassandra reverse reads are considerably more expensive
+   * than forward reads over large partitions.
+   */
+  def selectHighestSequenceNrGreaterThan =
+    s"""
+     SELECT sequence_nr FROM $tableName WHERE
+       persistence_id = ? AND
+       partition_nr = ? AND
+       sequence_nr > ?
+       ORDER BY sequence_nr
+       DESC LIMIT 1
+   """
+
   def selectDeletedTo =
     s"""
       SELECT deleted_to FROM $metadataTableName WHERE
