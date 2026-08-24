@@ -24,6 +24,8 @@ import org.scalatest.prop.TableDrivenPropertyChecks._
 import scala.util.Random
 
 import pekko.persistence.cassandra.journal.JournalSettings
+import pekko.persistence.cassandra.snapshot.SnapshotSettings
+import pekko.persistence.cassandra.EventsByTagSettings
 
 class CassandraPluginSettingsSpec
     extends TestKit(ActorSystem("CassandraPluginConfigSpec"))
@@ -38,12 +40,33 @@ class CassandraPluginSettingsSpec
     def maxKey = Random.alphanumeric.dropWhile(_.toString.matches("[^a-zA-Z]")).take(48).mkString
 
     Table(
-      ("Keyspace", "isValid"), ("test", true), ("_test_123", false), ("", false), ("test-space", false),
-      ("'test'", false), ("a", true), ("a_", true), ("1", false), ("a1", true), ("_", false), ("asdf!", false),
-      (maxKey, true), ("\"_asdf\"", false), ("\"_\"", false), ("\"a\"", true), ("\"a_sdf\"", true), ("\"\"", false),
-      ("\"valid_with_quotes\"", true), ("\"missing_trailing_quote", false), ("missing_leading_quote\"", false),
-      ('"'.toString + maxKey + '"'.toString, true), // using interpolation here breaks scalafmt :-/
-      (maxKey + "_", false))
+      ("Keyspace", "isValid"),
+      // unquoted: must start with a letter, then alphanumeric/underscore, max 48 chars
+      ("test", true),
+      ("_test_123", false),
+      ("", false),
+      ("test-space", false),
+      ("'test'", false),
+      ("a", true),
+      ("a_", true),
+      ("1", false),
+      ("a1", true),
+      ("_", false),
+      ("asdf!", false),
+      (maxKey, true),
+      (maxKey + "_", false),
+      // quoted: any content except a double quote, 1 to 48 chars
+      ("\"_asdf\"", true),
+      ("\"_\"", true),
+      ("\"a\"", true),
+      ("\"a_sdf\"", true),
+      ("\"\"", false),
+      ("\"valid_with_quotes\"", true),
+      ("\"test-space\"", true),
+      ("\"My Table\"", true),
+      ("\"missing_trailing_quote", false),
+      ("missing_leading_quote\"", false),
+      ('"'.toString + maxKey + '"'.toString, true))
   }
 
   override protected def afterAll(): Unit = {
@@ -124,12 +147,96 @@ class CassandraPluginSettingsSpec
 
     "validate table name parameter" in {
       forAll(keyspaceNames) { (tableName, isValid) =>
-        if (isValid) PluginSettings.validateKeyspaceName(tableName) must be(tableName)
+        if (isValid) PluginSettings.validateTableName(tableName) must be(tableName)
         else
           intercept[IllegalArgumentException] {
-            PluginSettings.validateKeyspaceName(tableName)
-          }
+            PluginSettings.validateTableName(tableName)
+          }.getMessage must include("Invalid table name")
       }
+    }
+
+    "reject invalid keyspace name in JournalSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""journal.keyspace = "invalid;name"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new JournalSettings(system, badConfig)
+      }.getMessage must include("Invalid keyspace name")
+    }
+
+    "reject invalid table name in JournalSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""journal.table = "invalid;table"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new JournalSettings(system, badConfig)
+      }.getMessage must include("Invalid table name")
+    }
+
+    "reject invalid metadata table name in JournalSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""journal.metadata-table = "bad-name"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new JournalSettings(system, badConfig)
+      }.getMessage must include("Invalid table name")
+    }
+
+    "reject invalid all-persistence-ids table name in JournalSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""journal.all-persistence-ids-table = "bad-name"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new JournalSettings(system, badConfig)
+      }.getMessage must include("Invalid table name")
+    }
+
+    "reject invalid keyspace name in SnapshotSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""snapshot.keyspace = "invalid;name"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new SnapshotSettings(system, badConfig)
+      }.getMessage must include("Invalid keyspace name")
+    }
+
+    "reject invalid table name in SnapshotSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""snapshot.table = "invalid;table"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new SnapshotSettings(system, badConfig)
+      }.getMessage must include("Invalid table name")
+    }
+
+    "reject invalid tag table name in EventsByTagSettings" in {
+      val badConfig =
+        ConfigFactory.parseString("""events-by-tag.table = "bad-name"""").withFallback(defaultConfig)
+      intercept[IllegalArgumentException] {
+        new EventsByTagSettings(system, badConfig)
+      }.getMessage must include("Invalid table name")
+    }
+
+    // Quoted identifiers are case sensitive in CQL and may contain characters that are not
+    // allowed unquoted, so they must survive validation now that it is applied at startup.
+    "accept quoted keyspace and table names in JournalSettings" in {
+      val quotedConfig = ConfigFactory.parseString("""
+          |journal.keyspace = "\"My Keyspace\""
+          |journal.table = "\"my-messages\""
+        """.stripMargin).withFallback(defaultConfig)
+      val config = new JournalSettings(system, quotedConfig)
+      config.keyspace must be("\"My Keyspace\"")
+      config.table must be("\"my-messages\"")
+    }
+
+    "accept a quoted table name in SnapshotSettings" in {
+      val quotedConfig = ConfigFactory.parseString("""
+          |snapshot.table = "\"my-snapshots\""
+        """.stripMargin).withFallback(defaultConfig)
+      val config = new SnapshotSettings(system, quotedConfig)
+      config.table must be("\"my-snapshots\"")
+    }
+
+    "accept a quoted tag table name in EventsByTagSettings" in {
+      val quotedConfig = ConfigFactory.parseString("""
+          |events-by-tag.table = "\"my-tag-views\""
+        """.stripMargin).withFallback(defaultConfig)
+      val config = new EventsByTagSettings(system, quotedConfig)
+      config.tagTable.name must be("\"my-tag-views\"")
     }
 
     "parse keyspace-autocreate parameter" in {

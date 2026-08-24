@@ -17,6 +17,8 @@ import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.annotation.InternalApi
 import pekko.persistence.cassandra.PluginSettings.getReplicationStrategy
+import pekko.persistence.cassandra.PluginSettings.validateKeyspaceName
+import pekko.persistence.cassandra.PluginSettings.validateTableName
 import pekko.persistence.cassandra.compaction.CassandraCompactionStrategy
 import pekko.persistence.cassandra.getListFromConfig
 import com.typesafe.config.Config
@@ -31,9 +33,9 @@ import com.typesafe.config.Config
   val keyspaceAutoCreate: Boolean = snapshotConfig.getBoolean("keyspace-autocreate")
   val tablesAutoCreate: Boolean = snapshotConfig.getBoolean("tables-autocreate")
 
-  val keyspace: String = snapshotConfig.getString("keyspace")
+  val keyspace: String = validateKeyspaceName(snapshotConfig.getString("keyspace"))
 
-  val table: String = snapshotConfig.getString("table")
+  val table: String = validateTableName(snapshotConfig.getString("table"))
 
   val tableCompactionStrategy: CassandraCompactionStrategy =
     CassandraCompactionStrategy(snapshotConfig.getConfig("table-compaction-strategy"))
