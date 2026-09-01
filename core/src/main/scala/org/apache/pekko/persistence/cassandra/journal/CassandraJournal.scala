@@ -122,8 +122,13 @@ import scala.util.{ Failure, Success, Try }
     else
       None
   }
+  // unbounded, used by the delete path which needs the highest sequence nr of a specific partition
   private val preparedSelectHighestSequenceNr: RetryableFutureEval[PreparedStatement] =
     RetryableFutureEval(() => session.prepare(statements.journalStatements.selectHighestSequenceNr))
+
+  // bounded, used when scanning partitions for the highest sequence nr of a persistenceId
+  private val preparedSelectHighestSequenceNrGreaterThan: RetryableFutureEval[PreparedStatement] =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.selectHighestSequenceNrGreaterThan))
 
   private val deletesNotSupportedException: RetryableFutureEval[PreparedStatement] =
     RetryableFutureEval(() =>
@@ -206,6 +211,7 @@ import scala.util.{ Failure, Success, Try }
       preparedWriteMessageWithMeta.futureResult()
       preparedSelectMessages.futureResult()
       preparedSelectHighestSequenceNr.futureResult()
+      preparedSelectHighestSequenceNrGreaterThan.futureResult()
       if (settings.journalSettings.supportAllPersistenceIds)
         preparedInsertIntoAllPersistenceIds.futureResult()
       if (settings.journalSettings.supportDeletes) {
@@ -673,10 +679,23 @@ import scala.util.{ Failure, Success, Try }
       persistenceId: String,
       fromSequenceNr: Long,
       partitionSize: Long): Future[Long] = {
-    def find(currentPnr: Long, currentSnr: Long, foundEmptyPartition: Boolean): Future[Long] = {
+    // Every statement of an AtomicWrite is stored in the partition of its *last* sequence number and an
+    // AtomicWrite may span at most two partitions, so partition numbers increase monotonically with
+    // sequence number: every row of a later partition is above every row of an earlier one. That makes
+    // `sequence_nr > currentSnr` a filter that can never hide the answer, only rows already known to be
+    // below it.
+    //
+    // The trade-off is that a partition holding nothing above `currentSnr` is indistinguishable from an
+    // empty one, so the scan cannot stop at the first such partition. Two of them can precede the first
+    // row that matters: the partition the floor itself lives in, plus one that an AtomicWrite skipped
+    // over. Probing three consecutive partitions before giving up covers both, and costs one extra
+    // bounded query per scan compared with an unbounded reverse read per partition.
+    val maxConsecutiveEmptyPartitions = 3
+
+    def find(currentPnr: Long, currentSnr: Long, consecutiveEmptyPartitions: Int): Future[Long] = {
       // if every message has been deleted and thus no sequence_nr the driver gives us back 0 for "null" :(
-      val boundSelectHighestSequenceNr = preparedSelectHighestSequenceNr.futureResult().map(ps => {
-        val bound = ps.bind(persistenceId, currentPnr: JLong)
+      val boundSelectHighestSequenceNr = preparedSelectHighestSequenceNrGreaterThan.futureResult().map(ps => {
+        val bound = ps.bind(persistenceId, currentPnr: JLong, currentSnr: JLong)
         bound
 
       })
@@ -687,17 +706,17 @@ import scala.util.{ Failure, Success, Try }
         }
         .flatMap {
           case None | Some(0) =>
-            // never been to this partition, query one more partition because AtomicWrite can span (skip)
-            // one entire partition
+            // nothing above currentSnr here, but a later partition may still hold events
             // Some(0) when old schema with static used column, everything deleted in this partition
-            if (foundEmptyPartition) Future.successful(currentSnr)
-            else find(currentPnr + 1, currentSnr, foundEmptyPartition = true)
+            val emptyPartitions = consecutiveEmptyPartitions + 1
+            if (emptyPartitions >= maxConsecutiveEmptyPartitions) Future.successful(currentSnr)
+            else find(currentPnr + 1, currentSnr, emptyPartitions)
           case Some(nextHighest) =>
-            find(currentPnr + 1, nextHighest, foundEmptyPartition = false)
+            find(currentPnr + 1, nextHighest, consecutiveEmptyPartitions = 0)
         }
     }
 
-    find(partitionNr(fromSequenceNr, partitionSize), fromSequenceNr, foundEmptyPartition = false)
+    find(partitionNr(fromSequenceNr, partitionSize), fromSequenceNr, consecutiveEmptyPartitions = 0)
   }
 
   private def executeBatch(body: BatchStatement => BatchStatement): Future[Unit] = {
