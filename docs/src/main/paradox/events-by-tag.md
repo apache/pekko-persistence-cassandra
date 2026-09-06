@@ -192,6 +192,30 @@ be taken not to have batches that will be rejected by Cassandra. Two other cases
 * Periodically: By default 250ms. To prevent eventsByTag queries being too out of date.
 * When a starting a new timebucket, which translates to a new partition in Cassandra, the events for the old timebucket are written.
 
+### Limiting the tag write buffer
+
+Each tag has a writer actor that buffers events until they are batched into a write. Normal writes are already
+bounded: the journal waits for the tag write to be acknowledged before completing the persist, so a persistent
+actor has at most one write outstanding. Recovery is different — it sends tag writes without waiting for
+acknowledgement, so a persistence id replaying a lot of tagged events is what can make the buffer grow.
+
+`max-buffer-size` puts a hard upper bound on the number of events one tag writer will hold. It is `unlimited` by
+default, which means no limit; `off` and `0` mean the same thing.
+
+```
+pekko.persistence.cassandra.events-by-tag.max-buffer-size = 100000
+```
+
+When the limit is reached the tag write is rejected and the failure is returned to the journal, which fails the
+write for that persistent actor and stops it. Nothing is dropped silently: a rejected write consumes no tag pid
+sequence nrs, so it leaves no gap in `tag_views`, and the events are written by tag scanning when the persistent
+actor next recovers.
+
+That is a disruptive outcome, so only set this if an unbounded buffer is a real risk for you — it trades stopped
+persistent actors for bounded memory. Set it comfortably above `max-message-batch-size`, as the batch currently
+being written counts towards the buffer. The existing warning about the buffer getting too large is logged well
+before the limit is reached and is the signal to investigate first.
+
 ## Cleanup of tag_views table
 
 By default the tag_views table keeps tagged events indefinitely, even when the original events have been removed. 

@@ -154,8 +154,11 @@ import com.typesafe.config.Config
 
   val tagWriteTimeout = eventsByTagConfig.getDuration("tag-write-timeout", TimeUnit.MILLISECONDS).millis
 
+  val maxBufferSize: Int = unlimitedInt(eventsByTagConfig, "max-buffer-size")
+
   val tagWriterSettings = TagWriterSettings(
     eventsByTagConfig.getInt("max-message-batch-size"),
+    maxBufferSize,
     eventsByTagConfig.getDuration("flush-interval", TimeUnit.MILLISECONDS).millis,
     eventsByTagConfig.getDuration("scanning-flush-interval", TimeUnit.MILLISECONDS).millis,
     eventsByTagConfig.getDuration("stop-tag-writer-when-idle", TimeUnit.MILLISECONDS).millis,
@@ -217,6 +220,16 @@ import com.typesafe.config.Config
     eventsByTagConfig.getDouble("retries.random-factor"))
 
   val maxMissingToSearch: Long = eventsByTagConfig.getLong("max-missing-to-search")
+
+  /**
+   * An int setting where no limit can be spelled either as `0` or as `unlimited`/`off`. Returns `0` for no limit.
+   */
+  private def unlimitedInt(cfg: Config, path: String): Int = {
+    cfg.getString(path).toLowerCase match {
+      case "unlimited" | "off" | "false" => 0
+      case _                             => cfg.getInt(path)
+    }
+  }
 
   private def optionalDuration(cfg: Config, path: String): Option[FiniteDuration] = {
     cfg.getString(path).toLowerCase match {

@@ -44,8 +44,8 @@ private[pekko] case class Buffer(
 
   def remove(pid: String): Buffer = {
     val (toFilter, without) = nextBatch.partition(_.events.head._1.persistenceId == pid)
-    val filteredPending = pending.filterNot(_.events.head._1.persistenceId == pid)
-    val removed = toFilter.foldLeft(0)((acc, next) => acc + next.events.size)
+    val (removedPending, filteredPending) = pending.partition(_.events.head._1.persistenceId == pid)
+    val removed = Buffer.eventCount(toFilter) + Buffer.eventCount(removedPending)
     copy(size = size - removed, nextBatch = without, pending = filteredPending)
   }
 
@@ -80,7 +80,7 @@ private[pekko] case class Buffer(
         // rare case where events have been received out of order, just re-build the buffer
         require(pending.isEmpty)
         val allWrites = (nextBatch :+ write).sortBy(_.events.head._1.timeUuid)(timeUuidOrdering)
-        rebuild(allWrites)
+        rebuild(allWrites, newSize)
       } else if (nextBatch.headOption.exists(_.events.head._1.timeBucket != write.events.head._1.timeBucket)) {
         // time bucket has changed
         copy(size = newSize, pending = pending :+ write, writeRequired = true)
@@ -104,7 +104,12 @@ private[pekko] case class Buffer(
     }
   }
 
-  private def rebuild(writes: Vector[AwaitingWrite]): Buffer = {
+  /**
+   * `totalSize` is the number of events in `writes`. It is passed in rather than counted here because
+   * `writes` can be very large when the database is falling behind, and this runs on every completed
+   * write.
+   */
+  private def rebuild(writes: Vector[AwaitingWrite], totalSize: Int): Buffer = {
     var buffer = Buffer.empty(batchSize)
     var i = 0
     while (!buffer.shouldWrite() && i < writes.size) {
@@ -112,7 +117,7 @@ private[pekko] case class Buffer(
       i += 1
     }
     //       pending may have one in it as the last one may have been a time bucket change rather than bach full
-    val done = buffer.copy(pending = buffer.pending ++ writes.drop(i))
+    val done = buffer.copy(size = totalSize, pending = buffer.pending ++ writes.drop(i))
     done
   }
 
@@ -123,7 +128,8 @@ private[pekko] case class Buffer(
   def writeComplete(): Buffer = {
     // this could be more efficient by adding until a write is required but this is simpler and
     // pending is expected to be small unless the database is falling behind
-    rebuild(pending)
+    // nextBatch has just been written and is bounded by batchSize, so what is left is the rest of size
+    rebuild(pending, size - Buffer.eventCount(nextBatch))
   }
 }
 
@@ -132,6 +138,10 @@ private[pekko] case class Buffer(
  */
 @InternalApi
 private[pekko] object Buffer {
+
+  private def eventCount(writes: Vector[AwaitingWrite]): Int =
+    writes.foldLeft(0)((acc, next) => acc + next.events.size)
+
   def empty(batchSize: Int): Buffer = {
     require(batchSize > 0)
     Buffer(batchSize, 0, Vector.empty, Vector.empty, writeRequired = false)

@@ -17,7 +17,8 @@ import java.nio.ByteBuffer
 import java.util.UUID
 import org.apache.pekko
 import pekko.Done
-import pekko.actor.{ ActorRef, ActorSystem }
+import pekko.actor.{ ActorRef, ActorSystem, Status }
+import pekko.event.Logging
 import pekko.event.Logging.Warning
 import pekko.persistence.cassandra.Day
 import pekko.persistence.cassandra.journal.CassandraJournal._
@@ -78,6 +79,7 @@ class TagWriterSpec
   val successfulWrite: Statement[?] => Future[Done] = _ => Future.successful(Done)
   val defaultSettings = TagWriterSettings(
     maxBatchSize = 10,
+    maxBufferSize = 0,
     flushInterval = 10.seconds,
     scanningFlushInterval = 20.seconds,
     stopTagWriterWhenIdle = 5.seconds,
@@ -101,6 +103,11 @@ class TagWriterSpec
     val sender = TestProbe()
     implicit val senderRef: ActorRef = sender.ref
   }
+
+  private def expectBufferFullLogged(): Unit =
+    logProbe.expectMsgPF(waitDuration) {
+      case Logging.Error(_, _, _, msg) if msg.toString.contains("Buffer for tagged events is full") => ()
+    }
 
   "Tag writer batching" must {
 
@@ -670,6 +677,130 @@ class TagWriterSpec
       promiseForWrite.success(Done)
     }
 
+  }
+
+  "Tag writer buffer limit" must {
+
+    "reject a write and fail the sender when the buffer is full" in new Setup {
+      val (probe, ref) =
+        setup(settings = defaultSettings.copy(maxBatchSize = 100, maxBufferSize = 1, flushInterval = 1.hour))
+      val bucket = nowBucket()
+      val e1 = event("p1", 1L, "e-1", bucket)
+      val e2 = event("p2", 1L, "e-2", bucket)
+
+      // fills the buffer, nothing is written yet as the batch is not full
+      ref ! TagWrite(tagName, Vector(e1))
+      probe.expectNoMessage(waitDuration)
+
+      ref ! TagWrite(tagName, Vector(e2))
+      val failure = sender.expectMsgType[Status.Failure]
+      assert(failure.cause.isInstanceOf[TagWriter.TagWriterBufferFullException])
+      probe.expectNoMessage(waitDuration)
+      expectBufferFullLogged()
+    }
+
+    "reject a write and fail the sender when the buffer is full during a write" in new Setup {
+      val writePromise = Promise[Done]()
+      val (probe, ref) = setup(
+        settings = defaultSettings.copy(maxBatchSize = 1, maxBufferSize = 2, flushInterval = 1.hour),
+        writeResponse = LazyList(writePromise.future) ++ LazyList.continually(Future.successful(Done)))
+      val bucket = nowBucket()
+      val e1 = event("p1", 1L, "e-1", bucket)
+      val e2 = event("p2", 1L, "e-2", bucket)
+      val e3 = event("p3", 1L, "e-3", bucket)
+
+      // maxBatchSize is 1 so this write starts immediately and stays in the buffer while in flight
+      ref ! TagWrite(tagName, Vector(e1))
+      probe.expectMsg(Vector(toEw(e1, 1)))
+
+      // buffer holds the in flight batch, one more still fits
+      ref ! TagWrite(tagName, Vector(e2))
+      probe.expectNoMessage(waitDuration)
+
+      ref ! TagWrite(tagName, Vector(e3))
+      val failure = sender.expectMsgType[Status.Failure]
+      assert(failure.cause.isInstanceOf[TagWriter.TagWriterBufferFullException])
+      expectBufferFullLogged()
+
+      // the accepted write is unaffected by the rejection
+      writePromise.success(Done)
+      sender.expectMsg(Done)
+      probe.expectMsg(ProgressWrite("p1", 1, 1, e1.timeUuid))
+      probe.expectMsg(Vector(toEw(e2, 1)))
+      probe.expectMsg(ProgressWrite("p2", 1, 1, e2.timeUuid))
+      sender.expectMsg(Done)
+    }
+
+    "not consume a tag pid sequence nr for a rejected write" in new Setup {
+      val (probe, ref) =
+        setup(settings = defaultSettings.copy(maxBatchSize = 100, maxBufferSize = 1, flushInterval = 1.hour))
+      val bucket = nowBucket()
+      val e1 = event("p1", 1L, "e-1", bucket)
+      val e2 = event("p1", 2L, "e-2", bucket)
+
+      ref ! TagWrite(tagName, Vector(e1))
+      probe.expectNoMessage(waitDuration)
+
+      // rejected, so it must not take tag pid sequence nr 2
+      ref ! TagWrite(tagName, Vector(e2))
+      sender.expectMsgType[Status.Failure]
+      expectBufferFullLogged()
+
+      ref ! Flush
+      probe.expectMsg(Vector(toEw(e1, 1)))
+      probe.expectMsg(ProgressWrite("p1", 1, 1, e1.timeUuid))
+      sender.expectMsg(Done)
+      sender.expectMsg(FlushComplete)
+
+      // buffer has drained, the retry gets the sequence nr the rejected write did not take.
+      // a gap here would stall eventsByTag until tag_views was repaired
+      ref ! TagWrite(tagName, Vector(e2))
+      ref ! Flush
+      probe.expectMsg(Vector(toEw(e2, 2)))
+      probe.expectMsg(ProgressWrite("p1", 2, 2, e2.timeUuid))
+      sender.expectMsg(Done)
+      sender.expectMsg(FlushComplete)
+    }
+
+    "accept writes again once the buffer has drained" in new Setup {
+      val (probe, ref) =
+        setup(settings = defaultSettings.copy(maxBatchSize = 100, maxBufferSize = 1, flushInterval = 1.hour))
+      val bucket = nowBucket()
+      val e1 = event("p1", 1L, "e-1", bucket)
+      val e2 = event("p2", 1L, "e-2", bucket)
+      val e3 = event("p3", 1L, "e-3", bucket)
+
+      ref ! TagWrite(tagName, Vector(e1))
+      ref ! TagWrite(tagName, Vector(e2))
+      sender.expectMsgType[Status.Failure]
+      expectBufferFullLogged()
+
+      ref ! Flush
+      probe.expectMsg(Vector(toEw(e1, 1)))
+      probe.expectMsg(ProgressWrite("p1", 1, 1, e1.timeUuid))
+      sender.expectMsg(Done)
+      sender.expectMsg(FlushComplete)
+
+      ref ! TagWrite(tagName, Vector(e3))
+      ref ! Flush
+      probe.expectMsg(Vector(toEw(e3, 1)))
+      probe.expectMsg(ProgressWrite("p3", 1, 1, e3.timeUuid))
+      sender.expectMsg(Done)
+      sender.expectMsg(FlushComplete)
+    }
+
+    "not reject anything when max-buffer-size is 0" in new Setup {
+      val (probe, ref) =
+        setup(settings = defaultSettings.copy(maxBatchSize = 100, maxBufferSize = 0, flushInterval = 1.hour))
+      val bucket = nowBucket()
+
+      (1 to 10).foreach { i =>
+        ref ! TagWrite(tagName, Vector(event(s"p$i", 1L, s"e-$i", bucket)))
+      }
+
+      sender.expectNoMessage(waitDuration)
+      probe.expectNoMessage(waitDuration)
+    }
   }
 
   "Tag writer error scenarios" must {
