@@ -28,4 +28,7 @@ Scala
 Java
 : @@snip [snapshot-keyspace](/docs/src/test/java/jdoc/cleanup/CleanupDocExample.java) { #cleanup } 
 
+The operations that delete tagged events start an actor that lives for as long as the `ActorSystem` does, so call
+`close()` on the cleanup tool once the operations have completed.
+
 By default, all operations only print what they were going to do. Once you're happy with what the cleanup tool is going to do set `pekko.persistence.cassandra.cleanup.dry-run = false`
