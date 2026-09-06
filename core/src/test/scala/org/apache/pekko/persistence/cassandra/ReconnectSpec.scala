@@ -18,6 +18,7 @@ import pekko.actor.{ ActorSystem, Props }
 import pekko.persistence.cassandra.CassandraLifecycle.AwaitPersistenceInit
 import pekko.testkit.{ ImplicitSender, SocketUtil, TestKit }
 import com.typesafe.config.ConfigFactory
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.Suite
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
@@ -43,7 +44,14 @@ class ReconnectSpec
     with ImplicitSender
     with AnyWordSpecLike
     with Matchers
-    with ScalaFutures {
+    with ScalaFutures
+    with BeforeAndAfterAll {
+
+  override protected def afterAll(): Unit = {
+    // not verifying the shutdown, the driver is left reconnecting to a Cassandra that is gone
+    shutdown(system)
+    super.afterAll()
+  }
 
   "Reconnecting" must {
     "start with system off" in {
