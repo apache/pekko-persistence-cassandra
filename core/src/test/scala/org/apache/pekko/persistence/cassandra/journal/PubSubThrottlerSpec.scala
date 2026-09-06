@@ -15,6 +15,7 @@ package org.apache.pekko.persistence.cassandra.journal
 
 import scala.concurrent.duration.DurationInt
 
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatest.matchers.should.Matchers
 
@@ -25,7 +26,14 @@ import pekko.testkit.{ TestKit, TestProbe }
 class PubSubThrottlerSpec
     extends TestKit(ActorSystem("CassandraConfigCheckerSpec"))
     with AnyWordSpecLike
-    with Matchers {
+    with Matchers
+    with BeforeAndAfterAll {
+
+  override protected def afterAll(): Unit = {
+    shutdown(system, verifySystemShutdown = true)
+    super.afterAll()
+  }
+
   "PubSubThrottler" should {
     "eat up duplicate messages that arrive within the same [interval] window" in {
       val delegate = TestProbe()

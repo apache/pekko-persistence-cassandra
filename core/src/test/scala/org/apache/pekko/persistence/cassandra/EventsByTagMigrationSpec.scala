@@ -427,6 +427,7 @@ abstract class AbstractEventsByTagMigrationSpec
         e.printStackTrace()
     }
     super.afterAll()
+    shutdown(migrationSystem)
     shutdown(systemTwo)
     shutdown(systemThree)
   }
