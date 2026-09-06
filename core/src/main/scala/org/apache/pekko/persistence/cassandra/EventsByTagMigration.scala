@@ -31,6 +31,8 @@ import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.util.Timeout
 import pekko.{ Done, NotUsed }
 import com.datastax.oss.driver.api.core.cql.Row
+
+import java.util.concurrent.atomic.AtomicInteger
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -38,6 +40,9 @@ import scala.concurrent.duration._
 import pekko.actor.ClassicActorSystemProvider
 
 object EventsByTagMigration {
+
+  private val uniqueActorNameCounter = new AtomicInteger(0)
+
   def apply(systemProvider: ClassicActorSystemProvider): EventsByTagMigration =
     new EventsByTagMigration(systemProvider)
 
@@ -78,6 +83,9 @@ object EventsByTagMigration {
 }
 
 /**
+ * Each instance starts a tag writers actor that lives until [[EventsByTagMigration#close]] is called,
+ * so an instance should be closed once the migration it was created for has completed.
+ *
  * @param pluginConfigPath The config namespace where the plugin is configured, default is `pekko.persistence.cassandra`
  */
 class EventsByTagMigration(
@@ -96,7 +104,9 @@ class EventsByTagMigration(
   private val taggedPreparedStatements = new TaggedPreparedStatements(journalStatements, session.prepare)
   private val tagWriterSession =
     TagWritersSession(session, journalSettings.writeProfile, journalSettings.readProfile, taggedPreparedStatements)
-  private val tagWriters = system.actorOf(TagWriters.props(eventsByTagSettings.tagWriterSettings, tagWriterSession))
+  private val tagWriters = system.actorOf(
+    TagWriters.props(eventsByTagSettings.tagWriterSettings, tagWriterSession),
+    s"eventsByTagMigration-tag-writers-${EventsByTagMigration.uniqueActorNameCounter.incrementAndGet()}")
 
   private val tagRecovery =
     new CassandraTagRecovery(system, session, settings, taggedPreparedStatements, tagWriters)
@@ -243,5 +253,17 @@ class EventsByTagMigration(
       _ <- (tagWriters ? FlushAllTagWriters(timeout)).mapTo[AllFlushed.type]
     } yield Done
   }
+
+  /**
+   * Stops the tag writers actor that this instance started. Without this the actor stays alive for
+   * the lifetime of the `ActorSystem`, so call it once the migration has completed.
+   *
+   * Any migration still in progress is aborted, so only close after the futures returned by the
+   * other methods have completed. This instance must not be used again after it has been closed.
+   *
+   * Calling this more than once has no further effect.
+   */
+  def close(): Unit =
+    system.stop(tagWriters)
 
 }
