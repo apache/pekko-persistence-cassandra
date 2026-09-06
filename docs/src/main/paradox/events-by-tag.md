@@ -199,8 +199,8 @@ bounded: the journal waits for the tag write to be acknowledged before completin
 actor has at most one write outstanding. Recovery is different — it sends tag writes without waiting for
 acknowledgement, so a persistence id replaying a lot of tagged events is what can make the buffer grow.
 
-`max-buffer-size` puts a hard upper bound on the number of events one tag writer will hold. It is `0` by default,
-which means no limit.
+`max-buffer-size` puts a hard upper bound on the number of events one tag writer will hold. It is `unlimited` by
+default, which means no limit; `off` and `0` mean the same thing.
 
 ```
 pekko.persistence.cassandra.events-by-tag.max-buffer-size = 100000

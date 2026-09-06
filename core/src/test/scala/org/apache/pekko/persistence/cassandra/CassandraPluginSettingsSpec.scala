@@ -149,4 +149,26 @@ class CassandraPluginSettingsSpec
     }
   }
 
+  "An EventsByTagSettings" must {
+
+    def settingsWithMaxBufferSize(value: String): EventsByTagSettings =
+      new EventsByTagSettings(
+        system,
+        ConfigFactory.parseString(s"events-by-tag.max-buffer-size = $value").withFallback(defaultConfig))
+
+    "default max-buffer-size to no limit" in {
+      new EventsByTagSettings(system, defaultConfig).maxBufferSize must be(0)
+    }
+
+    "parse max-buffer-size as a number" in {
+      settingsWithMaxBufferSize("100000").maxBufferSize must be(100000)
+    }
+
+    "parse max-buffer-size no limit aliases" in {
+      forAll(Table("value", "unlimited", "UNLIMITED", "off", "false", "0")) { value =>
+        settingsWithMaxBufferSize(value).maxBufferSize must be(0)
+      }
+    }
+  }
+
 }
