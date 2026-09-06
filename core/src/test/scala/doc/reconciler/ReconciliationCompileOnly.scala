@@ -34,7 +34,7 @@ class ReconciliationCompileOnly {
 
   // Drop and re-create data for a persistence id
   val pid = "pid1"
-  for {
+  val result: Future[Done] = for {
     // do this before dropping the data
     tags <- rec.tagsForPersistenceId(pid)
     // drop the tag view for every tag for this persistence id
@@ -42,5 +42,8 @@ class ReconciliationCompileOnly {
     // optional: re-build, if this is ommited then it will be re-build next time the pid is started
     _ <- rec.rebuildTagViewForPersistenceIds(pid)
   } yield Done
+
+  // release the tag writers actor that the Reconciliation started
+  result.onComplete(_ => rec.close())
   // #reconcile
 }
