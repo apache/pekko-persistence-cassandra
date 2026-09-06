@@ -49,6 +49,9 @@ import com.datastax.oss.driver.api.core.cql.Row
  * When a list of `persistenceIds` are given they are deleted sequentially in the order
  * of the list. It's possible to parallelize the deletes by running several cleanup operations
  * at the same time operating on different sets of `persistenceIds`.
+ *
+ * The tagged event operations start an actor that lives until [[Cleanup#close]] is called, so an
+ * instance should be closed once the cleanup operations it was created for have completed.
  */
 @ApiMayChange
 final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: CleanupSettings) {
@@ -68,9 +71,16 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
   // operations on journal, snapshotStore and tagViews should be only be done when dry-run = false
   private val journal: ActorRef = Persistence(system).journalFor(pluginLocation + ".journal")
   private lazy val snapshotStore: ActorRef = Persistence(system).snapshotStoreFor(pluginLocation + ".snapshot")
-  private lazy val tagViewsReconciliation = new Reconciliation(
-    system,
-    new ReconciliationSettings(system.settings.config.getConfig(pluginLocation + ".reconciler")))
+  // only the tagged event operations need this and it starts an actor, so track whether it was
+  // created to keep `close` from creating one just to stop it again
+  @volatile private var tagViewsReconciliationCreated = false
+  private lazy val tagViewsReconciliation = {
+    val reconciliation = new Reconciliation(
+      system,
+      new ReconciliationSettings(system.settings.config.getConfig(pluginLocation + ".reconciler")))
+    tagViewsReconciliationCreated = true
+    reconciliation
+  }
 
   private implicit val askTimeout: Timeout = operationTimeout
 
@@ -339,6 +349,20 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
   def deleteAllSnapshots(persistenceId: String): Future[Done] = {
     sendToSnapshotStore(CassandraSnapshotStore.DeleteAllSnapshots(persistenceId))
   }
+
+  /**
+   * Releases the resources that the tagged event operations acquired. Without this the actor that
+   * they start stays alive for the lifetime of the `ActorSystem`, so call this once the cleanup
+   * operations have completed.
+   *
+   * Any operation still in progress is aborted, so only close after the futures returned by the
+   * other methods have completed. This instance must not be used again after it has been closed.
+   *
+   * Calling this more than once has no further effect, and it does nothing if no tagged event
+   * operation was used.
+   */
+  def close(): Unit =
+    if (tagViewsReconciliationCreated) tagViewsReconciliation.close()
 
   private def foreach(
       persistenceIds: immutable.Seq[String],
