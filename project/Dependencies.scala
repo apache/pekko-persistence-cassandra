@@ -29,7 +29,7 @@ object Dependencies {
 
   val logbackVersion = "1.6.3"
 
-  val nettyVersion = "4.2.17.Final"
+  val nettyVersion = "4.2.18.Final"
   val logback = "ch.qos.logback" % "logback-classic" % logbackVersion
 
   val testcontainersVersion = "2.0.5"
