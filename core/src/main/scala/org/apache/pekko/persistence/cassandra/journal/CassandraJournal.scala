@@ -43,8 +43,6 @@ import com.datastax.oss.protocol.internal.util.Bytes
 import com.typesafe.config.Config
 
 import scala.annotation.tailrec
-import scala.collection.immutable
-import scala.collection.immutable.Seq
 import scala.concurrent._
 import scala.jdk.CollectionConverters._
 import scala.jdk.FutureConverters._
@@ -353,7 +351,7 @@ import scala.util.{ Failure, Success, Try }
           if b.tags.isEmpty
         } yield b
 
-      val writesWithTags: immutable.Seq[TagWrite] = messagesByTag.map {
+      val writesWithTags: Seq[TagWrite] = messagesByTag.map {
         case (tag, writes) => TagWrite(tag, writes)
       }.toList
 

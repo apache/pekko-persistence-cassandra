@@ -13,7 +13,6 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import scala.collection.immutable
 import scala.concurrent.Promise
 import java.lang.{ Integer => JInt, Long => JLong }
 import java.net.URLEncoder
@@ -129,7 +128,7 @@ import scala.util.Try
   /**
    * All tag writes should be for the same persistenceId
    */
-  private[pekko] case class BulkTagWrite(tagWrites: immutable.Seq[TagWrite], withoutTags: immutable.Seq[Serialized])
+  private[pekko] case class BulkTagWrite(tagWrites: Seq[TagWrite], withoutTags: Seq[Serialized])
       extends NoSerializationVerificationNeeded
 
   /**
@@ -138,7 +137,7 @@ import scala.util.Try
    * @param actorRunning migration sends these messages without the actor running so TagWriters should not
    *                     validate that the pid is running
    */
-  private[pekko] case class TagWrite(tag: Tag, serialised: immutable.Seq[Serialized], actorRunning: Boolean = true)
+  private[pekko] case class TagWrite(tag: Tag, serialised: Seq[Serialized], actorRunning: Boolean = true)
       extends NoSerializationVerificationNeeded
 
   def props(settings: TagWriterSettings, tagWriterSession: TagWritersSession): Props =
@@ -362,7 +361,7 @@ import scala.util.Try
     }
   }
 
-  private def updatePendingScanning(serialized: immutable.Seq[Serialized]): Unit = {
+  private def updatePendingScanning(serialized: Seq[Serialized]): Unit = {
     serialized.foreach { ser =>
       pendingScanning.get(ser.persistenceId) match {
         case Some(seqNr) =>

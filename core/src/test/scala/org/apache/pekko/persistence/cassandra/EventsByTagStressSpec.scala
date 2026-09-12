@@ -20,7 +20,6 @@ import pekko.persistence.query.NoOffset
 import pekko.stream.testkit.TestSubscriber
 import pekko.stream.testkit.scaladsl.TestSink
 
-import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Future }
 
 class EventsByTagStressSpec extends CassandraSpec(s"""
@@ -44,7 +43,7 @@ class EventsByTagStressSpec extends CassandraSpec(s"""
         system.actorOf(TestActor.props(s"pid$i"))
       }
 
-      val eventsByTagQueries: immutable.Seq[(Int, TestSubscriber.Probe[(String, Int)])] = (0 until readers).map { i =>
+      val eventsByTagQueries: Seq[(Int, TestSubscriber.Probe[(String, Int)])] = (0 until readers).map { i =>
         val probe = queryJournal
           .eventsByTag("all", NoOffset)
           .map(i => {

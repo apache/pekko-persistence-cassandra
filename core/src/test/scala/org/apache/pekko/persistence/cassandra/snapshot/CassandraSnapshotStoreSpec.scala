@@ -28,8 +28,6 @@ import pekko.testkit.TestProbe
 import com.datastax.oss.driver.api.core.cql.SimpleStatement
 import com.typesafe.config.ConfigFactory
 
-import scala.collection.immutable.Seq
-
 object CassandraSnapshotStoreConfiguration {
   lazy val config = ConfigFactory.parseString(s"""
        pekko.persistence.cassandra.journal.keyspace=CassandraSnapshotStoreSpec
