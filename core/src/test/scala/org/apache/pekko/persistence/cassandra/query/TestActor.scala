@@ -13,7 +13,6 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
-import scala.collection.immutable
 import org.apache.pekko
 import pekko.actor.Props
 import pekko.persistence.PersistentActor
@@ -25,7 +24,7 @@ object TestActor {
   def props(persistenceId: String, journalId: String = "pekko.persistence.cassandra.journal"): Props =
     Props(new TestActor(persistenceId, journalId))
 
-  final case class PersistAll(events: immutable.Seq[String])
+  final case class PersistAll(events: Seq[String])
   final case class DeleteTo(seqNr: Long)
 }
 

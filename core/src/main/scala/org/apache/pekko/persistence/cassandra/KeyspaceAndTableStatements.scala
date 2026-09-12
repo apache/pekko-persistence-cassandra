@@ -13,8 +13,6 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import scala.collection.immutable
-
 import org.apache.pekko
 import pekko.actor.ClassicActorSystemProvider
 
@@ -42,7 +40,7 @@ class KeyspaceAndTableStatements(
    * This can be queried in for example a startup script without accessing the actual
    * Cassandra plugin actor.
    */
-  def createJournalTablesStatements: immutable.Seq[String] =
+  def createJournalTablesStatements: Seq[String] =
     journalStatements.createTable ::
     journalStatements.createTagsTable ::
     journalStatements.createTagsProgressTable ::
@@ -77,7 +75,7 @@ class KeyspaceAndTableStatements(
    * This can be queried in for example a startup script without accessing the actual
    * Cassandra plugin actor.
    */
-  def createSnapshotTablesStatements: immutable.Seq[String] =
+  def createSnapshotTablesStatements: Seq[String] =
     snapshotStatements.createTable :: Nil
 
   /**

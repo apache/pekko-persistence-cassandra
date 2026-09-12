@@ -14,7 +14,6 @@
 package org.apache.pekko.persistence.cassandra.cleanup
 
 import java.lang.{ Integer => JInt, Long => JLong }
-import scala.collection.immutable
 import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
@@ -182,7 +181,7 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
    */
   def deleteBeforeSnapshot(persistenceId: String, maxSnapshotsToKeep: Int): Future[Option[SnapshotMetadata]] = {
     require(maxSnapshotsToKeep >= 1, "Must keep at least one snapshot")
-    val snapshots: Future[immutable.Seq[Row]] = selectLatestSnapshotsPs.futureResult().flatMap { ps =>
+    val snapshots: Future[Seq[Row]] = selectLatestSnapshotsPs.futureResult().flatMap { ps =>
       session.select(ps.bind(persistenceId, maxSnapshotsToKeep: JInt)).runWith(Sink.seq)
     }
     snapshots.flatMap(rows => issueSnapshotDelete(persistenceId, maxSnapshotsToKeep, rows))
@@ -241,7 +240,7 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
    *
    * See single persistenceId overload for what is done for each persistence id
    */
-  def cleanupBeforeSnapshot(persistenceIds: immutable.Seq[String], nrSnapshotsToKeep: Int): Future[Done] = {
+  def cleanupBeforeSnapshot(persistenceIds: Seq[String], nrSnapshotsToKeep: Int): Future[Done] = {
     foreach(persistenceIds, "cleanupBeforeSnapshot", pid => cleanupBeforeSnapshot(pid, nrSnapshotsToKeep))
   }
 
@@ -251,7 +250,7 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
    * See single persistenceId overload for what is done for each persistence id
    */
   def cleanupBeforeSnapshot(
-      persistenceIds: immutable.Seq[String],
+      persistenceIds: Seq[String],
       nrSnapshotsToKeep: Int,
       keepAfter: Long): Future[Done] = {
     foreach(persistenceIds, "cleanupBeforeSnapshot", pid => cleanupBeforeSnapshot(pid, nrSnapshotsToKeep, keepAfter))
@@ -268,7 +267,7 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
    * Delete everything related to the given list of `persistenceIds`. All events, tagged events, and
    * snapshots are deleted.
    */
-  def deleteAll(persistenceIds: immutable.Seq[String], neverUsePersistenceIdAgain: Boolean): Future[Done] = {
+  def deleteAll(persistenceIds: Seq[String], neverUsePersistenceIdAgain: Boolean): Future[Done] = {
     foreach(persistenceIds, "deleteAll", pid => deleteAll(pid, neverUsePersistenceIdAgain))
   }
 
@@ -287,7 +286,7 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
   /**
    * Delete all events related to the given list of `persistenceIds`. Snapshots are not deleted.
    */
-  def deleteAllEvents(persistenceIds: immutable.Seq[String], neverUsePersistenceIdAgain: Boolean): Future[Done] = {
+  def deleteAllEvents(persistenceIds: Seq[String], neverUsePersistenceIdAgain: Boolean): Future[Done] = {
     foreach(persistenceIds, "deleteAllEvents", pid => deleteAllEvents(pid, neverUsePersistenceIdAgain))
   }
 
@@ -302,7 +301,7 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
    * Delete all events from `tag_views` table related to the given list of `persistenceIds`.
    * Events in `messages` (journal) table are not deleted and snapshots are not deleted.
    */
-  def deleteAllTaggedEvents(persistenceIds: immutable.Seq[String]): Future[Done] = {
+  def deleteAllTaggedEvents(persistenceIds: Seq[String]): Future[Done] = {
     foreach(persistenceIds, "deleteAllEvents", pid => deleteAllTaggedEvents(pid))
   }
 
@@ -329,7 +328,7 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
   /**
    * Delete all snapshots related to the given list of `persistenceIds`. Events are not deleted.
    */
-  def deleteAllSnapshots(persistenceIds: immutable.Seq[String]): Future[Done] = {
+  def deleteAllSnapshots(persistenceIds: Seq[String]): Future[Done] = {
     foreach(persistenceIds, "deleteAllSnapshots", pid => deleteAllSnapshots(pid))
   }
 
@@ -341,7 +340,7 @@ final class Cleanup(systemProvider: ClassicActorSystemProvider, settings: Cleanu
   }
 
   private def foreach(
-      persistenceIds: immutable.Seq[String],
+      persistenceIds: Seq[String],
       operationName: String,
       pidOperation: String => Future[Done]): Future[Done] = {
     val size = persistenceIds.size
