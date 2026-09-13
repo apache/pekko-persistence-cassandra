@@ -18,7 +18,6 @@ import pekko.actor.{ ActorRef, PoisonPill, Props }
 import pekko.persistence.{ DeleteMessagesFailure, DeleteMessagesSuccess, PersistentActor, RecoveryCompleted }
 import pekko.persistence.cassandra.CassandraSpec
 import pekko.testkit.TestProbe
-import scala.collection.immutable
 import scala.concurrent.duration._
 
 import pekko.testkit.EventFilter
@@ -165,7 +164,7 @@ class CassandraJournalDeletionSpec extends CassandraSpec(s"""
       msg.getMessage shouldEqual "Over 5 outstanding deletes for persistenceId p2"
 
       // Does't matter how many as long as they are all in order
-      val successes: immutable.Seq[Long] = deleteSuccess.receiveWhile(max = 100.millis) {
+      val successes: Seq[Long] = deleteSuccess.receiveWhile(max = 100.millis) {
         case Deleted(i) => i
       }
       successes shouldEqual successes.sorted

@@ -24,7 +24,6 @@ import com.typesafe.config.{ Config, ConfigFactory }
 import org.scalatest.exceptions.TestCanceledException
 import org.scalatest.{ Canceled, Outcome, Suite }
 
-import scala.collection.immutable
 import scala.concurrent.duration._
 import scala.language.implicitConversions
 
@@ -261,7 +260,7 @@ trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec with FlightRecordi
    * be determined from the `RoleName`.
    */
   def assertLeader(nodesInCluster: RoleName*): Unit =
-    if (nodesInCluster.contains(myself)) assertLeaderIn(nodesInCluster.to[immutable.Seq])
+    if (nodesInCluster.contains(myself)) assertLeaderIn(nodesInCluster)
 
   /**
    * Assert that the cluster has elected the correct leader
@@ -274,7 +273,7 @@ trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec with FlightRecordi
    * member with status Up or Leaving and that information can't
    * be determined from the `RoleName`.
    */
-  def assertLeaderIn(nodesInCluster: immutable.Seq[RoleName]): Unit =
+  def assertLeaderIn(nodesInCluster: Seq[RoleName]): Unit =
     if (nodesInCluster.contains(myself)) {
       nodesInCluster.length should not be 0
       val expectedLeader = roleOfLeader(nodesInCluster)
@@ -324,7 +323,7 @@ trait MultiNodeClusterSpec extends Suite with STMultiNodeSpec with FlightRecordi
    * member with status Up or Leaving and that information can't
    * be determined from the `RoleName`.
    */
-  def roleOfLeader(nodesInCluster: immutable.Seq[RoleName] = roles): RoleName = {
+  def roleOfLeader(nodesInCluster: Seq[RoleName] = roles): RoleName = {
     nodesInCluster.length should not be 0
     nodesInCluster.sorted.head
   }

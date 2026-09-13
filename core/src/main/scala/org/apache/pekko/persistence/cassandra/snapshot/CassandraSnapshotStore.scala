@@ -34,7 +34,6 @@ import pekko.util.OptionVal
 
 import java.lang.{ Long => JLong }
 import java.nio.ByteBuffer
-import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.jdk.FutureConverters._
 import scala.util.control.NonFatal
@@ -122,7 +121,7 @@ import scala.util.{ Failure, Success }
   }
 
   @nowarn("msg=match may not be exhaustive")
-  private def loadNAsync(metadata: immutable.Seq[SnapshotMetadata]): Future[Option[SelectedSnapshot]] = metadata match {
+  private def loadNAsync(metadata: Seq[SnapshotMetadata]): Future[Option[SelectedSnapshot]] = metadata match {
     case Seq()     => Future.successful(None) // no snapshots stored
     case md +: mds =>
       load1Async(md)
@@ -216,7 +215,7 @@ import scala.util.{ Failure, Success }
           // this meta query gets slower than slower if snapshots are deleted without a criteria.minSequenceNr as
           // all previous tombstones are scanned in the meta data query
           metadata(snapshotMetaPs, persistenceId, criteria, limit = None).flatMap {
-            (mds: immutable.Seq[SnapshotMetadata]) =>
+            (mds: Seq[SnapshotMetadata]) =>
               val boundStatementBatches = mds
                 .map(md =>
                   preparedDeleteSnapshot.map(_.bind(md.persistenceId, md.sequenceNr: JLong)
@@ -255,7 +254,7 @@ import scala.util.{ Failure, Success }
       snapshotMetaPs: PreparedStatement,
       persistenceId: String,
       criteria: SnapshotSelectionCriteria,
-      limit: Option[Int]): Future[immutable.Seq[SnapshotMetadata]] = {
+      limit: Option[Int]): Future[Seq[SnapshotMetadata]] = {
     val boundStmt = snapshotMetaPs
       .bind(persistenceId, criteria.maxSequenceNr: JLong, criteria.minSequenceNr: JLong)
       .setExecutionProfileName(snapshotSettings.readProfile)

@@ -37,7 +37,6 @@ import org.scalatest.{ Outcome, Suite }
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatest.matchers.should.Matchers
 
-import scala.collection.immutable
 import scala.concurrent.duration._
 import scala.util.control.NonFatal
 import scala.annotation.nowarn
@@ -272,7 +271,7 @@ abstract class CassandraSpec(
       .run()
       .futureValue
 
-  def events(pid: String): immutable.Seq[Extractors.TaggedPersistentRepr] =
+  def events(pid: String): Seq[Extractors.TaggedPersistentRepr] =
     queries
       .eventsByPersistenceId(
         pid,
@@ -287,7 +286,7 @@ abstract class CassandraSpec(
       .run()
       .futureValue
 
-  def eventPayloadsWithTags(pid: String): immutable.Seq[(Any, Set[String])] =
+  def eventPayloadsWithTags(pid: String): Seq[(Any, Set[String])] =
     queries
       .eventsByPersistenceId(
         pid,
