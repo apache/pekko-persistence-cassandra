@@ -37,9 +37,11 @@ class AllPersistenceIdsMigrationCompileOnly {
   result.onComplete {
     case Success(_) =>
       system.log.info("All persistenceIds migrated.")
+      rec.close()
       system.terminate()
     case Failure(e) =>
       system.log.error(e, "All persistenceIds migration failed.")
+      rec.close()
       system.terminate()
   }
   // #migrate

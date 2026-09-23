@@ -142,6 +142,9 @@ final private[pekko] class ReconciliationSession(session: CassandraSession, stat
  * To support running in the same system as a journal the tag writers actor would need to be shared
  * and all the interleavings of the actor running at the same be considered.
  *
+ * Each instance starts a tag writers actor that lives until [[Reconciliation#close]] is called, so
+ * an instance should be closed once the reconciliation operations it was created for have completed.
+ *
  * API likely to change when a java/scaladsl is added.
  */
 @ApiMayChange
@@ -213,4 +216,16 @@ final class Reconciliation(systemProvider: ClassicActorSystemProvider, settings:
 
   def rebuildAllPersistenceIds(): Future[Done] =
     queries.currentPersistenceIdsFromMessages().runWith(recSession.insertIntoPersistenceIds())
+
+  /**
+   * Stops the tag writers actor that this instance started. Without this the actor stays alive for
+   * the lifetime of the `ActorSystem`, so call it once the reconciliation operations have completed.
+   *
+   * Any operation still in progress is aborted, so only close after the futures returned by the other
+   * methods have completed. This instance must not be used again after it has been closed.
+   *
+   * Calling this more than once has no further effect.
+   */
+  def close(): Unit =
+    system.stop(tagWriters)
 }

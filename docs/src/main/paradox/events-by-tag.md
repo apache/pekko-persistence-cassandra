@@ -153,6 +153,9 @@ It supports:
 
 After deleting the tag views they will be automatically re-built next time the persistence id starts or with an explicit rebuild.
 
+Each `Reconciliation` instance starts a tag writers actor that lives for as long as the `ActorSystem` does, so call `close()`
+once the reconciliation operations have completed.
+
 For example, to rebuild the data for a persistence id:
 
 @@snip [reconciler](/core/src/test/scala/doc/reconciler/ReconciliationCompileOnly.scala) { #imports #reconcile}                                                                                                                                
