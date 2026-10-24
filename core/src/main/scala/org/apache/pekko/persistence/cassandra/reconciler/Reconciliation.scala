@@ -39,6 +39,7 @@ import pekko.persistence.cassandra.journal.TagWriters._
 import pekko.persistence.cassandra.journal.TaggedPreparedStatements
 import pekko.persistence.cassandra.journal.TimeBucket
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.cassandra.util.RetryableFutureEval
 import pekko.persistence.query.PersistenceQuery
 import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
 import pekko.stream.connectors.cassandra.scaladsl.CassandraSessionRegistry
@@ -53,12 +54,15 @@ import pekko.stream.scaladsl.Source
 @InternalApi
 final private[pekko] class ReconciliationSession(session: CassandraSession, statements: CassandraStatements)(
     implicit ec: ExecutionContext) {
-  private val deleteTagView = session.prepare(statements.journalStatements.deleteTag)
-  private val deleteTagProgress = session.prepare(statements.journalStatements.deleteTagProgress)
-  private val deleteTagScanning = session.prepare(statements.journalStatements.deleteTagScanning)
-  private val selectAllTagProgressPs = session.prepare(statements.journalStatements.selectAllTagProgress)
-  private val selectTagProgressForPersistenceId =
-    session.prepare(statements.journalStatements.selectTagProgressForPersistenceId)
+  private val deleteTagViewPs = RetryableFutureEval(() => session.prepare(statements.journalStatements.deleteTag))
+  private val deleteTagProgressPs =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.deleteTagProgress))
+  private val deleteTagScanningPs =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.deleteTagScanning))
+  private val selectAllTagProgressPs =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.selectAllTagProgress))
+  private val selectTagProgressForPersistenceIdPs =
+    RetryableFutureEval(() => session.prepare(statements.journalStatements.selectTagProgressForPersistenceId))
 
   def deleteFromTagView(
       tag: String,
@@ -66,7 +70,7 @@ final private[pekko] class ReconciliationSession(session: CassandraSession, stat
       timestamp: UUID,
       persistenceId: String,
       tagPidSequenceNr: Long): Future[Done] = {
-    deleteTagView.flatMap(ps =>
+    deleteTagViewPs.futureResult().flatMap(ps =>
       session.executeWrite(ps.bind(tag, bucket.key: JLong, timestamp, persistenceId, tagPidSequenceNr: JLong)))
   }
 
@@ -74,7 +78,7 @@ final private[pekko] class ReconciliationSession(session: CassandraSession, stat
    * Delete entries in the tag_writes_progress table for the tag and persistence id
    */
   def deleteTagProgress(tag: String, persistenceId: String): Future[Done] = {
-    deleteTagProgress.flatMap(ps => session.executeWrite(ps.bind(persistenceId, tag)))
+    deleteTagProgressPs.futureResult().flatMap(ps => session.executeWrite(ps.bind(persistenceId, tag)))
   }
 
   /**
@@ -83,7 +87,7 @@ final private[pekko] class ReconciliationSession(session: CassandraSession, stat
    * the pre-snapshot events for tags.
    */
   def deleteTagScannning(persistenceId: String): Future[Done] = {
-    deleteTagScanning.flatMap(ps => session.executeWrite(ps.bind(persistenceId)))
+    deleteTagScanningPs.futureResult().flatMap(ps => session.executeWrite(ps.bind(persistenceId)))
   }
 
   /**
@@ -91,13 +95,15 @@ final private[pekko] class ReconciliationSession(session: CassandraSession, stat
    * current tag names.
    */
   def selectAllTagProgress(): Source[Row, NotUsed] = {
-    Source.futureSource(selectAllTagProgressPs.map(ps => session.select(ps.bind()))).mapMaterializedValue(_ => NotUsed)
+    Source.futureSource(
+      selectAllTagProgressPs.futureResult().map(ps => session.select(ps.bind()))).mapMaterializedValue(_ => NotUsed)
   }
 
   def selectTagProgress(persistenceId: String): Source[String, NotUsed] = {
     Source
       .futureSource(
-        selectTagProgressForPersistenceId.map(ps => session.select(ps.bind(persistenceId)).map(_.getString("tag"))))
+        selectTagProgressForPersistenceIdPs.futureResult().map(ps =>
+          session.select(ps.bind(persistenceId)).map(_.getString("tag"))))
       .mapMaterializedValue(_ => NotUsed)
   }
 
