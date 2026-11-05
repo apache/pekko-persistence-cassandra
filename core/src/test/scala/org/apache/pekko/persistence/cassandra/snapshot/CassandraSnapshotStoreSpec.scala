@@ -60,8 +60,8 @@ class CassandraSnapshotStoreSpec
     super.beforeAll()
   }
 
-  // ByteArraySerializer
-  val serId: JInteger = 4
+  // no serializer is registered with this id, so deserialization fails
+  val serId: JInteger = 9999
 
   "A Cassandra snapshot store" must {
     "insert Cassandra metrics to Cassandra Metrics Registry" in {
@@ -88,8 +88,8 @@ class CassandraSnapshotStoreSpec
           pid,
           17L: JLong,
           123L: JLong,
-          serId,
           "",
+          serId,
           ByteBuffer.wrap("fail-1".getBytes(StandardCharsets.UTF_8))))
 
       cluster.execute(
@@ -98,8 +98,8 @@ class CassandraSnapshotStoreSpec
           pid,
           18L: JLong,
           124L: JLong,
-          serId,
           "",
+          serId,
           ByteBuffer.wrap("fail-2".getBytes(StandardCharsets.UTF_8))))
 
       // load most recent snapshot, first two attempts will fail ...
@@ -124,8 +124,8 @@ class CassandraSnapshotStoreSpec
           pid,
           17L: JLong,
           123L: JLong,
-          serId,
           "",
+          serId,
           ByteBuffer.wrap("fail-1".getBytes(StandardCharsets.UTF_8))))
       cluster.execute(
         SimpleStatement.newInstance(
@@ -133,8 +133,8 @@ class CassandraSnapshotStoreSpec
           pid,
           18L: JLong,
           124L: JLong,
-          serId,
           "",
+          serId,
           ByteBuffer.wrap("fail-2".getBytes(StandardCharsets.UTF_8))))
       cluster.execute(
         SimpleStatement.newInstance(
@@ -142,8 +142,8 @@ class CassandraSnapshotStoreSpec
           pid,
           19L: JLong,
           125L: JLong,
-          serId,
           "",
+          serId,
           ByteBuffer.wrap("fail-3".getBytes(StandardCharsets.UTF_8))))
 
       // load most recent snapshot, first three attempts will fail ...
