@@ -23,6 +23,11 @@ datastax-java-driver {
     class = DefaultLoadBalancingPolicy
     local-datacenter = eu-central-1
   }
+  profiles {
+    pekko-persistence-cassandra-profile {
+      basic.request.consistency = LOCAL_QUORUM
+    }
+  }
   advanced {
     auth-provider = {
       class = software.aws.mcs.auth.SigV4AuthProvider
@@ -30,12 +35,18 @@ datastax-java-driver {
     }
     ssl-engine-factory {
       class = DefaultSslEngineFactory
+      truststore-path = "cassandra_truststore.jks"
+      truststore-password = "my_password"
+      hostname-validation = false
     }
   }
 }
 ```
 
 Note that the contact points must also be configured. You find the endpoints for different regions at https://docs.aws.amazon.com/keyspaces/latest/devguide/programmatic.endpoints.html
+
+The plugin's `pekko-persistence-cassandra-profile` uses `QUORUM` consistency by default, which overrides
+`basic.request.consistency`, so it must also be set to `LOCAL_QUORUM` for Keyspaces.
 
 ## Notes
 
