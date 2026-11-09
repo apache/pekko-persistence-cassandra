@@ -215,6 +215,25 @@ class BufferSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll {
       afterRemove.size shouldEqual 1
       afterRemove.nextBatch.map(_.events.size).sum + afterRemove.pending.map(_.events.size).sum shouldEqual 1
     }
+
+    // a buffer is only allowed to hold pending writes when a write is required, otherwise a later add
+    // that fills the batch fails its "pending should be empty" check and crashes the tag writer
+    "require a write after adding pending" in {
+      val bucket = nowBucket()
+      val e1 = event("p1", 1L, "e-1", bucket)
+      val e2 = event("p1", 2L, "e-2", bucket)
+
+      val buffer = Buffer.empty(2).addPending(awNoSender((e1, 1)))
+      buffer.shouldWrite() shouldEqual true
+
+      val nextBuffer = buffer.add(awNoSender((e2, 2)))
+      nextBuffer.size shouldEqual 2
+      nextBuffer.pending shouldEqual Vector(awNoSender((e1, 1)), awNoSender((e2, 2)))
+
+      val afterWrite = nextBuffer.writeComplete()
+      afterWrite.shouldWrite() shouldEqual true
+      afterWrite.nextBatch shouldEqual Vector(awNoSender((e1, 1)), awNoSender((e2, 2)))
+    }
   }
 
   override protected def afterAll(): Unit = {
