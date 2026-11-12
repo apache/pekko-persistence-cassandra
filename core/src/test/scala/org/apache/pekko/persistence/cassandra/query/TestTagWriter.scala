@@ -17,6 +17,9 @@ import java.nio.ByteBuffer
 import java.time.{ LocalDateTime, ZoneOffset }
 import java.util.UUID
 
+import com.datastax.oss.driver.api.core.CqlSession
+import com.datastax.oss.driver.api.core.uuid.Uuids
+
 import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.persistence.PersistentRepr
@@ -27,8 +30,6 @@ import pekko.persistence.cassandra.formatOffset
 import pekko.persistence.cassandra.journal._
 import pekko.serialization.Serialization
 import pekko.serialization.Serializers
-import com.datastax.oss.driver.api.core.CqlSession
-import com.datastax.oss.driver.api.core.uuid.Uuids
 
 private[pekko] trait TestTagWriter {
   def system: ActorSystem

@@ -15,10 +15,16 @@ package org.apache.pekko.persistence.cassandra.query
 
 import java.time.{ LocalDateTime, ZoneOffset }
 
+import scala.annotation.tailrec
+import scala.concurrent.duration._
+
+import com.datastax.oss.driver.api.core.uuid.Uuids
+
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.ActorRef
 import pekko.persistence.PersistentRepr
+import pekko.persistence.cassandra.PluginSettings
 import pekko.persistence.cassandra.journal.TimeBucket
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, Minute }
 import pekko.persistence.journal.Tagged
@@ -28,13 +34,10 @@ import pekko.serialization.{ Serialization, SerializationExtension }
 import pekko.stream.scaladsl.{ Keep, Source }
 import pekko.stream.testkit.scaladsl.TestSink
 import pekko.testkit.ImplicitSender
-import com.datastax.oss.driver.api.core.uuid.Uuids
-import com.typesafe.config.ConfigFactory
-import org.scalatest.BeforeAndAfterAll
-import scala.annotation.tailrec
-import scala.concurrent.duration._
 
-import pekko.persistence.cassandra.PluginSettings
+import org.scalatest.BeforeAndAfterAll
+
+import com.typesafe.config.ConfigFactory
 
 object EventsByTagStageSpec {
   val fetchSize = 3L

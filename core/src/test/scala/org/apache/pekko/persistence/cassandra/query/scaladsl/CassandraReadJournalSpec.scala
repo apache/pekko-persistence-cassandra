@@ -13,6 +13,8 @@
 
 package org.apache.pekko.persistence.cassandra.query.scaladsl
 
+import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.persistence.cassandra.query.TestActor
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
@@ -20,9 +22,8 @@ import pekko.persistence.journal.{ Tagged, WriteEventAdapter }
 import pekko.persistence.query.NoOffset
 import pekko.stream.connectors.cassandra.CassandraMetricsRegistry
 import pekko.stream.testkit.scaladsl.TestSink
-import com.typesafe.config.ConfigFactory
 
-import scala.concurrent.duration._
+import com.typesafe.config.ConfigFactory
 
 object CassandraReadJournalSpec {
   val config = ConfigFactory.parseString(s"""

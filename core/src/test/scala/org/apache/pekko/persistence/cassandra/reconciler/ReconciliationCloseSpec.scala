@@ -17,13 +17,15 @@
 
 package org.apache.pekko.persistence.cassandra.reconciler
 
-import com.typesafe.config.ConfigFactory
 import org.apache.pekko
+import pekko.actor.{ ActorIdentity, ActorSystem, Identify }
+import pekko.testkit.{ ImplicitSender, TestKit }
+
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
-import pekko.actor.{ ActorIdentity, ActorSystem, Identify }
-import pekko.testkit.{ ImplicitSender, TestKit }
+
+import com.typesafe.config.ConfigFactory
 
 object ReconciliationCloseSpec {
 

@@ -13,16 +13,17 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
+import scala.annotation.tailrec
+import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.actor.ActorRef
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
 import pekko.stream.scaladsl.Keep
 import pekko.stream.testkit.TestSubscriber.Probe
 import pekko.stream.testkit.scaladsl.TestSink
-import com.typesafe.config.ConfigFactory
 
-import scala.annotation.tailrec
-import scala.concurrent.duration._
+import com.typesafe.config.ConfigFactory
 
 object EventsByPersistenceIdWithControlSpec {
   val config = ConfigFactory.parseString(s"""

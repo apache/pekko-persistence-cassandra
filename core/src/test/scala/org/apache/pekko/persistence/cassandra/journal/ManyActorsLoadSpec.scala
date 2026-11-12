@@ -23,6 +23,7 @@ import pekko.persistence.PersistentActor
 import pekko.persistence.cassandra.CassandraLifecycle
 import pekko.persistence.cassandra.CassandraSpec
 import pekko.persistence.journal.Tagged
+
 import com.typesafe.config.ConfigFactory
 
 object ManyActorsLoadSpec {

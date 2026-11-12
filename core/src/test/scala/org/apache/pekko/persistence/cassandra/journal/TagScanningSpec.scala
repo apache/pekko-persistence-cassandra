@@ -13,9 +13,10 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import com.typesafe.config.ConfigFactory
 import org.apache.pekko
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, TestTaggingActor }
+
+import com.typesafe.config.ConfigFactory
 
 object TagScanningSpec {
   private val config = ConfigFactory.parseString(s"""

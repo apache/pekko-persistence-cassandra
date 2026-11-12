@@ -13,16 +13,25 @@
 
 package org.apache.pekko.persistence.cassandra
 
+import java.util.concurrent.atomic.AtomicInteger
+
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import scala.concurrent.duration._
+
+import com.datastax.oss.driver.api.core.cql.Row
+
 import org.apache.pekko
 import pekko.actor.ActorSystem
-import pekko.pattern.ask
+import pekko.actor.ClassicActorSystemProvider
 import pekko.event.Logging
+import pekko.pattern.ask
+import pekko.persistence.cassandra.Extractors.Extractor
+import pekko.persistence.cassandra.Extractors.RawEvent
 import pekko.persistence.cassandra.journal.CassandraJournal._
 import pekko.persistence.cassandra.journal.TagWriter.TagProgress
 import pekko.persistence.cassandra.journal.TagWriters.{ AllFlushed, FlushAllTagWriters, TagWritersSession }
 import pekko.persistence.cassandra.journal._
-import pekko.persistence.cassandra.Extractors.RawEvent
-import pekko.persistence.cassandra.Extractors.Extractor
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
 import pekko.persistence.query.PersistenceQuery
 import pekko.serialization.SerializationExtension
@@ -30,14 +39,6 @@ import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
 import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.util.Timeout
 import pekko.{ Done, NotUsed }
-import com.datastax.oss.driver.api.core.cql.Row
-
-import java.util.concurrent.atomic.AtomicInteger
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
-import scala.concurrent.duration._
-
-import pekko.actor.ClassicActorSystemProvider
 
 object EventsByTagMigration {
 

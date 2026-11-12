@@ -15,11 +15,12 @@ package org.apache.pekko.persistence.cassandra.journal
 
 import java.util.UUID
 
+import com.datastax.oss.driver.api.core.uuid.Uuids
+
 import org.apache.pekko
 import pekko.annotation.InternalApi
 import pekko.persistence.cassandra.BucketSize
 import pekko.util.HashCode
-import com.datastax.oss.driver.api.core.uuid.Uuids
 
 /** INTERNAL API */
 @InternalApi private[pekko] object TimeBucket {

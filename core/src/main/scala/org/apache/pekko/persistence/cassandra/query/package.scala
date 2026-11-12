@@ -17,9 +17,10 @@ import java.time.format.DateTimeFormatter
 import java.time.{ LocalDateTime, ZoneId, ZoneOffset }
 import java.util.UUID
 
-import org.apache.pekko.annotation.InternalApi
 import com.datastax.oss.driver.api.core.cql.AsyncResultSet
 import com.datastax.oss.driver.api.core.uuid.Uuids
+
+import org.apache.pekko.annotation.InternalApi
 
 package object query {
 

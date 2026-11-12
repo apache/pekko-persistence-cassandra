@@ -19,19 +19,21 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 import scala.concurrent.Await
+import scala.concurrent.duration._
+import scala.util.{ Failure, Success, Try }
+
+import com.datastax.oss.driver.api.core.CqlSession
 
 import org.apache.pekko
 import pekko.actor.{ ActorSystem, PoisonPill, Props }
 import pekko.persistence.PersistentActor
-import pekko.testkit.{ TestKitBase, TestProbe }
-import com.datastax.oss.driver.api.core.CqlSession
-import com.typesafe.config.ConfigFactory
-import org.scalatest._
-import scala.concurrent.duration._
-import scala.util.{ Failure, Success, Try }
-
 import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
 import pekko.stream.connectors.cassandra.scaladsl.CassandraSessionRegistry
+import pekko.testkit.{ TestKitBase, TestProbe }
+
+import org.scalatest._
+
+import com.typesafe.config.ConfigFactory
 
 object CassandraLifecycle {
 

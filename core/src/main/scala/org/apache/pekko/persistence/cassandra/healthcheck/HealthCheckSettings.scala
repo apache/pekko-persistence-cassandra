@@ -13,12 +13,13 @@
 
 package org.apache.pekko.persistence.cassandra.healthcheck
 
+import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.actor.{ ActorSystem, NoSerializationVerificationNeeded }
 import pekko.annotation.InternalApi
-import com.typesafe.config.Config
 
-import scala.concurrent.duration._
+import com.typesafe.config.Config
 
 @InternalApi
 private[pekko] final class HealthCheckSettings(system: ActorSystem, config: Config)

@@ -13,6 +13,8 @@
 
 package org.apache.pekko.persistence.cassandra
 
+import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.actor.{ ActorSystem, PoisonPill }
 import pekko.persistence.cassandra.TestTaggingActor.{ Ack, DoASnapshotPlease, SnapShotAck }
@@ -20,9 +22,8 @@ import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
 import pekko.persistence.query.{ EventEnvelope, NoOffset, PersistenceQuery }
 import pekko.stream.testkit.scaladsl.TestSink
 import pekko.testkit.TestProbe
-import com.typesafe.config.ConfigFactory
 
-import scala.concurrent.duration._
+import com.typesafe.config.ConfigFactory
 
 object EventsByTagRecoverySpec {
   val keyspaceName = "EventsByTagRecoverySpec"

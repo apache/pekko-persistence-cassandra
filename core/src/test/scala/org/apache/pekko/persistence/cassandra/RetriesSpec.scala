@@ -13,12 +13,14 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
+import scala.concurrent.{ ExecutionContext, Future }
+
 import org.apache.pekko
 import pekko.actor.{ ActorSystem, Scheduler }
 import pekko.testkit.TestKit
 import pekko.testkit.TestProbe
+
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers

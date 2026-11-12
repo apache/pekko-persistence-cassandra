@@ -13,6 +13,8 @@
 
 package doc.reconciler
 
+// Keep the documentation snippet import boundaries intact.
+// scalafix:off OrganizeImports
 //#imports
 import scala.util.Failure
 import scala.util.Success
@@ -46,3 +48,5 @@ class AllPersistenceIdsMigrationCompileOnly {
   }
   // #migrate
 }
+
+// scalafix:on OrganizeImports

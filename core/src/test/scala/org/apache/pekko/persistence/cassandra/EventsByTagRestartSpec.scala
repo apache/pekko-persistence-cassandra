@@ -16,17 +16,19 @@ package org.apache.pekko.persistence.cassandra
 import java.time.format.DateTimeFormatter
 import java.time.{ LocalDateTime, ZoneOffset }
 
+import scala.concurrent.duration._
+
 import org.apache.pekko
+import pekko.actor.PoisonPill
 import pekko.persistence.cassandra.TestTaggingActor.{ Ack, Stop }
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
 import pekko.persistence.query.{ EventEnvelope, NoOffset, PersistenceQuery }
 import pekko.stream.testkit.scaladsl.TestSink
 import pekko.testkit.TestProbe
-import com.typesafe.config.ConfigFactory
 
-import scala.concurrent.duration._
-import pekko.actor.PoisonPill
 import org.scalatest.matchers.should.Matchers
+
+import com.typesafe.config.ConfigFactory
 
 object EventsByTagRestartSpec {
   val today = LocalDateTime.now(ZoneOffset.UTC)

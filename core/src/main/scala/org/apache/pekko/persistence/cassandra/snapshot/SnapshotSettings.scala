@@ -21,6 +21,7 @@ import pekko.persistence.cassandra.PluginSettings.validateKeyspaceName
 import pekko.persistence.cassandra.PluginSettings.validateTableName
 import pekko.persistence.cassandra.compaction.CassandraCompactionStrategy
 import pekko.persistence.cassandra.getListFromConfig
+
 import com.typesafe.config.Config
 
 /** INTERNAL API */

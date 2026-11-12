@@ -44,6 +44,8 @@ object Common extends AutoPlugin {
     crossVersion := CrossVersion.binary,
     crossScalaVersions := Dependencies.publishedScalaVersions,
     scalaVersion := Dependencies.scala213Version,
+    // OrganizeImports needs unused-import diagnostics only while SemanticDB is enabled.
+    scalacOptions ++= (if (semanticdbEnabled.value) Seq("-Wunused:imports") else Nil),
     scalacOptions ++= Seq("-encoding", "UTF-8", "-feature", "-unchecked", "-deprecation"),
     scalacOptions ++= {
       if (scalaBinaryVersion.value == "3")

@@ -13,6 +13,8 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
+import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.actor.testkit.typed.scaladsl.ActorTestKit
 import pekko.actor.testkit.typed.scaladsl.TestProbe
@@ -24,9 +26,9 @@ import pekko.persistence.cassandra.CassandraSpec
 import pekko.persistence.typed.PersistenceId
 import pekko.persistence.typed.scaladsl.Effect
 import pekko.persistence.typed.scaladsl.EventSourcedBehavior
-import org.scalatest.wordspec.AnyWordSpecLike
+
 import org.scalatest.matchers.should.Matchers
-import scala.concurrent.duration._
+import org.scalatest.wordspec.AnyWordSpecLike
 
 object CassandraLoadTypedSpec {
 

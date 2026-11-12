@@ -28,6 +28,7 @@ import pekko.persistence.cassandra.compaction.CassandraCompactionStrategy
 import pekko.persistence.cassandra.journal.TagWriter.TagWriterSettings
 import pekko.persistence.cassandra.journal.TimeBucket
 import pekko.persistence.cassandra.query.firstBucketFormatter
+
 import com.typesafe.config.Config
 
 /**

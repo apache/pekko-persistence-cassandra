@@ -13,23 +13,31 @@
 
 package org.apache.pekko.persistence.cassandra.query.scaladsl
 
+import java.net.URLEncoder
+import java.util.UUID
+
+import scala.collection.immutable
+import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.util.control.NonFatal
+
 import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.cql._
 import com.datastax.oss.driver.api.core.uuid.Uuids
-import com.typesafe.config.Config
+
 import org.apache.pekko
 import pekko.actor.{ ActorSystem, ExtendedActorSystem }
 import pekko.annotation.InternalApi
 import pekko.dispatch.MessageDispatcher
 import pekko.event.Logging
 import pekko.persistence.cassandra.Extractors.Extractor
-import pekko.persistence.cassandra.{ CassandraStatements, Extractors, PluginSettings }
 import pekko.persistence.cassandra.journal.CassandraJournal.{ DeserializedEvent, PersistenceId, Tag, TagPidSequenceNr }
 import pekko.persistence.cassandra.journal._
 import pekko.persistence.cassandra.query.EventsByTagStage.TagStageSession
 import pekko.persistence.cassandra.query._
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal.EventByTagStatements
 import pekko.persistence.cassandra.util.RetryableFutureEval
+import pekko.persistence.cassandra.{ CassandraStatements, Extractors, PluginSettings }
 import pekko.persistence.query._
 import pekko.persistence.query.scaladsl._
 import pekko.persistence.{ Persistence, PersistentRepr }
@@ -41,12 +49,7 @@ import pekko.stream.scaladsl.{ Flow, Source }
 import pekko.util.{ ByteString, OptionVal }
 import pekko.{ Done, NotUsed }
 
-import java.net.URLEncoder
-import java.util.UUID
-import scala.collection.immutable
-import scala.concurrent.Future
-import scala.concurrent.duration._
-import scala.util.control.NonFatal
+import com.typesafe.config.Config
 
 object CassandraReadJournal {
 

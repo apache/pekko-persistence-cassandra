@@ -16,8 +16,8 @@ package org.apache.pekko.persistence.cassandra.query
 import java.util.UUID
 
 import org.apache.pekko
-import pekko.persistence.PersistentRepr
 import pekko.annotation.InternalApi
+import pekko.persistence.PersistentRepr
 import pekko.persistence.cassandra.journal.CassandraJournal.TagPidSequenceNr
 
 /**

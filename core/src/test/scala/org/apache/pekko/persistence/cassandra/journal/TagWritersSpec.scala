@@ -15,6 +15,10 @@ package org.apache.pekko.persistence.cassandra.journal
 
 import java.nio.ByteBuffer
 
+import scala.concurrent.duration._
+
+import com.datastax.oss.driver.api.core.uuid.Uuids
+
 import org.apache.pekko
 import pekko.Done
 import pekko.actor.{ Actor, ActorRef, ActorSystem, PoisonPill, Props }
@@ -24,13 +28,12 @@ import pekko.persistence.cassandra.journal.TagWriter._
 import pekko.persistence.cassandra.journal.TagWriters._
 import pekko.testkit.{ ImplicitSender, TestKit, TestProbe }
 import pekko.util.Timeout
-import com.datastax.oss.driver.api.core.uuid.Uuids
-import com.typesafe.config.{ Config, ConfigFactory }
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.wordspec.AnyWordSpecLike
-import org.scalatest.matchers.should.Matchers
 
-import scala.concurrent.duration._
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
+
+import com.typesafe.config.{ Config, ConfigFactory }
 
 object TagWritersSpec {
   val config: Config =

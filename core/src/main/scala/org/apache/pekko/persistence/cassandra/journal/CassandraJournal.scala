@@ -17,6 +17,17 @@ import java.lang.{ Long => JLong }
 import java.nio.ByteBuffer
 import java.util.{ HashMap => JHMap, Map => JMap, UUID }
 
+import scala.annotation.tailrec
+import scala.concurrent._
+import scala.jdk.CollectionConverters._
+import scala.jdk.FutureConverters._
+import scala.util.control.NonFatal
+import scala.util.{ Failure, Success, Try }
+
+import com.datastax.oss.driver.api.core.cql._
+import com.datastax.oss.driver.api.core.uuid.Uuids
+import com.datastax.oss.protocol.internal.util.Bytes
+
 import org.apache.pekko
 import pekko.Done
 import pekko.actor.SupervisorStrategy.Stop
@@ -25,29 +36,20 @@ import pekko.annotation.{ DoNotInherit, InternalApi, InternalStableApi }
 import pekko.event.{ Logging, LoggingAdapter }
 import pekko.pattern.{ ask, pipe }
 import pekko.persistence._
-import pekko.persistence.cassandra._
 import pekko.persistence.cassandra.Extractors
+import pekko.persistence.cassandra._
+import pekko.persistence.cassandra.journal.TagWriter.TagProgress
+import pekko.persistence.cassandra.journal.TagWriters.{ BulkTagWrite, TagWrite, TagWritersSession }
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
 import pekko.persistence.cassandra.util.RetryableFutureEval
 import pekko.persistence.journal.{ AsyncWriteJournal, Tagged }
 import pekko.persistence.query.PersistenceQuery
-import pekko.persistence.cassandra.journal.TagWriters.{ BulkTagWrite, TagWrite, TagWritersSession }
-import pekko.persistence.cassandra.journal.TagWriter.TagProgress
 import pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtension }
 import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
 import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.util.{ OptionVal, Timeout }
-import com.datastax.oss.driver.api.core.cql._
-import com.datastax.oss.driver.api.core.uuid.Uuids
-import com.datastax.oss.protocol.internal.util.Bytes
-import com.typesafe.config.Config
 
-import scala.annotation.tailrec
-import scala.concurrent._
-import scala.jdk.CollectionConverters._
-import scala.jdk.FutureConverters._
-import scala.util.control.NonFatal
-import scala.util.{ Failure, Success, Try }
+import com.typesafe.config.Config
 
 /**
  * INTERNAL API

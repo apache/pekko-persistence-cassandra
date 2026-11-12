@@ -13,12 +13,13 @@
 
 package org.apache.pekko.persistence.cassandra.cleanup
 
-import scala.concurrent.duration._
 import java.util.concurrent.TimeUnit
 
 import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration._
 
 import org.apache.pekko.annotation.ApiMayChange
+
 import com.typesafe.config.Config
 
 @ApiMayChange

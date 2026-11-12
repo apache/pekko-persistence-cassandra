@@ -16,6 +16,7 @@ package org.apache.pekko.persistence.cassandra.reconciler
 import org.apache.pekko
 import pekko.persistence.cassandra.CassandraSpec
 import pekko.stream.scaladsl.Sink
+
 import org.scalatest.concurrent.Eventually
 
 class RebuildAllPersisetceIdsSpec extends CassandraSpec with Eventually {

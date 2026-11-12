@@ -15,6 +15,11 @@ package org.apache.pekko.persistence.cassandra.journal
 
 import java.util.UUID
 
+import scala.concurrent.duration.{ Duration, FiniteDuration, _ }
+import scala.util.control.NoStackTrace
+import scala.util.control.NonFatal
+import scala.util.{ Failure, Success, Try }
+
 import org.apache.pekko
 import pekko.Done
 import pekko.actor.{
@@ -36,11 +41,6 @@ import pekko.persistence.cassandra.journal.CassandraJournal._
 import pekko.persistence.cassandra.journal.TagWriter.TagWriterSettings
 import pekko.persistence.cassandra.journal.TagWriters.TagWritersSession
 import pekko.util.{ OptionVal, UUIDComparator }
-
-import scala.concurrent.duration.{ Duration, FiniteDuration, _ }
-import scala.util.control.NoStackTrace
-import scala.util.control.NonFatal
-import scala.util.{ Failure, Success, Try }
 
 /*
  * INTERNAL API

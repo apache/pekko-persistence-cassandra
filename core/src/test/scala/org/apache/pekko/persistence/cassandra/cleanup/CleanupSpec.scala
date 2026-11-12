@@ -19,12 +19,13 @@ import java.time.ZoneOffset
 import org.apache.pekko
 import pekko.actor.ActorRef
 import pekko.actor.Props
-import pekko.persistence.{ PersistentActor, SaveSnapshotSuccess, SnapshotMetadata, SnapshotOffer }
+import pekko.persistence.cassandra.query.{ DirectWriting, firstBucketFormatter }
 import pekko.persistence.cassandra.{ CassandraSpec, RequiresCassandraThree }
-import pekko.persistence.cassandra.query.{ firstBucketFormatter, DirectWriting }
 import pekko.persistence.journal.Tagged
 import pekko.persistence.query.NoOffset
+import pekko.persistence.{ PersistentActor, SaveSnapshotSuccess, SnapshotMetadata, SnapshotOffer }
 import pekko.stream.scaladsl.Sink
+
 import com.typesafe.config.ConfigFactory
 
 object CleanupSpec {

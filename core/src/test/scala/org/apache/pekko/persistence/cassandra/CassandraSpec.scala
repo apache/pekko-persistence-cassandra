@@ -16,6 +16,10 @@ package org.apache.pekko.persistence.cassandra
 import java.io.{ OutputStream, PrintStream }
 import java.util.concurrent.atomic.AtomicInteger
 
+import scala.annotation.nowarn
+import scala.concurrent.duration._
+import scala.util.control.NonFatal
+
 import org.apache.pekko
 import pekko.actor.{ ActorSystem, PoisonPill }
 import pekko.event.Logging
@@ -30,16 +34,14 @@ import pekko.stream.scaladsl.{ Keep, Sink }
 import pekko.stream.testkit.TestSubscriber
 import pekko.stream.testkit.scaladsl.TestSink
 import pekko.testkit.{ EventFilter, ImplicitSender, SocketUtil, TestKitBase }
-import com.typesafe.config.{ Config, ConfigFactory }
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{ Milliseconds, Seconds, Span }
-import org.scalatest.{ Outcome, Suite }
-import org.scalatest.wordspec.AnyWordSpecLike
-import org.scalatest.matchers.should.Matchers
 
-import scala.concurrent.duration._
-import scala.util.control.NonFatal
-import scala.annotation.nowarn
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.time.{ Milliseconds, Seconds, Span }
+import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatest.{ Outcome, Suite }
+
+import com.typesafe.config.{ Config, ConfigFactory }
 
 object CassandraSpec {
   def getCallerName(clazz: Class[?]): String = {

@@ -14,10 +14,10 @@
 package org.apache.pekko.persistence.cassandra.query
 
 import org.apache.pekko
-import pekko.actor.Props
-import pekko.persistence.PersistentActor
 import pekko.actor.ActorRef
+import pekko.actor.Props
 import pekko.persistence.DeleteMessagesSuccess
+import pekko.persistence.PersistentActor
 import pekko.persistence.journal.Tagged
 
 object TestActor {

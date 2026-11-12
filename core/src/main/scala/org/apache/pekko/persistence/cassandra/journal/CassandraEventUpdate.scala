@@ -13,6 +13,13 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
+import java.lang.{ Long => JLong }
+
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.jdk.CollectionConverters._
+
+import com.datastax.oss.driver.api.core.cql.{ PreparedStatement, Row, Statement }
+
 import org.apache.pekko
 import pekko.Done
 import pekko.annotation.InternalApi
@@ -21,11 +28,6 @@ import pekko.persistence.cassandra.PluginSettings
 import pekko.persistence.cassandra.journal.CassandraJournal.{ Serialized, TagPidSequenceNr }
 import pekko.persistence.cassandra.util.RetryableFutureEval
 import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
-import com.datastax.oss.driver.api.core.cql.{ PreparedStatement, Row, Statement }
-
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.jdk.CollectionConverters._
-import java.lang.{ Long => JLong }
 
 /** INTERNAL API */
 @InternalApi private[pekko] trait CassandraEventUpdate {

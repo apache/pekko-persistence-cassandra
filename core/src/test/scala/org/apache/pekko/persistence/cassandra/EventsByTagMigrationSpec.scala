@@ -13,35 +13,37 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import java.nio.ByteBuffer
 import java.lang.{ Long => JLong }
+import java.nio.ByteBuffer
+
+import scala.concurrent.duration._
+import scala.util.control.NonFatal
+
+import com.datastax.oss.driver.api.core.cql.SimpleStatement
+import com.datastax.oss.driver.api.core.uuid.Uuids
 
 import org.apache.pekko
 import pekko.actor.{ ActorSystem, PoisonPill }
 import pekko.persistence.cassandra.TestTaggingActor.Ack
 import pekko.persistence.cassandra.journal.CassandraJournalStatements
+import pekko.persistence.cassandra.journal.TimeBucket
 import pekko.persistence.cassandra.query.DirectWriting
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.cassandra.reconciler.Reconciliation
 import pekko.persistence.query.{ EventEnvelope, NoOffset, PersistenceQuery }
 import pekko.persistence.{ PersistentRepr, RecoveryCompleted }
 import pekko.serialization.SerializationExtension
+import pekko.serialization.Serializers
+import pekko.stream.SystemMaterializer
+import pekko.stream.connectors.cassandra.scaladsl.CassandraSessionRegistry
 import pekko.stream.scaladsl.Source
 import pekko.stream.testkit.scaladsl.TestSink
 import pekko.testkit.TestProbe
 import pekko.{ Done, NotUsed }
-import com.typesafe.config.ConfigFactory
+
 import org.scalatest.BeforeAndAfterAll
-import scala.concurrent.duration._
 
-import pekko.persistence.cassandra.journal.TimeBucket
-import pekko.serialization.Serializers
-import com.datastax.oss.driver.api.core.cql.SimpleStatement
-import com.datastax.oss.driver.api.core.uuid.Uuids
-import scala.util.control.NonFatal
-
-import pekko.persistence.cassandra.reconciler.Reconciliation
-import pekko.stream.SystemMaterializer
-import pekko.stream.connectors.cassandra.scaladsl.CassandraSessionRegistry
+import com.typesafe.config.ConfigFactory
 
 /**
  */

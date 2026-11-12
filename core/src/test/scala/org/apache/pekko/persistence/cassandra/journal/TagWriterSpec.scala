@@ -15,28 +15,32 @@ package org.apache.pekko.persistence.cassandra.journal
 
 import java.nio.ByteBuffer
 import java.util.UUID
+
+import scala.concurrent.duration._
+import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.util.control.NoStackTrace
+
+import com.datastax.oss.driver.api.core.cql.{ PreparedStatement, Statement }
+import com.datastax.oss.driver.api.core.uuid.Uuids
+
 import org.apache.pekko
 import pekko.Done
 import pekko.actor.{ ActorRef, ActorSystem, Status }
 import pekko.event.Logging
 import pekko.event.Logging.Warning
 import pekko.persistence.cassandra.Day
+import pekko.persistence.cassandra.formatOffset
 import pekko.persistence.cassandra.journal.CassandraJournal._
 import pekko.persistence.cassandra.journal.TagWriter._
-import pekko.persistence.cassandra.journal.TagWriters.TagWrite
 import pekko.persistence.cassandra.journal.TagWriterSpec.{ EventWrite, ProgressWrite, TestEx }
-import pekko.persistence.cassandra.formatOffset
+import pekko.persistence.cassandra.journal.TagWriters.TagWrite
 import pekko.persistence.cassandra.journal.TagWriters.TagWritersSession
 import pekko.testkit.{ TestKit, TestProbe }
-import com.datastax.oss.driver.api.core.cql.{ PreparedStatement, Statement }
-import com.datastax.oss.driver.api.core.uuid.Uuids
-import com.typesafe.config.{ Config, ConfigFactory }
-import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach }
-import org.scalatest.wordspec.AnyWordSpecLike
 
-import scala.concurrent.duration._
-import scala.concurrent.{ ExecutionContext, Future, Promise }
-import scala.util.control.NoStackTrace
+import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach }
+
+import com.typesafe.config.{ Config, ConfigFactory }
 
 object TagWriterSpec {
   val config: Config =

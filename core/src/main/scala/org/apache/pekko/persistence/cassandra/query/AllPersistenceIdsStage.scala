@@ -15,16 +15,17 @@ package org.apache.pekko.persistence.cassandra.query
 
 import java.util.concurrent.ThreadLocalRandom
 
-import org.apache.pekko
-import pekko.annotation.InternalApi
-import pekko.stream.stage._
-import pekko.stream.{ Attributes, Outlet, SourceShape }
+import scala.collection.immutable.Queue
+import scala.concurrent.duration._
+
 import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.cql.AsyncResultSet
 import com.datastax.oss.driver.api.core.cql.PreparedStatement
 
-import scala.collection.immutable.Queue
-import scala.concurrent.duration._
+import org.apache.pekko
+import pekko.annotation.InternalApi
+import pekko.stream.stage._
+import pekko.stream.{ Attributes, Outlet, SourceShape }
 
 /**
  * INTERNAL API

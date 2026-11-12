@@ -13,13 +13,13 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
+import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.actor._
 import pekko.persistence._
 import pekko.persistence.cassandra.CassandraSpec
 import pekko.testkit._
-
-import scala.concurrent.duration._
 
 object StartupLoadSpec {
   class ProcessorA(val persistenceId: String, receiver: ActorRef) extends PersistentActor {

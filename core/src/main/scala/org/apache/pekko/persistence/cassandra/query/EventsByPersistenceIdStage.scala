@@ -13,22 +13,24 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
+import java.lang.{ Long => JLong }
+import java.util.concurrent.ThreadLocalRandom
+
+import scala.annotation.tailrec
+import scala.concurrent.duration.{ FiniteDuration, _ }
+import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.jdk.FutureConverters._
+import scala.util.{ Failure, Success, Try }
+
 import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.cql._
+
 import org.apache.pekko
 import pekko.Done
 import pekko.annotation.InternalApi
 import pekko.persistence.cassandra.PluginSettings
 import pekko.stream.stage._
 import pekko.stream.{ Attributes, Outlet, SourceShape }
-
-import java.lang.{ Long => JLong }
-import java.util.concurrent.ThreadLocalRandom
-import scala.annotation.tailrec
-import scala.concurrent.duration.{ FiniteDuration, _ }
-import scala.concurrent.{ ExecutionContext, Future, Promise }
-import scala.jdk.FutureConverters._
-import scala.util.{ Failure, Success, Try }
 
 /**
  * INTERNAL API
