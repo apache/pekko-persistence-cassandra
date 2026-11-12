@@ -19,6 +19,7 @@ val mimaCompareVersion = "1.0.0"
 
 ThisBuild / reproducibleBuildsCheckResolver := Resolver.ApacheMavenStagingRepo
 ThisBuild / javafmtFormatterCompatibleJavaVersion := 17
+ThisBuild / javafmtSortImports := false
 ThisBuild / evictionErrorLevel := Level.Info
 Global / excludeLintKeys += previewPath
 
