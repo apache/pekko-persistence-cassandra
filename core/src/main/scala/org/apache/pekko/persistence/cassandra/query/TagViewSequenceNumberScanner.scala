@@ -16,27 +16,28 @@ package org.apache.pekko.persistence.cassandra.query
 import java.lang.{ Long => JLong }
 import java.util.UUID
 
+import scala.annotation.nowarn
+import scala.concurrent.duration.{ Duration, FiniteDuration }
+import scala.concurrent.{ ExecutionContext, Future }
+
+import com.datastax.oss.driver.api.core.cql.{ PreparedStatement, Row }
+
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.annotation.InternalApi
 import pekko.event.Logging
 import pekko.pattern.after
+import pekko.persistence.cassandra.BucketSize
+import pekko.persistence.cassandra.formatOffset
 import pekko.persistence.cassandra.journal.CassandraJournal._
 import pekko.persistence.cassandra.journal.TimeBucket
-import pekko.persistence.cassandra.formatOffset
 import pekko.persistence.cassandra.query.TagViewSequenceNumberScanner.Session
-import pekko.stream.Materializer
-import pekko.stream.scaladsl.Source
-import com.datastax.oss.driver.api.core.cql.{ PreparedStatement, Row }
-import scala.annotation.nowarn
-import scala.concurrent.duration.{ Duration, FiniteDuration }
-import scala.concurrent.{ ExecutionContext, Future }
-
-import pekko.persistence.cassandra.BucketSize
 import pekko.stream.ActorAttributes
+import pekko.stream.Materializer
 import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
 import pekko.stream.scaladsl.Keep
 import pekko.stream.scaladsl.Sink
+import pekko.stream.scaladsl.Source
 
 /**
  * INTERNAL API

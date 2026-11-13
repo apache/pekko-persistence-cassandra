@@ -13,10 +13,12 @@
 
 package org.apache.pekko.persistence.cassandra.snapshot
 
-import java.lang.{ Long => JLong }
 import java.lang.{ Integer => JInteger }
+import java.lang.{ Long => JLong }
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
+
+import com.datastax.oss.driver.api.core.cql.SimpleStatement
 
 import org.apache.pekko
 import pekko.persistence.SnapshotProtocol._
@@ -25,7 +27,7 @@ import pekko.persistence.cassandra.CassandraLifecycle
 import pekko.persistence.snapshot.SnapshotStoreSpec
 import pekko.stream.connectors.cassandra.CassandraMetricsRegistry
 import pekko.testkit.TestProbe
-import com.datastax.oss.driver.api.core.cql.SimpleStatement
+
 import com.typesafe.config.ConfigFactory
 
 object CassandraSnapshotStoreConfiguration {

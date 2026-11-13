@@ -13,24 +13,25 @@
 
 package org.apache.pekko.persistence.cassandra
 
-import java.{ util => ju }
 import java.nio.ByteBuffer
+import java.{ util => ju }
+
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
+
+import com.datastax.oss.driver.api.core.cql.Row
+import com.datastax.oss.protocol.internal.util.Bytes
 
 import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.annotation.InternalApi
 import pekko.persistence.PersistentRepr
-import pekko.persistence.cassandra.journal._
 import pekko.persistence.cassandra.journal.CassandraJournal._
+import pekko.persistence.cassandra.journal._
 import pekko.persistence.query.TimeBasedUUID
 import pekko.serialization.Serialization
 import pekko.util.OptionVal
-
-import com.datastax.oss.driver.api.core.cql.Row
-import com.datastax.oss.protocol.internal.util.Bytes
 
 /**
  * An Extractor takes reads a row from the messages table. There are different extractors

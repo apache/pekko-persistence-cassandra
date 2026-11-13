@@ -21,6 +21,7 @@ import pekko.actor.NoSerializationVerificationNeeded
 import pekko.annotation.InternalApi
 import pekko.annotation.InternalStableApi
 import pekko.persistence.cassandra.EventsByTagSettings
+
 import com.typesafe.config.Config
 
 /**

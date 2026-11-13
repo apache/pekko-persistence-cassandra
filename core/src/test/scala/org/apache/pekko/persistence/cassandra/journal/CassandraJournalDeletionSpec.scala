@@ -13,14 +13,14 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import org.apache.pekko
-import pekko.actor.{ ActorRef, PoisonPill, Props }
-import pekko.persistence.{ DeleteMessagesFailure, DeleteMessagesSuccess, PersistentActor, RecoveryCompleted }
-import pekko.persistence.cassandra.CassandraSpec
-import pekko.testkit.TestProbe
 import scala.concurrent.duration._
 
+import org.apache.pekko
+import pekko.actor.{ ActorRef, PoisonPill, Props }
+import pekko.persistence.cassandra.CassandraSpec
+import pekko.persistence.{ DeleteMessagesFailure, DeleteMessagesSuccess, PersistentActor, RecoveryCompleted }
 import pekko.testkit.EventFilter
+import pekko.testkit.TestProbe
 
 object CassandraJournalDeletionSpec {
   case class PersistMe(msg: Long)

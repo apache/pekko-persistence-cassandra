@@ -16,8 +16,8 @@ package org.apache.pekko.persistence.cassandra
 import org.apache.pekko
 import pekko.actor.{ ActorLogging, ActorRef, Props }
 import pekko.persistence.cassandra.journal.TagWriterSpec.TestEx
-import pekko.persistence.{ PersistentActor, RecoveryCompleted, SaveSnapshotSuccess }
 import pekko.persistence.journal.Tagged
+import pekko.persistence.{ PersistentActor, RecoveryCompleted, SaveSnapshotSuccess }
 
 object TestTaggingActor {
   case object Ack

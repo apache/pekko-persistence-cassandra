@@ -13,6 +13,8 @@
 
 package org.apache.pekko.persistence.cassandra.sharding
 
+import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.actor.{ ActorLogging, ActorRef, Props, ReceiveTimeout }
 import pekko.cluster.sharding.{ ClusterSharding, ClusterShardingSettings, ShardRegion }
@@ -20,8 +22,6 @@ import pekko.cluster.{ Cluster, MemberStatus }
 import pekko.persistence.PersistentActor
 import pekko.persistence.cassandra.CassandraSpec
 import pekko.testkit.TestProbe
-
-import scala.concurrent.duration._
 
 object ClusterShardingQuickTerminationSpec {
 

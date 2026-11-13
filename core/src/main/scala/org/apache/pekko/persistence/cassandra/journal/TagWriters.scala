@@ -13,15 +13,21 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
-import scala.concurrent.Promise
 import java.lang.{ Integer => JInt, Long => JLong }
 import java.net.URLEncoder
 import java.util.UUID
+
+import scala.concurrent.Promise
+import scala.concurrent.duration._
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
+
+import com.datastax.oss.driver.api.core.cql.{ BatchStatementBuilder, BatchType, BoundStatement, Statement }
+
 import org.apache.pekko
 import pekko.Done
-import pekko.actor.SupervisorStrategy.Escalate
-import pekko.pattern.ask
-import pekko.pattern.pipe
 import pekko.actor.Actor
 import pekko.actor.ActorLogging
 import pekko.actor.ActorRef
@@ -29,21 +35,17 @@ import pekko.actor.NoSerializationVerificationNeeded
 import pekko.actor.OneForOneStrategy
 import pekko.actor.Props
 import pekko.actor.SupervisorStrategy
+import pekko.actor.SupervisorStrategy.Escalate
 import pekko.actor.Timers
 import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
+import pekko.pattern.ask
+import pekko.pattern.pipe
 import pekko.persistence.cassandra.journal.CassandraJournal._
 import pekko.persistence.cassandra.journal.TagWriter._
 import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
 import pekko.util.ByteString
 import pekko.util.Timeout
-import com.datastax.oss.driver.api.core.cql.{ BatchStatementBuilder, BatchType, BoundStatement, Statement }
-
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.concurrent.duration._
-import scala.util.Failure
-import scala.util.Success
-import scala.util.Try
 
 /**
  * INTERNAL API

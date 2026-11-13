@@ -13,14 +13,14 @@
 
 package org.apache.pekko.persistence.cassandra
 
+import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.persistence.cassandra.TestTaggingActor.{ Ack, Crash }
 import pekko.persistence.query.{ EventEnvelope, NoOffset }
 import pekko.stream.scaladsl.Source
 import pekko.stream.testkit.scaladsl.TestSink
-
-import scala.concurrent.duration._
 
 class EventsByTagCrashSpec extends CassandraSpec(EventsByTagRestartSpec.config) {
 

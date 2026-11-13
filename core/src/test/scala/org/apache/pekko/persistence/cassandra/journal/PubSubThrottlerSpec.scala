@@ -15,13 +15,13 @@ package org.apache.pekko.persistence.cassandra.journal
 
 import scala.concurrent.duration.DurationInt
 
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.wordspec.AnyWordSpecLike
-import org.scalatest.matchers.should.Matchers
-
 import org.apache.pekko
 import pekko.actor.{ ActorSystem, Props }
 import pekko.testkit.{ TestKit, TestProbe }
+
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 
 class PubSubThrottlerSpec
     extends TestKit(ActorSystem("CassandraConfigCheckerSpec"))

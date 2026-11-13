@@ -19,6 +19,7 @@ import pekko.persistence.RecoveryCompleted
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, Persister }
 import pekko.serialization.BaseSerializer
 import pekko.testkit.TestProbe
+
 import com.typesafe.config.ConfigFactory
 
 object CassandraSerializationSpec {

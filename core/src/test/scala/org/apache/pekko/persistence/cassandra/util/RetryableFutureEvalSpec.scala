@@ -17,14 +17,15 @@
 
 package org.apache.pekko.persistence.cassandra.util
 
-import org.scalatest.concurrent.Eventually
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpecLike
-
 import java.util.UUID
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ Await, Future }
+
+import org.scalatest.concurrent.Eventually
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 
 class RetryableFutureEvalSpec extends AnyWordSpecLike with Matchers with Eventually {
   private val timeout = 5.seconds

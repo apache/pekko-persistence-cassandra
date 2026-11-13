@@ -13,9 +13,10 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
+import scala.concurrent.{ ExecutionContext, Future }
+
 import com.datastax.oss.driver.api.core.cql.PreparedStatement
 
-import scala.concurrent.{ ExecutionContext, Future }
 import org.apache.pekko.annotation.InternalApi
 import org.apache.pekko.persistence.cassandra.util.RetryableFutureEval
 

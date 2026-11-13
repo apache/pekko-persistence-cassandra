@@ -13,13 +13,23 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
+import scala.concurrent.duration._
+import scala.concurrent.{ ExecutionContext, Future }
+
 import org.apache.pekko
 import pekko.Done
 import pekko.actor.ActorRef
-import pekko.pattern.ask
+import pekko.actor.ActorSystem
+import pekko.annotation.InternalApi
+import pekko.event.Logging
 import pekko.event.LoggingAdapter
+import pekko.pattern.ask
+import pekko.persistence.cassandra.Extractors.RawEvent
+import pekko.persistence.cassandra.Extractors.TaggedPersistentRepr
+import pekko.persistence.cassandra._
 import pekko.persistence.cassandra.journal.CassandraJournal.{ SequenceNr, Tag }
 import pekko.persistence.cassandra.journal.TagWriter.TagProgress
+import pekko.persistence.cassandra.journal.TagWriters.FlushAllTagWriters
 import pekko.persistence.cassandra.journal.TagWriters.{
   PersistentActorStarting,
   PersistentActorStartingAck,
@@ -27,20 +37,10 @@ import pekko.persistence.cassandra.journal.TagWriters.{
   TagProcessAck,
   TagWrite
 }
-import pekko.persistence.cassandra.Extractors.RawEvent
+import pekko.serialization.SerializationExtension
+import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
 import pekko.stream.scaladsl.Sink
 import pekko.util.Timeout
-
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.concurrent.duration._
-import pekko.actor.ActorSystem
-import pekko.annotation.InternalApi
-import pekko.event.Logging
-import pekko.persistence.cassandra.Extractors.TaggedPersistentRepr
-import pekko.serialization.SerializationExtension
-import pekko.persistence.cassandra._
-import pekko.persistence.cassandra.journal.TagWriters.FlushAllTagWriters
-import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
 
 /**
  * INTERNAL API

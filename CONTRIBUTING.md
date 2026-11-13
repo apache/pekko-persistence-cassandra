@@ -168,3 +168,34 @@ git blame to ignore these commits you can execute the following.
 ```shell
 git config blame.ignoreRevsFile .git-blame-ignore-revs
 ```
+
+### Organizing Scala imports
+
+Run `sbt sortImports` using the default Scala 2.13 version to organize imports.
+This enables SemanticDB for the sbt session, applies Scalafix `OrganizeImports`
+to the root project and its aggregated compile and test sources, then runs Scalafmt. Import organization is
+separate from `applyCodeStyle` because it requires compilation.
+The `endToEndExample`, `dseTest` and `docs` projects are not aggregated by the
+root project. To organize one of these explicitly, run, for example:
+
+```sh
+sbt 'scalafixEnable' 'endToEndExample/scalafixAll OrganizeImports' 'endToEndExample/scalafmtAll'
+```
+
+The custom `MultiJvm` configuration is not enabled for Scalafix. Its sources
+must compile against the selected dependencies before semantic import
+organization can be enabled for that configuration.
+
+The configuration preserves relative imports, groups imports by their resolved
+package and removes unused imports using compiler diagnostics. Scalafmt no
+longer sorts imports independently.
+
+Run `scripts/check-organize-imports.sh` for a focused regression check of
+grouping, relative imports, unused import removal and idempotence. It creates
+an isolated temporary build and accepts an alternative sbt launcher as arguments.
+Set `SCALA_VERSION` to exercise another supported Scala version.
+
+Documentation examples with import snippet markers opt out of
+`OrganizeImports` using `scalafix:off/on` comments. This preserves which
+imports appear in published snippets; do not move the snippet boundaries
+merely to satisfy import sorting.

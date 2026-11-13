@@ -20,8 +20,10 @@ import pekko.persistence.PersistentRepr
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
 import pekko.stream.scaladsl.Keep
 import pekko.stream.testkit.scaladsl.TestSink
-import com.typesafe.config.ConfigFactory
+
 import org.scalatest.time.{ Milliseconds, Seconds, Span }
+
+import com.typesafe.config.ConfigFactory
 
 object EventsByPersistenceIdFastForwardSpec {
 

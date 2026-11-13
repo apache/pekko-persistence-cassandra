@@ -14,9 +14,10 @@
 package org.apache.pekko.persistence.cassandra.journal
 
 import scala.concurrent.duration.FiniteDuration
+
 import org.apache.pekko
-import pekko.actor.{ Actor, ActorRef }
 import pekko.actor.Props
+import pekko.actor.{ Actor, ActorRef }
 import pekko.annotation.InternalApi
 
 /**

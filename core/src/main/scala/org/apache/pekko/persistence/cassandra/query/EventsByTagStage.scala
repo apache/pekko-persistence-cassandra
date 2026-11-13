@@ -13,9 +13,20 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
+import java.lang.{ Long => JLong }
+import java.util.UUID
+import java.util.concurrent.ThreadLocalRandom
+
+import scala.annotation.tailrec
+import scala.concurrent.duration.{ Duration, _ }
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.jdk.FutureConverters._
+import scala.util.{ Failure, Success, Try }
+
 import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.cql.{ AsyncResultSet, Row }
 import com.datastax.oss.driver.api.core.uuid.Uuids
+
 import org.apache.pekko
 import pekko.actor.Scheduler
 import pekko.annotation.InternalApi
@@ -29,15 +40,6 @@ import pekko.stream.stage._
 import pekko.stream.{ Attributes, Outlet, SourceShape }
 import pekko.util.PrettyDuration._
 import pekko.util.UUIDComparator
-
-import java.lang.{ Long => JLong }
-import java.util.UUID
-import java.util.concurrent.ThreadLocalRandom
-import scala.annotation.tailrec
-import scala.concurrent.duration.{ Duration, _ }
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.jdk.FutureConverters._
-import scala.util.{ Failure, Success, Try }
 
 /**
  * INTERNAL API

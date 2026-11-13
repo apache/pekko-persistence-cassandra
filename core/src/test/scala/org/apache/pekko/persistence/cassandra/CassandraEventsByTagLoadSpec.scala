@@ -13,16 +13,18 @@
 
 package org.apache.pekko.persistence.cassandra
 
+import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.persistence.cassandra.TestTaggingActor.Ack
 import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
 import pekko.persistence.query.{ NoOffset, PersistenceQuery }
 import pekko.stream.scaladsl._
 import pekko.stream.testkit.scaladsl.TestSink
-import com.typesafe.config.ConfigFactory
+
 import org.scalatest.time.{ Seconds, Span }
 
-import scala.concurrent.duration._
+import com.typesafe.config.ConfigFactory
 
 object CassandraEventsByTagLoadSpec {
 

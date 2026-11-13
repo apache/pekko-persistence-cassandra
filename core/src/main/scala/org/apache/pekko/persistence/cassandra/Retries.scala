@@ -13,14 +13,14 @@
 
 package org.apache.pekko.persistence.cassandra
 
+import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.control.NonFatal
+
 import org.apache.pekko
 import pekko.actor.Scheduler
 import pekko.annotation.InternalApi
-import pekko.pattern.{ after, RetrySupport }
-
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.concurrent.duration.FiniteDuration
-import scala.util.control.NonFatal
+import pekko.pattern.{ RetrySupport, after }
 
 /**
  * INTERNAL API

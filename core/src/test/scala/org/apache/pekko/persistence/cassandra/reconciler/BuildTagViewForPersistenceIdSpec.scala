@@ -14,6 +14,7 @@
 package org.apache.pekko.persistence.cassandra.reconciler
 
 import org.apache.pekko.persistence.cassandra.CassandraSpec
+
 import org.scalatest.concurrent.Eventually
 
 class BuildTagViewForPersisetceIdSpec extends CassandraSpec with Eventually {

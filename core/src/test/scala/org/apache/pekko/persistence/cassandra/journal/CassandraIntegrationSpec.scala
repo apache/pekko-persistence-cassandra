@@ -20,9 +20,11 @@ import pekko.actor._
 import pekko.persistence._
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
 import pekko.testkit._
-import com.typesafe.config.ConfigFactory
-import org.scalatest.wordspec.AnyWordSpecLike
+
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
+
+import com.typesafe.config.ConfigFactory
 
 object CassandraIntegrationSpec {
   val config = ConfigFactory.parseString(s"""

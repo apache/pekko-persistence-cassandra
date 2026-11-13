@@ -16,10 +16,12 @@ package org.apache.pekko.persistence.cassandra.compaction
 import java.util.concurrent.TimeUnit
 
 import org.apache.pekko
-import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, PluginSettings }
-import com.typesafe.config.ConfigFactory
-import org.scalatest.wordspec.AnyWordSpecLike
 import pekko.persistence.cassandra.RequiresCassandraThree
+import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, PluginSettings }
+
+import org.scalatest.wordspec.AnyWordSpecLike
+
+import com.typesafe.config.ConfigFactory
 
 object CassandraCompactionStrategySpec {
   lazy val config = ConfigFactory.parseString(s"""

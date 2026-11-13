@@ -13,12 +13,19 @@
 
 package org.apache.pekko.persistence.cassandra.snapshot
 
+import java.lang.{ Long => JLong }
+import java.nio.ByteBuffer
+
+import scala.annotation.nowarn
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.jdk.FutureConverters._
+import scala.util.control.NonFatal
+import scala.util.{ Failure, Success }
+
 import com.datastax.oss.driver.api.core.cql._
 import com.datastax.oss.protocol.internal.util.Bytes
-import com.typesafe.config.Config
-import scala.annotation.nowarn
+
 import org.apache.pekko
-import pekko.{ Done, NotUsed }
 import pekko.actor._
 import pekko.annotation.InternalApi
 import pekko.event.Logging
@@ -31,13 +38,9 @@ import pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtens
 import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
 import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.util.OptionVal
+import pekko.{ Done, NotUsed }
 
-import java.lang.{ Long => JLong }
-import java.nio.ByteBuffer
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.jdk.FutureConverters._
-import scala.util.control.NonFatal
-import scala.util.{ Failure, Success }
+import com.typesafe.config.Config
 
 /**
  * INTERNAL API

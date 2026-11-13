@@ -17,13 +17,14 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import scala.jdk.FutureConverters._
 
+import com.datastax.oss.driver.api.core.CqlSession
+
 import org.apache.pekko
 import pekko.Done
 import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
-import pekko.persistence.cassandra.indent
 import pekko.persistence.cassandra.FutureDone
-import com.datastax.oss.driver.api.core.CqlSession
+import pekko.persistence.cassandra.indent
 
 /**
  * INTERNAL API

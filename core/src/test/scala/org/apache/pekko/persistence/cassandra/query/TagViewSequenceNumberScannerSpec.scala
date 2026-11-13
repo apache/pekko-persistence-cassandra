@@ -16,17 +16,21 @@ package org.apache.pekko.persistence.cassandra.query
 import java.time.{ LocalDateTime, ZoneOffset }
 import java.util.UUID
 
+import scala.concurrent.duration.Duration
+
+import com.datastax.oss.driver.api.core.uuid.Uuids
+
 import org.apache.pekko
 import pekko.persistence.PersistentRepr
 import pekko.persistence.cassandra.journal.CassandraJournal.{ PersistenceId, TagPidSequenceNr }
 import pekko.persistence.cassandra.query.TagViewSequenceNumberScannerSpec.config
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, Hour, PluginSettings }
 import pekko.serialization.{ Serialization, SerializationExtension }
-import com.datastax.oss.driver.api.core.uuid.Uuids
-import com.typesafe.config.ConfigFactory
+
 import org.scalatest.BeforeAndAfter
 import org.scalatest.time.{ Seconds, Span }
-import scala.concurrent.duration.Duration
+
+import com.typesafe.config.ConfigFactory
 
 object TagViewSequenceNumberScannerSpec {
   val bucketSize = Hour

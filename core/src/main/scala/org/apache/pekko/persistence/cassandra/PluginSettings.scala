@@ -21,6 +21,7 @@ import pekko.persistence.cassandra.healthcheck.HealthCheckSettings
 import pekko.persistence.cassandra.journal.JournalSettings
 import pekko.persistence.cassandra.query.QuerySettings
 import pekko.persistence.cassandra.snapshot.SnapshotSettings
+
 import com.typesafe.config.Config
 
 /**

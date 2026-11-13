@@ -13,17 +13,18 @@
 
 package org.apache.pekko.persistence.cassandra.reconciler
 
-import org.apache.pekko
-import pekko.actor.ActorSystem
-import pekko.persistence.cassandra.PluginSettings
-import pekko.Done
-import pekko.event.Logging
-import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import pekko.annotation.InternalApi
-import pekko.persistence.query.NoOffset
-import pekko.persistence.cassandra.journal.TimeBucket
-import pekko.stream.scaladsl.Sink
 import scala.concurrent.Future
+
+import org.apache.pekko
+import pekko.Done
+import pekko.actor.ActorSystem
+import pekko.annotation.InternalApi
+import pekko.event.Logging
+import pekko.persistence.cassandra.PluginSettings
+import pekko.persistence.cassandra.journal.TimeBucket
+import pekko.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import pekko.persistence.query.NoOffset
+import pekko.stream.scaladsl.Sink
 
 /**
  * Deletes tagged events for a persistence id.

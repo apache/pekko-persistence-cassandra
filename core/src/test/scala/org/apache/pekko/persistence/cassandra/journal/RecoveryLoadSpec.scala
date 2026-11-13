@@ -13,14 +13,15 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
+import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.actor._
-import pekko.persistence.{ PersistentActor, RecoveryCompleted, SnapshotOffer }
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
 import pekko.persistence.journal.Tagged
-import com.typesafe.config.ConfigFactory
+import pekko.persistence.{ PersistentActor, RecoveryCompleted, SnapshotOffer }
 
-import scala.concurrent.duration._
+import com.typesafe.config.ConfigFactory
 
 object RecoveryLoadSpec {
   val config = ConfigFactory.parseString(s"""

@@ -13,7 +13,10 @@
 
 package org.apache.pekko.persistence.cassandra.query
 
-import com.typesafe.config.ConfigFactory
+import java.util.UUID
+
+import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.actor.ActorRef
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
@@ -23,10 +26,10 @@ import pekko.stream.KillSwitches
 import pekko.stream.scaladsl.{ Keep, Sink }
 import pekko.stream.testkit.scaladsl.TestSink
 import pekko.util.UUIDComparator
+
 import org.scalatest.Inside
 
-import java.util.UUID
-import scala.concurrent.duration._
+import com.typesafe.config.ConfigFactory
 
 object EventsByPersistenceIdSpec {
   private val config = ConfigFactory.parseString(s"""

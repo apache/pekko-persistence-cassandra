@@ -13,12 +13,12 @@
 
 package org.apache.pekko.persistence.cassandra.reconciler
 
+import scala.collection.mutable
+
 import org.apache.pekko
+import pekko.NotUsed
 import pekko.annotation.InternalApi
 import pekko.stream.scaladsl.Source
-import pekko.NotUsed
-
-import scala.collection.mutable
 
 /**
  * Calculates all the tags by scanning the tag_write_progress table.

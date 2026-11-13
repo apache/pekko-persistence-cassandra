@@ -175,3 +175,6 @@ Global / onLoad := (Global / onLoad).value.andThen { s =>
     s"Building Pekko Persistence Cassandra $v against Pekko ${Dependencies.pekkoVersion} and Pekko Connectors ${Dependencies.pekkoConnectorsVersion}")
   s
 }
+
+// Enable SemanticDB only for import organization, not for ordinary builds.
+addCommandAlias("sortImports", ";scalafixEnable; scalafixAll OrganizeImports; scalafmtAll")

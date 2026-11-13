@@ -13,17 +13,20 @@
 
 package org.apache.pekko.persistence.cassandra
 
+import org.testcontainers.cassandra.CassandraContainer
+
 import org.apache.pekko
 import pekko.actor.{ ActorSystem, Props }
 import pekko.persistence.cassandra.CassandraLifecycle.AwaitPersistenceInit
 import pekko.testkit.{ ImplicitSender, SocketUtil, TestKit }
-import com.typesafe.config.ConfigFactory
+
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.Suite
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
-import org.testcontainers.cassandra.CassandraContainer
+
+import com.typesafe.config.ConfigFactory
 
 object ReconnectSpec {
   val freePort = SocketUtil.temporaryLocalPort()

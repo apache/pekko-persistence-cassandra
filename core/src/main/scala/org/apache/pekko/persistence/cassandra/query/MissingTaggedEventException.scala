@@ -14,6 +14,7 @@
 package org.apache.pekko.persistence.cassandra.query
 
 import java.util.UUID
+
 import org.apache.pekko.annotation.ApiMayChange
 
 /**

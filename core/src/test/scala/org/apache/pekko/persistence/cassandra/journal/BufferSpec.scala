@@ -16,6 +16,8 @@ package org.apache.pekko.persistence.cassandra.journal
 import java.nio.ByteBuffer
 import java.util.UUID
 
+import com.datastax.oss.driver.api.core.uuid.Uuids
+
 import org.apache.pekko
 import pekko.actor.{ ActorRef, ActorSystem }
 import pekko.persistence.cassandra.Day
@@ -23,7 +25,7 @@ import pekko.persistence.cassandra.journal.CassandraJournal.{ Serialized, TagPid
 import pekko.persistence.cassandra.journal.TagWriter.AwaitingWrite
 import pekko.testkit.{ TestKit, TestProbe }
 import pekko.util.OptionVal
-import com.datastax.oss.driver.api.core.uuid.Uuids
+
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

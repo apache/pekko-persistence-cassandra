@@ -19,6 +19,7 @@ import org.apache.pekko
 import pekko.persistence.PersistentRepr
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec }
 import pekko.stream.testkit.scaladsl.TestSink
+
 import com.typesafe.config.ConfigFactory
 
 object EventsByPersistenceIdMultiPartitionGapSpec {

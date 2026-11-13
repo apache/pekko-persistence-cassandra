@@ -13,9 +13,9 @@
 
 package org.apache.pekko.persistence.cassandra.compaction
 
-import com.typesafe.config.{ Config, ConfigFactory }
-
 import scala.jdk.CollectionConverters._
+
+import com.typesafe.config.{ Config, ConfigFactory }
 
 /*
  * Based upon https://github.com/apache/cassandra/blob/cassandra-2.2/src/java/org/apache/cassandra/db/compaction/AbstractCompactionStrategy.java

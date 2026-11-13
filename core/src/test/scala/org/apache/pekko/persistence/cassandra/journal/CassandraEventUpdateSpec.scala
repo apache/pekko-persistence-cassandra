@@ -16,20 +16,21 @@ package org.apache.pekko.persistence.cassandra.journal
 import java.util.UUID
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+
 import org.apache.pekko
 import pekko.Done
+import pekko.actor.ExtendedActorSystem
 import pekko.event.Logging
 import pekko.persistence.PersistentRepr
 import pekko.persistence.cassandra.journal.CassandraJournal.Serialized
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, TestTaggingActor, _ }
 import pekko.serialization.SerializationExtension
-import com.typesafe.config.ConfigFactory
-
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
-import pekko.actor.ExtendedActorSystem
 import pekko.stream.connectors.cassandra.CqlSessionProvider
 import pekko.stream.connectors.cassandra.scaladsl.CassandraSession
+
+import com.typesafe.config.ConfigFactory
 
 object CassandraEventUpdateSpec {
   val config = ConfigFactory.parseString("""

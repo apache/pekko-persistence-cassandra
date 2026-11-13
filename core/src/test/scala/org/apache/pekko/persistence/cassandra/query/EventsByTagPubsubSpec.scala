@@ -15,15 +15,16 @@ package org.apache.pekko.persistence.cassandra.query
 
 import java.time.{ LocalDate, ZoneOffset }
 
+import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.cluster.Cluster
 import pekko.persistence.cassandra.CassandraSpec
 import pekko.persistence.cassandra.journal.JournalSettings
 import pekko.persistence.query.{ EventEnvelope, NoOffset }
 import pekko.stream.testkit.scaladsl.TestSink
-import com.typesafe.config.ConfigFactory
 
-import scala.concurrent.duration._
+import com.typesafe.config.ConfigFactory
 
 object EventsByTagPubsubSpec {
   val today = LocalDate.now(ZoneOffset.UTC)

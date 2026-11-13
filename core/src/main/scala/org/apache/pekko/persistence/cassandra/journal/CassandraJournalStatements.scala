@@ -13,16 +13,16 @@
 
 package org.apache.pekko.persistence.cassandra.journal
 
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.jdk.FutureConverters._
+
 import com.datastax.oss.driver.api.core.CqlSession
 
 import org.apache.pekko
 import pekko.Done
 import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
-import pekko.persistence.cassandra.{ indent, FutureDone, PluginSettings }
-
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.jdk.FutureConverters._
+import pekko.persistence.cassandra.{ FutureDone, PluginSettings, indent }
 
 /**
  * INTERNAL API

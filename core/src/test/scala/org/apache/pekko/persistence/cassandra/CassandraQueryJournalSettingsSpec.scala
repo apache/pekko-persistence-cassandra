@@ -15,16 +15,18 @@ package org.apache.pekko.persistence.cassandra
 
 import org.apache.pekko
 import pekko.actor.ActorSystem
-import pekko.persistence.cassandra.journal.TimeBucket
 import pekko.persistence.cassandra.EventsByTagSettings.BackTrackSettings
 import pekko.persistence.cassandra.EventsByTagSettings.Fixed
 import pekko.persistence.cassandra.EventsByTagSettings.Max
+import pekko.persistence.cassandra.journal.TimeBucket
 import pekko.testkit.TestKit
-import com.typesafe.config.ConfigFactory
+
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest.wordspec.AnyWordSpecLike
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.wordspec.AnyWordSpecLike
+
+import com.typesafe.config.ConfigFactory
 
 class CassandraQueryJournalSettingsSpec
     extends TestKit(ActorSystem("CassandraReadJournalConfigSpec"))

@@ -14,23 +14,25 @@
 package org.apache.pekko.persistence
 
 import java.nio.ByteBuffer
-import java.time.{ Instant, LocalDateTime, ZoneOffset }
 import java.time.format.DateTimeFormatter
+import java.time.{ Instant, LocalDateTime, ZoneOffset }
 import java.util.UUID
+
+import scala.concurrent._
+import scala.jdk.CollectionConverters._
+import scala.util.control.NonFatal
+
+import com.datastax.oss.driver.api.core.uuid.Uuids
 
 import org.apache.pekko
 import pekko.Done
 import pekko.actor.{ ActorSystem, ExtendedActorSystem }
 import pekko.annotation.InternalApi
-import pekko.persistence.cassandra.journal.TimeBucket
 import pekko.persistence.cassandra.journal.CassandraJournal.{ Serialized, SerializedMeta }
+import pekko.persistence.cassandra.journal.TimeBucket
 import pekko.serialization.{ AsyncSerializer, Serialization, Serializers }
 
-import scala.concurrent._
-import scala.jdk.CollectionConverters._
-import scala.util.control.NonFatal
 import com.typesafe.config.{ Config, ConfigValueType }
-import com.datastax.oss.driver.api.core.uuid.Uuids
 
 package object cassandra {
 

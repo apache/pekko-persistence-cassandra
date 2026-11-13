@@ -17,11 +17,12 @@
 
 package org.apache.pekko.persistence.cassandra.util
 
-import org.apache.pekko.annotation.InternalApi
-
 import java.util.concurrent.atomic.AtomicReference
+
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.Failure
+
+import org.apache.pekko.annotation.InternalApi
 
 @InternalApi
 private[cassandra] object RetryableFutureEval {

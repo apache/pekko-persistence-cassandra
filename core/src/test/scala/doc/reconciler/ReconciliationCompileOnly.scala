@@ -13,6 +13,8 @@
 
 package doc.reconciler
 
+// Keep the documentation snippet import boundaries intact.
+// scalafix:off OrganizeImports
 //#imports
 import org.apache.pekko
 import pekko.persistence.cassandra.reconciler.Reconciliation
@@ -47,3 +49,5 @@ class ReconciliationCompileOnly {
   result.onComplete(_ => rec.close())
   // #reconcile
 }
+
+// scalafix:on OrganizeImports

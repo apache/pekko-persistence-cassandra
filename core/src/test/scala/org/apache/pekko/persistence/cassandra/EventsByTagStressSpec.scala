@@ -13,14 +13,14 @@
 
 package org.apache.pekko.persistence.cassandra
 
+import scala.concurrent.{ ExecutionContext, Future }
+
 import org.apache.pekko
 import pekko.persistence.cassandra.query.TestActor
 import pekko.persistence.journal.Tagged
 import pekko.persistence.query.NoOffset
 import pekko.stream.testkit.TestSubscriber
 import pekko.stream.testkit.scaladsl.TestSink
-
-import scala.concurrent.{ ExecutionContext, Future }
 
 class EventsByTagStressSpec extends CassandraSpec(s"""
     pekko.persistence.cassandra {

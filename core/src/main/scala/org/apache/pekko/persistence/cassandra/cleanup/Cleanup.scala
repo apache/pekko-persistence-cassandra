@@ -14,27 +14,30 @@
 package org.apache.pekko.persistence.cassandra.cleanup
 
 import java.lang.{ Integer => JInt, Long => JLong }
+
 import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
+
+import com.datastax.oss.driver.api.core.cql.Row
+
 import org.apache.pekko
-import pekko.{ Done, NotUsed }
 import pekko.actor.{ ActorRef, ActorSystem, ClassicActorSystemProvider }
 import pekko.annotation.ApiMayChange
 import pekko.event.Logging
 import pekko.pattern.ask
 import pekko.persistence.JournalProtocol.DeleteMessagesTo
-import pekko.persistence.{ Persistence, SnapshotMetadata }
 import pekko.persistence.cassandra.PluginSettings
 import pekko.persistence.cassandra.journal.CassandraJournal
 import pekko.persistence.cassandra.reconciler.Reconciliation
 import pekko.persistence.cassandra.reconciler.ReconciliationSettings
 import pekko.persistence.cassandra.snapshot.{ CassandraSnapshotStatements, CassandraSnapshotStore }
 import pekko.persistence.cassandra.util.RetryableFutureEval
+import pekko.persistence.{ Persistence, SnapshotMetadata }
 import pekko.stream.connectors.cassandra.scaladsl.{ CassandraSession, CassandraSessionRegistry }
 import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.util.Timeout
-import com.datastax.oss.driver.api.core.cql.Row
+import pekko.{ Done, NotUsed }
 
 /**
  * Tool for deleting all events and/or snapshots for a given list of `persistenceIds` without using persistent actors.

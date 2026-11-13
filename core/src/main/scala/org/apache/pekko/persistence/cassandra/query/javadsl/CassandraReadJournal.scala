@@ -16,16 +16,16 @@ package org.apache.pekko.persistence.cassandra.query.javadsl
 import java.util.UUID
 import java.util.concurrent.CompletionStage
 
+import scala.jdk.FutureConverters._
+
 import org.apache.pekko
-import pekko.{ Done, NotUsed }
 import pekko.persistence.query.EventEnvelope
 import pekko.persistence.query.Offset
 import pekko.persistence.query.TimeBasedUUID
 import pekko.persistence.query.javadsl._
 import pekko.stream.connectors.cassandra.javadsl.CassandraSession
 import pekko.stream.javadsl.Source
-
-import scala.jdk.FutureConverters._
+import pekko.{ Done, NotUsed }
 
 object CassandraReadJournal {
 

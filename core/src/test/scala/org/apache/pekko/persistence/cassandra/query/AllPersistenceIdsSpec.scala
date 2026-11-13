@@ -25,8 +25,10 @@ import pekko.persistence.cassandra.CassandraSpec
 import pekko.persistence.cassandra.journal.JournalSettings
 import pekko.stream.scaladsl.Source
 import pekko.stream.testkit.scaladsl.TestSink
-import com.typesafe.config.ConfigFactory
+
 import org.scalatest.BeforeAndAfterEach
+
+import com.typesafe.config.ConfigFactory
 
 object AllPersistenceIdsSpec {
   val config = ConfigFactory.parseString(s"""
