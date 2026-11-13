@@ -24,6 +24,7 @@ addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.6.1")
 addSbtPlugin("com.github.sbt" % "sbt-site-paradox" % "1.8.0")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-theme" % "0.11.1")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox" % "0.11.1")
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-dependencies" % "0.2.4")
 addSbtPlugin("org.apache.pekko" % "pekko-sbt-paradox" % "1.0.1")
 
 // https://eed3si9n.com/reducing-scaladoc-file-size-with-sbt-salad-days/
