@@ -122,7 +122,7 @@ private[pekko] case class Buffer(
   }
 
   final def addPending(write: AwaitingWrite): Buffer = {
-    copy(size = size + write.events.size, pending = pending :+ write)
+    copy(size = size + write.events.size, pending = pending :+ write, writeRequired = true)
   }
 
   def writeComplete(): Buffer = {
