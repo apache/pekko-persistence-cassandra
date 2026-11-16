@@ -79,46 +79,43 @@ package object cassandra {
           SerializedMeta(metaBuf, serManifest, serializer.identifier)
         }
 
-      val event: AnyRef = p.payload.asInstanceOf[AnyRef]
-      val serializer = serialization.findSerializerFor(event)
-      val serManifest = Serializers.manifestFor(serializer, event)
+      def serialized(serEvent: ByteBuffer, serManifest: String, serId: Int): Serialized =
+        Serialized(
+          p.persistenceId,
+          p.sequenceNr,
+          serEvent,
+          tags,
+          eventAdapterManifest = p.manifest,
+          serManifest = serManifest,
+          serId = serId,
+          p.writerUuid,
+          serializeMeta(),
+          uuid,
+          timeBucket)
 
-      serializer match {
-        case asyncSer: AsyncSerializer =>
-          Serialization.withTransportInformation(system.asInstanceOf[ExtendedActorSystem]) { () =>
-            asyncSer.toBinaryAsync(event).map { bytes =>
-              val serEvent = ByteBuffer.wrap(bytes)
-              Serialized(
-                p.persistenceId,
-                p.sequenceNr,
-                serEvent,
-                tags,
-                eventAdapterManifest = p.manifest,
-                serManifest = serManifest,
-                serId = serializer.identifier,
-                p.writerUuid,
-                serializeMeta(),
-                uuid,
-                timeBucket)
-            }
-          }
+      p.payload match {
+        case se: SerializedEvent =>
+          // already serialized, store the wrapped event's serialization information as is
+          Future.successful(serialized(ByteBuffer.wrap(se.bytes), se.serializerManifest, se.serializerId))
 
-        case _ =>
-          Future {
-            // Serialization.serialize adds transport info
-            val serEvent = ByteBuffer.wrap(serialization.serialize(event).get)
-            Serialized(
-              p.persistenceId,
-              p.sequenceNr,
-              serEvent,
-              tags,
-              eventAdapterManifest = p.manifest,
-              serManifest = serManifest,
-              serId = serializer.identifier,
-              p.writerUuid,
-              serializeMeta(),
-              uuid,
-              timeBucket)
+        case payload =>
+          val event: AnyRef = payload.asInstanceOf[AnyRef]
+          val serializer = serialization.findSerializerFor(event)
+          val serManifest = Serializers.manifestFor(serializer, event)
+
+          serializer match {
+            case asyncSer: AsyncSerializer =>
+              Serialization.withTransportInformation(system.asInstanceOf[ExtendedActorSystem]) { () =>
+                asyncSer.toBinaryAsync(event).map { bytes =>
+                  serialized(ByteBuffer.wrap(bytes), serManifest, serializer.identifier)
+                }
+              }
+
+            case _ =>
+              Future {
+                // Serialization.serialize adds transport info
+                serialized(ByteBuffer.wrap(serialization.serialize(event).get), serManifest, serializer.identifier)
+              }
           }
       }
 
