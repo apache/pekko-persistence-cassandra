@@ -15,12 +15,15 @@ package org.apache.pekko.persistence.cassandra.compaction
 
 import java.util.concurrent.TimeUnit
 
+import scala.jdk.CollectionConverters._
+
 import org.apache.pekko
 import pekko.persistence.cassandra.RequiresCassandraThree
 import pekko.persistence.cassandra.{ CassandraLifecycle, CassandraSpec, PluginSettings }
 
 import org.scalatest.wordspec.AnyWordSpecLike
 
+import com.datastax.oss.driver.api.core.Version
 import com.typesafe.config.ConfigFactory
 
 object CassandraCompactionStrategySpec {
@@ -41,6 +44,10 @@ class CassandraCompactionStrategySpec
     cluster.execute(
       "CREATE KEYSPACE IF NOT EXISTS testKeyspace WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 }")
   }
+
+  private def supportsUnifiedCompactionStrategy: Boolean =
+    cluster.getMetadata.getNodes.values.asScala.headOption.flatMap(n => Option(n.getCassandraVersion)).exists(
+      _.compareTo(Version.parse("5.0.0")) >= 0)
 
   "A CassandraCompactionStrategy" must {
 
@@ -182,6 +189,117 @@ class CassandraCompactionStrategySpec
       noException must be thrownBy {
         cluster.execute(cqlExpression)
       }
+    }
+
+    "successfully create a UnifiedCompactionStrategy" in {
+      val ucsConfig = ConfigFactory.parseString("""journal.table-compaction-strategy {
+          | class = "UnifiedCompactionStrategy"
+          | tombstone_threshold = 0.1
+          | scaling_parameters = "T4"
+          | target_sstable_size = "1GiB"
+          | min_sstable_size = "100MiB"
+          | base_shard_count = 4
+          | sstable_growth = 0.333
+          | max_sstables_to_compact = 32
+          | expired_sstable_check_frequency_seconds = 600
+          | unsafe_aggressive_sstable_expiration = false
+          | overlap_inclusion_method = "TRANSITIVE"
+          |}
+        """.stripMargin)
+
+      val compactionStrategy = CassandraCompactionStrategy(ucsConfig.getConfig("journal.table-compaction-strategy"))
+        .asInstanceOf[UnifiedCompactionStrategy]
+
+      compactionStrategy.tombstoneThreshold shouldEqual 0.1
+      compactionStrategy.scalingParameters shouldEqual Some("T4")
+      compactionStrategy.targetSSTableSize shouldEqual Some("1GiB")
+      compactionStrategy.minSSTableSize shouldEqual Some("100MiB")
+      compactionStrategy.baseShardCount shouldEqual Some(4)
+      compactionStrategy.sstableGrowth shouldEqual Some(0.333)
+      compactionStrategy.maxSSTablesToCompact shouldEqual Some(32)
+      compactionStrategy.expiredSSTableCheckFrequencySeconds shouldEqual Some(600L)
+      compactionStrategy.unsafeAggressiveSSTableExpiration shouldEqual Some(false)
+      compactionStrategy.overlapInclusionMethod shouldEqual Some("TRANSITIVE")
+    }
+
+    "only include the configured UnifiedCompactionStrategy options in the CQL" in {
+      val ucsConfig = ConfigFactory.parseString("""journal.table-compaction-strategy {
+          | class = "UnifiedCompactionStrategy"
+          | scaling_parameters = "L10, T4"
+          |}
+        """.stripMargin)
+
+      CassandraCompactionStrategy(ucsConfig.getConfig("journal.table-compaction-strategy")).asCQL shouldEqual
+      """{
+          |'class' : 'UnifiedCompactionStrategy',
+          |'enabled' : true,
+          |'tombstone_compaction_interval' : 86400,
+          |'tombstone_threshold' : 0.2,
+          |'unchecked_tombstone_compaction' : false,
+          |'scaling_parameters' : 'L10, T4'
+          |}""".stripMargin
+    }
+
+    "fail if unrecognised property for UnifiedCompactionStrategy" in {
+      val ucsConfig = ConfigFactory.parseString("""journal.table-compaction-strategy {
+          | class = "UnifiedCompactionStrategy"
+          | sstable_size_in_mb = 100
+          |}
+        """.stripMargin)
+
+      assertThrows[IllegalArgumentException] {
+        CassandraCompactionStrategy(ucsConfig.getConfig("journal.table-compaction-strategy"))
+      }
+    }
+
+    "fail if sstable_growth is out of range for UnifiedCompactionStrategy" in {
+      val ucsConfig = ConfigFactory.parseString("""journal.table-compaction-strategy {
+          | class = "UnifiedCompactionStrategy"
+          | sstable_growth = 1.5
+          |}
+        """.stripMargin)
+
+      assertThrows[IllegalArgumentException] {
+        CassandraCompactionStrategy(ucsConfig.getConfig("journal.table-compaction-strategy"))
+      }
+    }
+
+    "successfully create CQL from UnifiedCompactionStrategy" in {
+      assume(supportsUnifiedCompactionStrategy, "UnifiedCompactionStrategy requires Cassandra 5.0+")
+
+      val ucsConfig = ConfigFactory.parseString("""journal.table-compaction-strategy {
+          | class = "UnifiedCompactionStrategy"
+          | enabled = true
+          | tombstone_compaction_interval = 86400
+          | tombstone_threshold = 0.1
+          | unchecked_tombstone_compaction = false
+          | scaling_parameters = "T4"
+          | target_sstable_size = "1GiB"
+          | min_sstable_size = "100MiB"
+          | base_shard_count = 4
+          | sstable_growth = 0.333
+          | max_sstables_to_compact = 32
+          | expired_sstable_check_frequency_seconds = 600
+          | unsafe_aggressive_sstable_expiration = false
+          | overlap_inclusion_method = "TRANSITIVE"
+          |}
+        """.stripMargin)
+
+      val cqlExpression =
+        s"CREATE TABLE IF NOT EXISTS testKeyspace.testTable4 (testId TEXT PRIMARY KEY) WITH compaction = ${CassandraCompactionStrategy(
+            ucsConfig.getConfig("journal.table-compaction-strategy")).asCQL}"
+
+      noException must be thrownBy {
+        cluster.execute(cqlExpression)
+      }
+
+      val compaction = cluster.getMetadata
+        .getKeyspace("testkeyspace").get
+        .getTable("testtable4").get
+        .getOptions.asScala.collectFirst { case (k, v) if k.asInternal == "compaction" => v }
+        .get.asInstanceOf[java.util.Map[String, String]].asScala
+      compaction("class") should endWith("UnifiedCompactionStrategy")
+      compaction("scaling_parameters") shouldEqual "T4"
     }
   }
 }
