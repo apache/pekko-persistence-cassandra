@@ -206,6 +206,32 @@ class CassandraIntegrationSpec extends CassandraSpec(config) with ImplicitSender
       processor2
     }
 
+    "write and replay with persistAll greater than partition size skipping a whole partition after events" in {
+      val persistenceId = UUID.randomUUID().toString
+      val processorAtomic = system.actorOf(Props(new ProcessorAtomic(persistenceId, self)))
+
+      // fills partition 0
+      processorAtomic ! List("a-1", "a-2", "a-3", "a-4", "a-5")
+      (1L to 5L).foreach { i =>
+        expectMsgAllOf[Any](s"a-$i", i, false)
+      }
+
+      // spans partitions 1 and 2, all rows go into partition 2 and partition 1 has none
+      processorAtomic ! (6 to 11).map(i => s"a-$i").toList
+      (6L to 11L).foreach { i =>
+        expectMsgAllOf[Any](s"a-$i", i, false)
+      }
+
+      stopAndWaitUntilTerminated(processorAtomic)
+
+      val testProbe = TestProbe()
+      val processor2 = system.actorOf(Props(new ProcessorAtomic(persistenceId, testProbe.ref)))
+      (1L to 11L).foreach { i =>
+        testProbe.expectMsgAllOf[Any](s"a-$i", i, true)
+      }
+      processor2
+    }
+
     "write and replay with persistAll greater than partition size skipping part of a partition" in {
       val persistenceId = UUID.randomUUID().toString
       val processorAtomic = system.actorOf(Props(new ProcessorAtomic(persistenceId, self)))

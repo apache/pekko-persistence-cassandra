@@ -145,6 +145,8 @@ import pekko.stream.{ Attributes, Outlet, SourceShape }
       var pendingPoll: Option[Long] = None
       var pendingFastForward: Option[Long] = None
       var lookingForMissingSeqNr: Option[MissingSeqNr] = None
+      // true while the partition after an empty next partition is being queried, see mayHaveSkippedPartition
+      var probingSkippedPartition = false
 
       var queryState: QueryState = QueryIdle
 
@@ -251,6 +253,15 @@ import pekko.stream.{ Attributes, Outlet, SourceShape }
 
       def partitionNr(sequenceNr: Long): Long = (sequenceNr - 1L) / journalSettings.targetPartitionSize
 
+      // The journal stores every row of a write in the partition of the write's last sequence nr, and a write
+      // spans at most two partitions. A write that starts at the first sequence nr of partition `p + 1` and
+      // ends in `p + 2` therefore leaves `p + 1` with no rows at all. That is only possible when the next
+      // expected sequence nr is the first one of `p + 1`, so only then is `p + 2` worth a query when `p + 1`
+      // turns out to be empty.
+      def mayHaveSkippedPartition(): Boolean =
+        partitionNr(expectedNextSeqNr) == partition + 1 &&
+        (expectedNextSeqNr - 1L) % journalSettings.targetPartitionSize == 0
+
       override def preStart(): Unit = {
         queryState = QueryInProgress(switchPartition = false, fetchMore = false, System.nanoTime())
         session.highestDeletedSequenceNumber(persistenceId).onComplete(highestDeletedSequenceNrCb.invoke)
@@ -323,7 +334,10 @@ import pekko.stream.{ Attributes, Outlet, SourceShape }
             if (!isExhausted(rs))
               throw new IllegalStateException("Previous query was not exhausted")
         }
-        val pnr = if (switchPartition) partition + 1 else partition
+        val pnr =
+          if (!switchPartition) partition
+          else if (probingSkippedPartition) partition + 2
+          else partition + 1
         queryState = QueryInProgress(switchPartition, fetchMore = false, System.nanoTime())
 
         val endNr = lookingForMissingSeqNr match {
@@ -358,7 +372,16 @@ import pekko.stream.{ Attributes, Outlet, SourceShape }
               // When ResultSet is exhausted we immediately look in next partition for more events.
               // We keep track of if the query was such switching partition and if result is empty
               // we complete the stage or wait until next Continue tick.
-              if (empty && switchPartition && lookingForMissingSeqNr.isEmpty) {
+              if (empty && switchPartition && lookingForMissingSeqNr.isEmpty && !probingSkippedPartition &&
+                mayHaveSkippedPartition()) {
+                log.debug(
+                  "EventsByPersistenceId [{}] Partition [{}] is empty, checking whether a write skipped it",
+                  persistenceId,
+                  partition + 1)
+                probingSkippedPartition = true
+                query(switchPartition = true)
+              } else if (empty && switchPartition && lookingForMissingSeqNr.isEmpty) {
+                probingSkippedPartition = false
                 if (expectedNextSeqNr < toSeqNr && !querySettings.gapFreeSequenceNumbers) {
                   log.warning(
                     s"Gap found! Checking if data in partition was deleted for {}, expected seq nr: {}, current partition nr: {}",
@@ -382,6 +405,7 @@ import pekko.stream.{ Attributes, Outlet, SourceShape }
                 }
               } else {
                 // TODO if we are far from the partition boundary we could skip this query if refreshInterval.nonEmpty
+                probingSkippedPartition = false
                 query(switchPartition = true) // next partition
               }
             }
@@ -427,6 +451,7 @@ import pekko.stream.{ Attributes, Outlet, SourceShape }
                     throw new IllegalStateException(
                       s"Should not be able to get here when already looking for missing seqNr [$expectedNextSeqNr] for entity [$persistenceId]")
                   case None =>
+                    probingSkippedPartition = false
                     log.debug(
                       "EventsByPersistenceId [{}] Missing seqNr [{}], found [{}], looking for event eventually appear",
                       persistenceId,
@@ -442,6 +467,7 @@ import pekko.stream.{ Attributes, Outlet, SourceShape }
               } else {
                 expectedNextSeqNr = sequenceNr + 1
                 partition = row.getLong("partition_nr")
+                probingSkippedPartition = false
                 count += 1
                 push(out, row)
 

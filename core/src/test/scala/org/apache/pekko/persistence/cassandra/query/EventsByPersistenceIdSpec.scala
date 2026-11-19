@@ -271,6 +271,23 @@ class EventsByPersistenceIdSpec extends CassandraSpec(EventsByPersistenceIdSpec.
         .expectComplete()
     }
 
+    "find all events when PersistAll leaves a whole partition empty" in {
+      val ref = setup("skip1", 15) // fills partition 0
+      // 16 to 31 span partitions 1 and 2, all rows go into partition 2 and partition 1 has none
+      ref ! TestActor.PersistAll((16 to 31).map(i => s"skip1-$i"))
+      expectMsg("PersistAll-done")
+      ref ! "skip1-32"
+      expectMsg("skip1-32-done")
+
+      val src = queries.currentEventsByPersistenceId("skip1", 0L, Long.MaxValue)
+      src
+        .map(_.event)
+        .runWith(TestSink[Any]())
+        .request(100)
+        .expectNextN((1 to 32).map(i => s"skip1-$i"))
+        .expectComplete()
+    }
+
     "start not in the first or second partition" in {
       val ref: ActorRef = setup("i4", 50)
       ref ! TestActor.DeleteTo(48)
@@ -483,6 +500,28 @@ class EventsByPersistenceIdSpec extends CassandraSpec(EventsByPersistenceIdSpec.
       ref ! TestActor.PersistAll((44 to 46).map(i => s"q2-$i"))
       expectMsg("PersistAll-done")
       probe.expectNextN((44 to 46).map(i => s"q2-$i"))
+
+      probe.cancel()
+    }
+
+    "find new events when PersistAll leaves a whole partition empty" in {
+      val ref = setup("skip2", 15) // fills partition 0
+
+      val src = queries.eventsByPersistenceId("skip2", 0L, Long.MaxValue)
+      val probe = src
+        .map(_.event)
+        .runWith(TestSink[Any]())
+        .request(100)
+        .expectNextN((1 to 15).map(i => s"skip2-$i"))
+
+      // 16 to 31 span partitions 1 and 2, all rows go into partition 2 and partition 1 has none
+      ref ! TestActor.PersistAll((16 to 31).map(i => s"skip2-$i"))
+      expectMsg("PersistAll-done")
+      probe.expectNextN((16 to 31).map(i => s"skip2-$i"))
+
+      ref ! "skip2-32"
+      expectMsg("skip2-32-done")
+      probe.expectNext("skip2-32")
 
       probe.cancel()
     }
