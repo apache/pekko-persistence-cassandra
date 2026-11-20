@@ -233,6 +233,45 @@ requirements, it is strongly recommended to keep disk utilization on all nodes i
 utilization threshold as a signal that the cluster needs to be scaled out by adding nodes).  There can be substantial operational complexity
 if attempting to delete events after disk utilization has gone above 50%.
 
+## Unified Compaction Strategy (Cassandra 5.0+)
+
+Cassandra 5.0 added the [Unified Compaction Strategy (UCS)](https://cassandra.apache.org/doc/stable/cassandra/managing/operating/compaction/ucs.html),
+which Cassandra recommends for most workloads. The default compaction strategy in this plugin remains `SizeTieredCompactionStrategy`,
+because UCS is not available in older Cassandra versions and creating a table with it there fails.
+
+To have the tables created with UCS when `tables-autocreate` is enabled, set the compaction strategy for each table:
+
+```
+pekko.persistence.cassandra {
+  journal.table-compaction-strategy {
+    class = "UnifiedCompactionStrategy"
+    # optional, Cassandra's defaults are used for any option that is not set
+    # scaling_parameters = "T4"
+    # target_sstable_size = "1GiB"
+  }
+  snapshot.table-compaction-strategy {
+    class = "UnifiedCompactionStrategy"
+  }
+  events-by-tag.compaction-strategy {
+    class = "UnifiedCompactionStrategy"
+  }
+}
+```
+
+The supported UCS options are `scaling_parameters`, `target_sstable_size`, `min_sstable_size`, `base_shard_count`, `sstable_growth`,
+`max_sstables_to_compact`, `expired_sstable_check_frequency_seconds`, `unsafe_aggressive_sstable_expiration` and `overlap_inclusion_method`,
+plus the common `enabled`, `tombstone_threshold`, `tombstone_compaction_interval` and `unchecked_tombstone_compaction` options.
+
+These settings are only used when the tables are created. The plugin never changes the compaction strategy of existing tables.
+Existing tables can be switched to UCS manually with CQL, for example:
+
+```
+ALTER TABLE pekko.messages WITH compaction = {'class' : 'UnifiedCompactionStrategy', 'scaling_parameters' : 'T4'};
+```
+
+Changing the compaction strategy of a table with existing data causes Cassandra to recompact that data, which takes disk space
+and I/O. Read the Cassandra documentation and test the change on a non-production cluster with a realistic data volume first.
+
 ## Delete all events
 
 The @apidoc[org.apache.pekko.persistence.cassandra.cleanup.Cleanup] tool can be used for deleting all events and/or snapshots
