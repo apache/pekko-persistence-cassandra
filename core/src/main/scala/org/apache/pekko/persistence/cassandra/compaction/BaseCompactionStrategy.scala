@@ -73,6 +73,8 @@ object BaseCompactionStrategy extends CassandraCompactionStrategyConfig[BaseComp
         LeveledCompactionStrategy.fromConfig(config)
       case SizeTieredCompactionStrategy.ClassName =>
         SizeTieredCompactionStrategy.fromConfig(config)
+      case UnifiedCompactionStrategy.ClassName =>
+        UnifiedCompactionStrategy.fromConfig(config)
       case _ =>
         SizeTieredCompactionStrategy.fromConfig(ConfigFactory.parseString(s"""
                |class = "${SizeTieredCompactionStrategy.ClassName}"
