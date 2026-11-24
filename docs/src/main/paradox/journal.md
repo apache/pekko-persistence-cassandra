@@ -261,6 +261,8 @@ pekko.persistence.cassandra {
 The supported UCS options are `scaling_parameters`, `target_sstable_size`, `min_sstable_size`, `base_shard_count`, `sstable_growth`,
 `max_sstables_to_compact`, `expired_sstable_check_frequency_seconds`, `unsafe_aggressive_sstable_expiration` and `overlap_inclusion_method`,
 plus the common `enabled`, `tombstone_threshold`, `tombstone_compaction_interval` and `unchecked_tombstone_compaction` options.
+Only the UCS options that you set are sent to Cassandra, so Cassandra's defaults apply for the rest. The common options are
+always sent, as they are for the other compaction strategies.
 
 These settings are only used when the tables are created. The plugin never changes the compaction strategy of existing tables.
 Existing tables can be switched to UCS manually with CQL, for example:

@@ -17,15 +17,22 @@
 
 package org.apache.pekko.persistence.cassandra.compaction
 
+import java.util.Locale
+
 import com.typesafe.config.Config
 
 /**
  * The Unified Compaction Strategy (UCS), added in Cassandra 5.0. Using this strategy against an
  * older Cassandra version (or a database that does not support UCS) will fail when the table is created.
  *
- * Only the options set in the config are sent to Cassandra, so Cassandra's own defaults apply
- * for the rest. Sizes (`target_sstable_size`, `min_sstable_size`) and `scaling_parameters`
- * are passed through as strings, e.g. `"1GiB"` or `"T4"`, and are validated by Cassandra.
+ * Only the UCS specific options that are set in the config are sent to Cassandra, so Cassandra's
+ * own defaults apply for the rest. The common options (`enabled`, `tombstone_compaction_interval`,
+ * `tombstone_threshold` and `unchecked_tombstone_compaction`) are always sent, as they are for the
+ * other strategies, using the defaults of [[BaseCompactionStrategy]] when they are not set.
+ *
+ * Sizes (`target_sstable_size`, `min_sstable_size`) and `scaling_parameters` are passed through
+ * as strings, e.g. `"1GiB"` or `"T4"`, and are validated by Cassandra. `max_sstables_to_compact`
+ * is not range checked because Cassandra treats values less than or equal to 0 as "no limit".
  *
  * See https://cassandra.apache.org/doc/stable/cassandra/managing/operating/compaction/ucs.html
  */
@@ -60,8 +67,6 @@ class UnifiedCompactionStrategy(config: Config)
   baseShardCount.foreach(n => require(n > 0, s"$BaseShardCount must be larger than 0, but was $n"))
   sstableGrowth.foreach(g =>
     require(g >= 0.0 && g <= 1.0, s"$SSTableGrowth must be between 0 and 1, but was $g"))
-  maxSSTablesToCompact.foreach(n =>
-    require(n >= 0, s"$MaxSSTablesToCompact must be larger than or equal to 0, but was $n"))
   expiredSSTableCheckFrequencySeconds.foreach(n =>
     require(n > 0, s"$ExpiredSSTableCheckFrequencySeconds must be larger than 0, but was $n"))
 
@@ -78,7 +83,7 @@ class UnifiedCompactionStrategy(config: Config)
         maxSSTablesToCompact.map(v => s"'$MaxSSTablesToCompact' : $v"),
         expiredSSTableCheckFrequencySeconds.map(v => s"'$ExpiredSSTableCheckFrequencySeconds' : $v"),
         unsafeAggressiveSSTableExpiration.map(v => s"'$UnsafeAggressiveSSTableExpiration' : $v"),
-        overlapInclusionMethod.map(v => s"'$OverlapInclusionMethod' : ${quote(v.toUpperCase)}")).flatten
+        overlapInclusionMethod.map(v => s"'$OverlapInclusionMethod' : ${quote(v.toUpperCase(Locale.ROOT))}")).flatten
 
     (s"'class' : '$ClassName'" :: super.asCQL :: options).mkString("{\n", ",\n", "\n}")
   }

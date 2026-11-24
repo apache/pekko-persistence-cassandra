@@ -222,7 +222,7 @@ class CassandraCompactionStrategySpec
       compactionStrategy.overlapInclusionMethod shouldEqual Some("TRANSITIVE")
     }
 
-    "only include the configured UnifiedCompactionStrategy options in the CQL" in {
+    "only include the configured UnifiedCompactionStrategy specific options in the CQL" in {
       val ucsConfig = ConfigFactory.parseString("""journal.table-compaction-strategy {
           | class = "UnifiedCompactionStrategy"
           | scaling_parameters = "L10, T4"
@@ -238,6 +238,41 @@ class CassandraCompactionStrategySpec
           |'unchecked_tombstone_compaction' : false,
           |'scaling_parameters' : 'L10, T4'
           |}""".stripMargin
+    }
+
+    "normalize a lower case overlap_inclusion_method for UnifiedCompactionStrategy" in {
+      val ucsConfig = ConfigFactory.parseString("""journal.table-compaction-strategy {
+          | class = "UnifiedCompactionStrategy"
+          | overlap_inclusion_method = "transitive"
+          |}
+        """.stripMargin)
+
+      CassandraCompactionStrategy(ucsConfig.getConfig("journal.table-compaction-strategy")).asCQL shouldEqual
+      """{
+          |'class' : 'UnifiedCompactionStrategy',
+          |'enabled' : true,
+          |'tombstone_compaction_interval' : 86400,
+          |'tombstone_threshold' : 0.2,
+          |'unchecked_tombstone_compaction' : false,
+          |'overlap_inclusion_method' : 'TRANSITIVE'
+          |}""".stripMargin
+    }
+
+    "allow a max_sstables_to_compact of 0 or less for UnifiedCompactionStrategy" in {
+      // Cassandra treats values <= 0 as "no limit"
+      List(0, -1).foreach { n =>
+        val ucsConfig = ConfigFactory.parseString(s"""journal.table-compaction-strategy {
+            | class = "UnifiedCompactionStrategy"
+            | max_sstables_to_compact = $n
+            |}
+          """.stripMargin)
+
+        val compactionStrategy = CassandraCompactionStrategy(ucsConfig.getConfig("journal.table-compaction-strategy"))
+          .asInstanceOf[UnifiedCompactionStrategy]
+
+        compactionStrategy.maxSSTablesToCompact shouldEqual Some(n)
+        compactionStrategy.asCQL should include(s"'max_sstables_to_compact' : $n")
+      }
     }
 
     "fail if unrecognised property for UnifiedCompactionStrategy" in {
