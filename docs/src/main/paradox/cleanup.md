@@ -21,7 +21,9 @@ and the `tag_view` table can be re-built if it is corrupted (e.g. due to a two p
 In some cases keeping all events is not possible. `EventSourcedBehavior`s can automatically snapshot state and delete events as described in the [Pekko docs](https://pekko.apache.org/docs/pekko/current/typed/persistence-snapshot.html#snapshot-deletion).
 Snapshotting is useful even if events aren't deleted as it speeds up recovery.
 
-The @apidoc[org.apache.pekko.persistence.cassandra.cleanup.Cleanup] tool can retrospectively clean up the journal. Its operations include:
+The `Cleanup` tool can retrospectively clean up the journal. It is available as a Scala API in
+`org.apache.pekko.persistence.cassandra.cleanup.Cleanup` and as a Java API, that returns `CompletionStage` and accepts Java collections, in
+`org.apache.pekko.persistence.cassandra.cleanup.javadsl.Cleanup`. Its operations include:
 
 * Delete all events for a persistence id
 * Delete all events and tagged events for the `eventsByTag` query

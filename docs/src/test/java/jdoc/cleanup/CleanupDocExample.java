@@ -9,13 +9,20 @@
 
 package jdoc.cleanup;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletionStage;
+import org.apache.pekko.Done;
 import org.apache.pekko.actor.ActorSystem;
-import org.apache.pekko.persistence.cassandra.cleanup.Cleanup;
+import org.apache.pekko.persistence.SnapshotMetadata;
+import org.apache.pekko.persistence.cassandra.cleanup.CleanupSettings;
+import org.apache.pekko.persistence.cassandra.cleanup.javadsl.Cleanup;
 import org.apache.pekko.persistence.cassandra.query.javadsl.CassandraReadJournal;
 import org.apache.pekko.persistence.query.PersistenceQuery;
-import scala.jdk.javaapi.FutureConverters;
 
 public class CleanupDocExample {
 
@@ -37,7 +44,7 @@ public class CleanupDocExample {
         .currentPersistenceIds()
         .mapAsync(
             persistenceIdParallelism,
-            pid -> FutureConverters.toJava(cleanup.cleanupBeforeSnapshot(pid, 2)))
+            pid -> cleanup.cleanupBeforeSnapshot(pid, 2))
         .run(system);
 
     // forall persistence ids, keep everything after the provided unix timestamp, if there aren't
@@ -49,12 +56,18 @@ public class CleanupDocExample {
         .currentPersistenceIds()
         .mapAsync(
             persistenceIdParallelism,
-            pid ->
-                FutureConverters.toJava(
-                    cleanup.cleanupBeforeSnapshot(pid, 2, keepAfter.toInstant().toEpochMilli())))
+            pid -> cleanup.cleanupBeforeSnapshot(pid, 2, keepAfter.toInstant().toEpochMilli()))
         .run(system);
 
     // #cleanup
 
+    // a list of persistence ids that is typed with a wildcard is accepted
+    List<? extends String> persistenceIds = Arrays.asList("pid1", "pid2");
+    CompletionStage<Done> deleted = cleanup.deleteAll(persistenceIds, false);
+    CompletionStage<Optional<SnapshotMetadata>> oldestSnapshot =
+        cleanup.deleteBeforeSnapshot("pid1", 2);
+    Duration operationTimeout =
+        new CleanupSettings(system.settings().config().getConfig("pekko.persistence.cassandra.cleanup"))
+            .getOperationTimeout();
   }
 }
