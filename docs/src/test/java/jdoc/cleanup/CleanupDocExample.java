@@ -42,9 +42,7 @@ public class CleanupDocExample {
     // snapshot
     queries
         .currentPersistenceIds()
-        .mapAsync(
-            persistenceIdParallelism,
-            pid -> cleanup.cleanupBeforeSnapshot(pid, 2))
+        .mapAsync(persistenceIdParallelism, pid -> cleanup.cleanupBeforeSnapshot(pid, 2))
         .run(system);
 
     // forall persistence ids, keep everything after the provided unix timestamp, if there aren't
@@ -67,7 +65,8 @@ public class CleanupDocExample {
     CompletionStage<Optional<SnapshotMetadata>> oldestSnapshot =
         cleanup.deleteBeforeSnapshot("pid1", 2);
     Duration operationTimeout =
-        new CleanupSettings(system.settings().config().getConfig("pekko.persistence.cassandra.cleanup"))
+        new CleanupSettings(
+                system.settings().config().getConfig("pekko.persistence.cassandra.cleanup"))
             .getOperationTimeout();
   }
 }

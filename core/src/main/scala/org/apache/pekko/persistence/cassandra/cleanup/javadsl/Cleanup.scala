@@ -144,7 +144,7 @@ final class Cleanup(delegate: ScalaCleanup) {
    *
    * See single persistenceId overload for what is done for each persistence id
    */
-  def cleanupBeforeSnapshot(persistenceIds: JList[_ <: String], nrSnapshotsToKeep: Int): CompletionStage[Done] =
+  def cleanupBeforeSnapshot(persistenceIds: JList[? <: String], nrSnapshotsToKeep: Int): CompletionStage[Done] =
     delegate.cleanupBeforeSnapshot(toScala(persistenceIds), nrSnapshotsToKeep).asJava
 
   /**
@@ -153,7 +153,7 @@ final class Cleanup(delegate: ScalaCleanup) {
    * See single persistenceId overload for what is done for each persistence id
    */
   def cleanupBeforeSnapshot(
-      persistenceIds: JList[_ <: String],
+      persistenceIds: JList[? <: String],
       nrSnapshotsToKeep: Int,
       keepAfter: Long): CompletionStage[Done] =
     delegate.cleanupBeforeSnapshot(toScala(persistenceIds), nrSnapshotsToKeep, keepAfter).asJava
@@ -162,7 +162,7 @@ final class Cleanup(delegate: ScalaCleanup) {
    * Delete everything related to the given list of `persistenceIds`. All events, tagged events, and
    * snapshots are deleted.
    */
-  def deleteAll(persistenceIds: JList[_ <: String], neverUsePersistenceIdAgain: Boolean): CompletionStage[Done] =
+  def deleteAll(persistenceIds: JList[? <: String], neverUsePersistenceIdAgain: Boolean): CompletionStage[Done] =
     delegate.deleteAll(toScala(persistenceIds), neverUsePersistenceIdAgain).asJava
 
   /**
@@ -175,7 +175,7 @@ final class Cleanup(delegate: ScalaCleanup) {
   /**
    * Delete all events related to the given list of `persistenceIds`. Snapshots are not deleted.
    */
-  def deleteAllEvents(persistenceIds: JList[_ <: String], neverUsePersistenceIdAgain: Boolean): CompletionStage[Done] =
+  def deleteAllEvents(persistenceIds: JList[? <: String], neverUsePersistenceIdAgain: Boolean): CompletionStage[Done] =
     delegate.deleteAllEvents(toScala(persistenceIds), neverUsePersistenceIdAgain).asJava
 
   /**
@@ -188,7 +188,7 @@ final class Cleanup(delegate: ScalaCleanup) {
    * Delete all events from `tag_views` table related to the given list of `persistenceIds`.
    * Events in `messages` (journal) table are not deleted and snapshots are not deleted.
    */
-  def deleteAllTaggedEvents(persistenceIds: JList[_ <: String]): CompletionStage[Done] =
+  def deleteAllTaggedEvents(persistenceIds: JList[? <: String]): CompletionStage[Done] =
     delegate.deleteAllTaggedEvents(toScala(persistenceIds)).asJava
 
   /**
@@ -201,7 +201,7 @@ final class Cleanup(delegate: ScalaCleanup) {
   /**
    * Delete all snapshots related to the given list of `persistenceIds`. Events are not deleted.
    */
-  def deleteAllSnapshots(persistenceIds: JList[_ <: String]): CompletionStage[Done] =
+  def deleteAllSnapshots(persistenceIds: JList[? <: String]): CompletionStage[Done] =
     delegate.deleteAllSnapshots(toScala(persistenceIds)).asJava
 
   /**
@@ -225,6 +225,6 @@ final class Cleanup(delegate: ScalaCleanup) {
     delegate.close()
 
   // copies, so that later changes to the caller's list can't affect an operation in progress
-  private def toScala(persistenceIds: JList[_ <: String]): List[String] =
+  private def toScala(persistenceIds: JList[? <: String]): List[String] =
     persistenceIds.asScala.toList
 }

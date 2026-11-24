@@ -58,7 +58,7 @@ class CleanupSpec extends CassandraSpec(ScalaCleanupSpec.config) with DirectWrit
       val cleanup = new Cleanup(system)
       try {
         // a list that is typed with a wildcard is accepted
-        val wildcardPids: JList[_ <: String] = pids
+        val wildcardPids: JList[? <: String] = pids
         cleanup.deleteAll(wildcardPids, true).toCompletableFuture.get(10, TimeUnit.SECONDS) should ===(Done)
       } finally cleanup.close()
 

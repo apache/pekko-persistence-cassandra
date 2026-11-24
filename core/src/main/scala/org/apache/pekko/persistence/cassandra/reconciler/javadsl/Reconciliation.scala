@@ -64,7 +64,7 @@ final class Reconciliation(delegate: ScalaReconciliation) {
    * As this has to scan the tag views table for the given tag it is more efficient to
    * pass all the persistence ids of a tag in one call than to call this once per persistence id.
    */
-  def deleteTagViewForPersistenceIds(persistenceIds: JSet[_ <: String], tag: String): CompletionStage[Done] =
+  def deleteTagViewForPersistenceIds(persistenceIds: JSet[? <: String], tag: String): CompletionStage[Done] =
     delegate.deleteTagViewForPersistenceIds(persistenceIds.asScala.toSet[String], tag).asJava
 
   /**

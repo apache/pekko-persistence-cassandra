@@ -80,7 +80,7 @@ class ReconciliationSpec extends CassandraSpec with Eventually with BeforeAndAft
         .cancel()
 
       // a set that is typed with a wildcard is accepted
-      val pids: JSet[_ <: String] = java.util.Collections.singleton(pid2)
+      val pids: JSet[? <: String] = java.util.Collections.singleton(pid2)
       reconciliation
         .deleteTagViewForPersistenceIds(pids, tag1)
         .toCompletableFuture
