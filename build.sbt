@@ -189,7 +189,11 @@ lazy val docs = project
     ApidocPlugin.autoImport.apidocRootPackage := "org.apache.pekko",
     apidocRootPackage := "org.apache.pekko",
     Global / pekkoParadoxIncubatorNotice := None,
-    pekkoParadoxGithub := Some("https://github.com/apache/pekko-persistence-cassandra"))
+    pekkoParadoxGithub := Some("https://github.com/apache/pekko-persistence-cassandra"),
+    pekkoParadoxCopyright :=
+      """Copyright © 2011-2023 <a href="https://www.lightbend.com/">Lightbend, Inc</a>.
+        | Apache Pekko, Pekko, Apache, the Apache logo, and the Apache Pekko project logo are either registered trademarks
+        | or trademarks of The Apache Software Foundation in the United States and other countries.""".stripMargin)
 
 Global / onLoad := (Global / onLoad).value.andThen { s =>
   val v = version.value
