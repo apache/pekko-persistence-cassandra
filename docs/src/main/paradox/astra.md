@@ -9,24 +9,41 @@
 
 # DataStax Astra
 
-You can spin up a free Apache Cassandra cluster in the cloud using [DataStax
-Astra](https://www.datastax.com/products/datastax-astra). To use a Cassandra-as-a-Service cluster as Pekko persistence,
-specify your secure connect bundle and credentials in your configuration instead of the contact points:
+To use Astra DB with Pekko Persistence Cassandra, download the database's Secure Connect Bundle (SCB) and
+generate an [application token](https://docs.datastax.com/en/astra-db-serverless/administration/manage-application-tokens.html)
+with permissions for the operations your application performs. The bundle supplies contact points and TLS settings,
+so remove any explicit contact points from this driver configuration.
 
-```
+The example uses an existing keyspace named `my_keyspace` for both the journal and snapshot store. Use your actual
+keyspace in all three settings. Create the keyspace through Astra, and use the
+@ref:[journal](journal.md#schema) and @ref:[snapshot](snapshots.md#schema) schemas for the table definitions.
+Astra DB Serverless ignores [unsupported CQL table properties](https://docs.datastax.com/en/astra-db-serverless/cql/develop-with-cql.html),
+such as compaction settings, and returns a warning. You can leave those properties out of the table definitions.
+
+Set the `ASTRA_DB_APPLICATION_TOKEN` environment variable for your application process to the token value
+(the `token` field, not the token's client ID or secret). Keep the token and bundle out of source control.
+
+Astra DB Serverless [does not allow writes at consistency `ONE`](https://docs.datastax.com/en/astra-db-serverless/architecture/database-internals/configure-consistency.html).
+Set `LOCAL_QUORUM` on the snapshot profile, which otherwise uses `ONE`. The example also sets it for requests
+without a named profile, such as some cleanup operations. The journal and query profile keeps its default `QUORUM`.
+
+```hocon
+pekko.persistence.cassandra {
+  journal.keyspace = "my_keyspace"
+  snapshot.keyspace = "my_keyspace"
+}
+
 datastax-java-driver {
   basic {
-    session-keyspace = my_keyspace
-    cloud {
-      secure-connect-bundle = /path/to/secure-connect-database_name.zip
-    }
+    session-keyspace = "my_keyspace"
+    cloud.secure-connect-bundle = "/path/to/secure-connect-database.zip"
+    request.consistency = LOCAL_QUORUM
   }
-  advanced {
-    auth-provider {
-      class = PlainTextAuthProvider
-      username = <user name> 
-      password = <password>
-    }
+  profiles.pekko-persistence-cassandra-snapshot-profile.basic.request.consistency = LOCAL_QUORUM
+  advanced.auth-provider {
+    class = PlainTextAuthProvider
+    username = "token"
+    password = ${ASTRA_DB_APPLICATION_TOKEN}
   }
 }
 ```
