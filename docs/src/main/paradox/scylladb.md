@@ -24,10 +24,14 @@ You can run the tests and having a ScyllaDB instance accessible on localhost por
 
 ## Tablets and keyspace creation
 
-Since ScyllaDB 2026.2, new keyspaces use tablets by default and ScyllaDB rejects `SimpleStrategy` for such keyspaces
-with the error `SimpleStrategy doesn't support tablet replication`. `SimpleStrategy` is the default
-`replication-strategy` of this plugin, so with `keyspace-autocreate` enabled the journal and snapshot keyspaces
-fail to be created and the plugin cannot start.
+ScyllaDB enables tablets for new keyspaces by default. Up to ScyllaDB 2026.1 that default was only applied to
+keyspaces created with `NetworkTopologyStrategy`, and a `SimpleStrategy` keyspace was silently created with vnodes.
+Since ScyllaDB 2026.2 the default is applied to every replication strategy, including `SimpleStrategy`, and because
+`SimpleStrategy` cannot be used with tablets the `CREATE KEYSPACE` statement is rejected with the error
+`SimpleStrategy doesn't support tablet replication`.
+
+`SimpleStrategy` is the default `replication-strategy` of this plugin, so with `keyspace-autocreate` enabled the
+journal and snapshot keyspaces fail to be created and the plugin cannot start.
 
 Use one of these approaches:
 
@@ -35,6 +39,10 @@ Use one of these approaches:
   `pekko.persistence.cassandra.journal` and `pekko.persistence.cassandra.snapshot`.
 * Create the keyspaces yourself, see @ref:[Journal](journal.md#schema) and @ref:[Snapshots](snapshots.md#schema),
   using `NetworkTopologyStrategy` or adding `AND tablets = {'enabled': false}` to the `CREATE KEYSPACE` statement.
+  Set `keyspace-autocreate = false` for both `pekko.persistence.cassandra.journal` and
+  `pekko.persistence.cassandra.snapshot`, otherwise the plugin still issues `CREATE KEYSPACE IF NOT EXISTS` with
+  its configured `replication-strategy`. The per-keyspace `tablets = {'enabled': false}` override is only accepted
+  when the server permits it: ScyllaDB rejects it when `tablets_mode_for_new_keyspaces` is set to `enforced`.
 * Disable tablets for new keyspaces on the ScyllaDB side with `tablets_mode_for_new_keyspaces: disabled` in
   `scylla.yaml` (or the `--tablets-mode-for-new-keyspaces=disabled` command line option). This is what the
   `scylladb-service` in the project's `docker-compose.yml` does.
