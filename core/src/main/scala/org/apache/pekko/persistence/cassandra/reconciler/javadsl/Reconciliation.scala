@@ -48,7 +48,7 @@ import pekko.stream.javadsl.Source
  * Corresponding Scala API is in [[pekko.persistence.cassandra.reconciler.Reconciliation]].
  */
 @ApiMayChange
-final class Reconciliation(delegate: ScalaReconciliation) {
+final class Reconciliation private (delegate: ScalaReconciliation) {
 
   def this(systemProvider: ClassicActorSystemProvider, settings: ReconciliationSettings) =
     this(new ScalaReconciliation(systemProvider, settings))

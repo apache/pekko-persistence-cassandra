@@ -53,7 +53,7 @@ import pekko.persistence.cassandra.cleanup.{ Cleanup => ScalaCleanup }
  * Corresponding Scala API is in [[pekko.persistence.cassandra.cleanup.Cleanup]].
  */
 @ApiMayChange
-final class Cleanup(delegate: ScalaCleanup) {
+final class Cleanup private (delegate: ScalaCleanup) {
 
   def this(systemProvider: ClassicActorSystemProvider, settings: CleanupSettings) =
     this(new ScalaCleanup(systemProvider, settings))
