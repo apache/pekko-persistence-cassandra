@@ -149,8 +149,9 @@ This adds a delay each time a new persistence id is found by an offset query whe
 
 ## Events by tag reconciliation
 
-In the event that the `tag_views` table gets corrupted there is a @apidoc[org.apache.pekko.persistence.cassandra.reconciler.Reconciliation]
-tool that can help fix it. It can only be run while the application is offline but per persistence id operations can
+In the event that the `tag_views` table gets corrupted there is a `Reconciliation`
+tool that can help fix it. It is available as a Scala API in `org.apache.pekko.persistence.cassandra.reconciler.Reconciliation`
+and as a Java API in `org.apache.pekko.persistence.cassandra.reconciler.javadsl.Reconciliation`. It can only be run while the application is offline but per persistence id operations can
 be used if it is known that the persistence id is not running.
 
 It supports:
@@ -167,7 +168,11 @@ once the reconciliation operations have completed.
 
 For example, to rebuild the data for a persistence id:
 
-@@snip [reconciler](/core/src/test/scala/doc/reconciler/ReconciliationCompileOnly.scala) { #imports #reconcile}                                                                                                                                
+Scala
+: @@snip [reconciler](/core/src/test/scala/doc/reconciler/ReconciliationCompileOnly.scala) { #imports #reconcile }
+
+Java
+: @@snip [reconciler](/docs/src/test/java/jdoc/reconciler/ReconciliationDocExample.java) { #imports #reconcile }
 
 ## Other tuning
 

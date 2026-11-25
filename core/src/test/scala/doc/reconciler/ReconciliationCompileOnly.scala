@@ -41,7 +41,7 @@ class ReconciliationCompileOnly {
     tags <- rec.tagsForPersistenceId(pid)
     // drop the tag view for every tag for this persistence id
     dropData <- Future.traverse(tags)(tag => rec.deleteTagViewForPersistenceIds(Set(pid), tag))
-    // optional: re-build, if this is ommited then it will be re-build next time the pid is started
+    // optional: re-build, if this is omitted then it will be re-build next time the pid is started
     _ <- rec.rebuildTagViewForPersistenceIds(pid)
   } yield Done
 
