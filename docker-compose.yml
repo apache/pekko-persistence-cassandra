@@ -35,7 +35,10 @@ services:
       retries: 60
 
   scylladb-service:
-    image: scylladb/scylla:2026.1.6
+    image: scylladb/scylla:latest
+    # ScyllaDB 2026.2+ creates new keyspaces with tablets by default and rejects SimpleStrategy
+    # (the plugin's default replication-strategy) for them, so tablets are disabled here.
+    command: --tablets-mode-for-new-keyspaces=disabled
     ports:
       - "9042:9042"
     volumes:
