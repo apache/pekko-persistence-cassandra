@@ -53,7 +53,25 @@ object EventsByTagSpec {
     }
   }
 
-  val today = LocalDate.now(ZoneOffset.UTC).atStartOfDay()
+  /**
+   * Start of the (UTC) day on which the specs were loaded. Only for values that must stay fixed for the whole run,
+   * like `first-time-bucket`. A run can cross midnight, so tests that need the current `Day` bucket must use
+   * [[startOfToday]] or [[recentTimeInCurrentBucket]] instead.
+   */
+  val specStartDay = LocalDate.now(ZoneOffset.UTC).atStartOfDay()
+
+  /** Start of the current (UTC) day, i.e. of the current `Day` bucket. Evaluated on each call. */
+  def startOfToday(): LocalDateTime = LocalDate.now(ZoneOffset.UTC).atStartOfDay()
+
+  /**
+   * A time 5 minutes before `now`, unless that is in the previous `Day` bucket, in which case it is moved to just
+   * after the start of the bucket of `now`. The second of slack leaves room for `minusSeconds(1)`.
+   */
+  def recentTimeInCurrentBucket(now: LocalDateTime = LocalDateTime.now(ZoneOffset.UTC)): LocalDateTime = {
+    val earliest = now.toLocalDate.atStartOfDay().plusSeconds(1)
+    val fiveMinutesAgo = now.minusMinutes(5)
+    if (fiveMinutesAgo.isBefore(earliest)) earliest else fiveMinutesAgo
+  }
 
   val config = ConfigFactory.parseString(s"""
     pekko.actor.serialize-messages = off
@@ -77,7 +95,7 @@ object EventsByTagSpec {
       }
 
       events-by-tag {
-        first-time-bucket = "${today.minusDays(5).format(firstBucketFormatter)}"
+        first-time-bucket = "${specStartDay.minusDays(5).format(firstBucketFormatter)}"
         flush-interval = 0ms
         eventual-consistency-delay = 2s
         bucket-size = Day
@@ -101,7 +119,7 @@ object EventsByTagSpec {
 
   val strictConfigFirstOffset1001DaysAgo = ConfigFactory.parseString(s"""
     pekko.loglevel = INFO # DEBUG is very verbose for this test so don't turn it on when debugging other tests
-    pekko.persistence.cassandra.events-by-tag.first-time-bucket = "${today.minusDays(1001).format(
+    pekko.persistence.cassandra.events-by-tag.first-time-bucket = "${specStartDay.minusDays(1001).format(
       firstBucketFormatter)}"
     """).withFallback(strictConfig)
 
@@ -329,7 +347,7 @@ class EventsByTagSpec extends AbstractEventsByTagSpec(EventsByTagSpec.config) {
     }
 
     "find existing events that spans several time buckets" in {
-      val t1 = today.minusDays(5).toLocalDate.atStartOfDay.plusHours(13)
+      val t1 = specStartDay.minusDays(5).toLocalDate.atStartOfDay.plusHours(13)
       val w1 = UUID.randomUUID().toString
       val pr1 = PersistentRepr("e1", 1L, "p1", "", writerUuid = w1)
       writeTaggedEvent(t1, pr1, Set("T1-current"), 1, bucketSize)
@@ -457,7 +475,7 @@ class EventsByTagSpec extends AbstractEventsByTagSpec(EventsByTagSpec.config) {
     }
 
     "find new events that spans several time buckets" in {
-      val t1 = today.minusDays(5).toLocalDate.atStartOfDay.plusHours(13)
+      val t1 = specStartDay.minusDays(5).toLocalDate.atStartOfDay.plusHours(13)
       val w1 = UUID.randomUUID().toString
       val pr1 = PersistentRepr("e1", 1L, "p1", "", writerUuid = w1)
       writeTaggedEvent(t1, pr1, Set("T1-live"), 1, bucketSize)
@@ -612,7 +630,8 @@ pekko.persistence.cassandra.events-by-tag.refresh-internal = 100ms
 
     // slightly lower guarantee than before, we need another event to come along for that pid/tag combination
     "find delayed events" in {
-      val t1 = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(5)
+      // all timestamps must be in the current bucket, the delayed events are not looked for in an older one
+      val t1 = recentTimeInCurrentBucket()
       val w1 = UUID.randomUUID().toString
       val w2 = UUID.randomUUID().toString
       val p1e1 = PersistentRepr("p1-e1", 1L, "p1", "", writerUuid = w1)
@@ -641,7 +660,8 @@ pekko.persistence.cassandra.events-by-tag.refresh-internal = 100ms
     }
 
     "find delayed events 2" in {
-      val t1 = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(5)
+      // all timestamps must be in the current bucket, the delayed events are not looked for in an older one
+      val t1 = recentTimeInCurrentBucket()
       val w1 = UUID.randomUUID().toString
       val w2 = UUID.randomUUID().toString
 
@@ -668,7 +688,8 @@ pekko.persistence.cassandra.events-by-tag.refresh-internal = 100ms
     }
 
     "find delayed events 3" in {
-      val t1 = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(5)
+      // all timestamps must be in the current bucket, the delayed events are not looked for in an older one
+      val t1 = recentTimeInCurrentBucket()
       val w1 = UUID.randomUUID().toString
       val w2 = UUID.randomUUID().toString
 
@@ -698,7 +719,8 @@ pekko.persistence.cassandra.events-by-tag.refresh-internal = 100ms
     }
 
     "find delayed events from offset" in {
-      val t1 = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(5)
+      // all timestamps must be in the current bucket, the delayed events are not looked for in an older one
+      val t1 = recentTimeInCurrentBucket()
       val w1 = UUID.randomUUID().toString
       val w2 = UUID.randomUUID().toString
 
@@ -1114,6 +1136,7 @@ class EventsByTagSpecBackTrackingLongRefreshInterval
 
   "Backtracking" must {
     "find in the previous bucket without needing a refresh" in {
+      val today = startOfToday()
       val tagName = "back-track-previous-bucket-no-refresh"
       writeTaggedEvent(PersistentRepr("e1", 1L, "p2", ""), Set(tagName), 1, bucketSize)
       val src = queries.eventsByTag(tag = tagName, offset = NoOffset)
@@ -1157,6 +1180,7 @@ class EventsByTagSpecBackTracking
 
   "Delayed events" must {
     "be found even if there are no more events for that persistence id" in {
+      val today = startOfToday()
 
       val t1 = today.minusMinutes(5)
       writeTaggedEvent(t1, PersistentRepr("e1", 1L, "p1", ""), Set("back-track"), 1, bucketSize)
@@ -1188,6 +1212,7 @@ class EventsByTagSpecBackTracking
     }
 
     "work for for delayed events in the previous bucket via long period" in {
+      val today = startOfToday()
       val t1 = today.minusDays(5)
       val tagName = "back-track-previous-bucket"
       writeTaggedEvent(t1, PersistentRepr("e1", 1L, "p1", ""), Set(tagName), 1, bucketSize)
@@ -1220,6 +1245,7 @@ class EventsByTagSpecBackTracking
     }
 
     "find new persistence ids that were missed" in {
+      val today = startOfToday()
       val tagName = "back-track-new-persistence-id"
       val src = queries.eventsByTag(tag = tagName, offset = NoOffset)
       val probe = src.runWith(TestSink[Any]())
@@ -1241,6 +1267,7 @@ class EventsByTagSpecBackTracking
     }
 
     "sort delayed events by timeuuid" in {
+      val today = startOfToday()
       val tagName = "back-track-sort-delayed-events"
       val src = queries.eventsByTag(tag = tagName, offset = NoOffset)
       val probe = src.runWith(TestSink[Any]())
@@ -1266,6 +1293,7 @@ class EventsByTagSpecBackTracking
     }
 
     "work for many delayed events for different persistence ids" in {
+      val today = startOfToday()
       val tagName = "back-track-many-persistence-ids"
       val src = queries.eventsByTag(tag = tagName, offset = NoOffset)
       val probe = src.runWith(TestSink[Any]())
