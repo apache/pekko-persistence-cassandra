@@ -58,7 +58,7 @@ object EventsByTagSpec {
    * like `first-time-bucket`. A run can cross midnight, so tests that need the current `Day` bucket must use
    * [[startOfToday]] or [[recentTimeInCurrentBucket]] instead.
    */
-  val specStartDay = LocalDate.now(ZoneOffset.UTC).atStartOfDay()
+  val specStartDay = startOfToday()
 
   /** Start of the current (UTC) day, i.e. of the current `Day` bucket. Evaluated on each call. */
   def startOfToday(): LocalDateTime = LocalDate.now(ZoneOffset.UTC).atStartOfDay()
