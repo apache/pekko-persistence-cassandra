@@ -32,6 +32,7 @@ import pekko.event.Logging
 import pekko.pattern.pipe
 import pekko.persistence._
 import pekko.persistence.cassandra._
+import pekko.persistence.cassandra.util.RetryableFutureEval
 import pekko.persistence.serialization.Snapshot
 import pekko.persistence.snapshot.SnapshotStore
 import pekko.serialization.{ AsyncSerializer, Serialization, SerializationExtension, Serializers }
@@ -61,22 +62,24 @@ import com.typesafe.config.Config
   private val serialization = SerializationExtension(context.system)
   private val snapshotSerialization = new SnapshotSerialization(context.system)
   private val statements = new CassandraStatements(settings)
-  import statements.snapshotStatements._
 
   private val someMaxLoadAttempts = Some(snapshotSettings.maxLoadAttempts)
   private val session: CassandraSession = CassandraSessionRegistry(context.system)
     .sessionFor(sharedConfigPath, ses => statements.executeAllCreateKeyspaceAndTables(ses, log))
+  private val preparedStatements =
+    new PreparedStatements(statements.snapshotStatements, snapshotSettings.maxLoadAttempts,
+      query => session.prepare(query))
 
-  private def preparedWriteSnapshot =
-    session.prepare(writeSnapshot(withMeta = false))
-  private def preparedWriteSnapshotWithMeta =
-    session.prepare(writeSnapshot(withMeta = true))
-  private def preparedSelectSnapshot =
-    session.prepare(selectSnapshot)
+  private def preparedWriteSnapshot: Future[PreparedStatement] =
+    preparedStatements.writeSnapshot()
+  private def preparedWriteSnapshotWithMeta: Future[PreparedStatement] =
+    preparedStatements.writeSnapshotWithMeta()
+  private def preparedSelectSnapshot: Future[PreparedStatement] =
+    preparedStatements.selectSnapshot()
   private def preparedSelectSnapshotMetadata: Future[PreparedStatement] =
-    session.prepare(selectSnapshotMetadata(limit = None))
+    preparedStatements.selectSnapshotMetadata()
   private def preparedSelectSnapshotMetadataWithMaxLoadAttemptsLimit: Future[PreparedStatement] =
-    session.prepare(selectSnapshotMetadata(limit = Some(snapshotSettings.maxLoadAttempts)))
+    preparedStatements.selectSnapshotMetadataWithLimit()
 
   override def preStart(): Unit =
     // eager initialization, but not from constructor
@@ -275,10 +278,10 @@ import com.typesafe.config.Config
   }
 
   def preparedDeleteSnapshot: Future[PreparedStatement] =
-    session.prepare(deleteSnapshot)
+    preparedStatements.deleteSnapshot()
 
   def preparedDeleteAllSnapshotsForPidAndSequenceNrBetween: Future[PreparedStatement] =
-    session.prepare(deleteAllSnapshotForPersistenceIdAndSequenceNrBetween)
+    preparedStatements.deleteSnapshotRange()
 
   def deleteAsync(metadata: SnapshotMetadata): Future[Unit] = {
     val boundDeleteSnapshot = preparedDeleteSnapshot.map(
@@ -293,6 +296,29 @@ import com.typesafe.config.Config
  */
 @InternalApi private[pekko] object CassandraSnapshotStore {
   private case object Init
+
+  @InternalApi private[snapshot] final class PreparedStatements(
+      queries: CassandraSnapshotStatements,
+      maxLoadAttempts: Int,
+      prepare: String => Future[PreparedStatement])(implicit ec: ExecutionContext) {
+
+    // Keep one strong reference to each successful prepare for the lifetime of this store.
+    // Serialize the cache lookup and start of a prepare, not the asynchronous work itself.
+    private def memoize(query: => String): () => Future[PreparedStatement] = {
+      val cached = RetryableFutureEval(() => prepare(query))
+      () => cached.synchronized(cached.futureResult())
+    }
+
+    val writeSnapshot = memoize(queries.writeSnapshot(withMeta = false))
+    val writeSnapshotWithMeta = memoize(queries.writeSnapshot(withMeta = true))
+    // Leave the SELECT * query to the driver's cache. Pre-v5 protocol cannot refresh its result metadata
+    // on a schema change, so do not pin it for the store's lifetime.
+    def selectSnapshot(): Future[PreparedStatement] = prepare(queries.selectSnapshot)
+    val selectSnapshotMetadata = memoize(queries.selectSnapshotMetadata(limit = None))
+    val selectSnapshotMetadataWithLimit = memoize(queries.selectSnapshotMetadata(limit = Some(maxLoadAttempts)))
+    val deleteSnapshot = memoize(queries.deleteSnapshot)
+    val deleteSnapshotRange = memoize(queries.deleteAllSnapshotForPersistenceIdAndSequenceNrBetween)
+  }
 
   sealed trait CleanupCommand
   final case class DeleteAllSnapshots(persistenceId: String) extends CleanupCommand
